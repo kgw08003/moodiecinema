@@ -1,3 +1,4 @@
+# users/models.py
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
@@ -47,3 +48,4 @@ class User(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return True
+
