@@ -1,0 +1,60 @@
+/* 로그인 페이지 스타일 */
+.login-container {
+    max-width: 400px;
+    margin: 250px auto;
+    padding: 40px;
+    background-color: #181818;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    box-sizing: border-box; /* 부모 요소에 추가 */
+}
+
+.login-container h2 {
+    color: #ffffff;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"],
+.login-container button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    box-sizing: border-box; /* 각 요소에 추가 */
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"] {
+    background-color: #333;
+    color: #ffffff;
+    border: none;
+}
+
+.login-container button {
+    padding: 12px; /* 버튼의 높이를 입력 필드와 조금 다르게 설정 */
+    background-color: #f7c948; /* 노란색 */
+    color: #000000;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-container button:hover {
+    background-color: #ffc107;
+}
+
+.signup-link {
+    display: block;
+    color: #b3b3b3;
+    font-size: 14px;
+    margin-top: 20px;
+    text-decoration: none;
+}
+
+.signup-link:hover {
+    color: #ffffff;
+}

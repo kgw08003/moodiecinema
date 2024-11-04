@@ -1,0 +1,23 @@
+{% extends 'moodiecinema/base.html' %}
+
+{% load static %}
+
+{% block title %}로그인{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'login.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+  <h2>로그인</h2>
+  <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <input type="text" name="username" placeholder="아이디" required>
+    <input type="password" name="password" placeholder="비밀번호" required>
+    <button type="submit">로그인</button>
+    <a href="{% url 'social:begin' 'google-oauth2' %}">구글로 로그인</a>
+  </form>
+  <a href="{% url 'signup' %}" class="signup-link">계정이 없으신가요? 회원가입</a>
+</div>
+{% endblock %}
