@@ -305,3 +305,42 @@ body {
     color: #fff;
     margin-top: 10px;
 }
+
+/* 로그인 및 로그아웃 버튼 스타일 */
+.auth-button {
+  background-color: #ffffff; /* 배경 색상 */
+  color: #000000; /* 글자 색상 */
+  font-size: 16px; /* 글자 크기 */
+  font-weight: bold; /* 두껍게 */
+  padding: 14px 30px; /* 패딩 */
+  border: 0px; /* 테두리 없음 */
+  border-radius: 40px; /* 모서리 둥글게 */
+  cursor: pointer; /* 클릭 가능 커서 */
+  min-width: 150px; /* 버튼 최소 너비 설정 */
+  height: 40px; /* 버튼 높이 설정 */
+}
+
+/* 버튼의 hover 및 active 상태 스타일 */
+.auth-button:hover,
+.auth-button:active,
+.auth-button:focus {
+  background-color: #f2f2f2; /* hover 시 배경 색상 변경 */
+}
+
+/* 로그인/로그아웃 버튼 스타일 */
+.navbar form button {
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 40px;
+  cursor: pointer;
+  min-width: 150px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar form button:hover {
+  background-color: #f2f2f2;
+}
