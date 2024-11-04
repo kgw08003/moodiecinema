@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  {% load static %}
+  <title>{% block title %}Moodie Cinema{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'home.css' %}">
+
+  {% block head %}{% endblock %}
+  {% block extra_js %}{% endblock %}
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <a href="{% url 'home' %}">
+        <img src="{% static 'images/로고.png' %}" alt="Logo" />
+      </a>
+    </div>
+    
+    <div class="navigation">
+      <ul>
+        <li><a href="#"><span class="fa fa-home"></span> <span>Home</span></a></li>
+        <li><a href="#"><span class="fa fa-search"></span> <span>카테고리</span></a></li>
+        <li><a href="#"><span class="fa fas fa-book"></span> <span>Your Library</span></a></li>
+      </ul>
+    </div>
+
+    <div class="navigation">
+      <ul>
+        <li><a href="#"><span class="fa fas fa-plus-square"></span> <span>일기장</span></a></li>
+        <li><a href="#"><span class="fa fas fa-heart"></span> <span>찜 목록</span></a></li>
+      </ul>
+    </div>
+
+    <div class="policies">
+      <ul>
+        <li><a href="#">Cookies</a></li>
+        <li><a href="#">Privacy</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Top Bar -->
+    <div class="topbar">
+      <div class="prev-next-buttons">
+        <button type="button" class="fa fas fa-chevron-left"></button>
+        <button type="button" class="fa fas fa-chevron-right"></button>
+      </div>
+
+      <form class="search-form">
+        <div class="search_box">
+          <button type="submit" tabindex="2" class="search-button">
+            <img src="{% static 'images/돋보기 로고.png' %}" alt="검색"> 
+          </button>
+          <input type="text" maxlength="225" tabindex="1" placeholder="검색어를 입력하세요" class="search-input">
+        </div>
+      </form>
+
+      <div class="navbar">
+        <ul>
+          <li><a href="#">아무거나</a></li>
+          <li><a href="#">원하는거</a></li>
+          <li><a href="#">추가예정</a></li>
+          <li class="divider">|</li>
+          <li><a href="{% url 'signup' %}">회원가입</a></li>
+        </ul>
+        <a href="{% url 'login' %}">
+          <button type="button">로그인</button>
+        </a>
+      </div>
+    </div>
+
+    <!-- Content Block -->
+    <div class="content">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+  <script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
+</body>
+</html>
