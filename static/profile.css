@@ -4,24 +4,7 @@
     padding: 20px;
     background-color: #f7f7f7;
     border-radius: 8px;
-}
-
-/* 프로필 상단 영역에 여백 추가 */
-.profile-container {
-    margin-top: 80px; 
-}
-
-.profile-info .username {
-    font-size: 28px; /* 유저 네임의 글자 크기를 조정합니다 */
-    font-weight: bold;
-    margin: 0;
-    color: #fff; /* 원하는 색상으로 설정 */
-}
-
-.profile-info .membership-date {
-    font-size: 16px; /* 연월일 글자 크기를 조금 줄여서 유저 네임을 강조 */
-    color: #aaa;
-    margin-top: 5px;
+    margin-top: 80px;
 }
 
 .profile-header {
@@ -54,15 +37,16 @@
     object-fit: cover;
 }
 
-.profile-info h2 {
-    font-size: 24px;
-    margin: 0;
+.profile-info .username {
+    font-size: 28px;
+    font-weight: bold;
+    color: #fff;
 }
 
-.profile-info p {
-    font-size: 14px;
-    margin: 5px 0;
+.profile-info .membership-date {
+    font-size: 16px;
     color: #aaa;
+    margin-top: 5px;
 }
 
 .profile-stats {
@@ -125,14 +109,14 @@
 }
 
 .stat-item {
-    width: 100px; /* 각 통계 항목의 고정 너비 설정 */
+    width: 100px;
     text-align: center;
 }
 
 .rating-distribution {
     flex-grow: 1;
     margin-left: 20px;
-    height: 150px; /* 평점 분포 그래프 공간 */
+    height: 150px;
     background-color: #e0e0e0;
     border-radius: 4px;
     display: flex;
@@ -148,7 +132,7 @@
     font-size: 14px;
     margin-top: -25px;
     display: flex;
-    justify-content: flex-end; /* 오른쪽 정렬 */
+    justify-content: flex-end;
 }
 
 .btn-link:hover {
@@ -184,4 +168,91 @@
 
 .btn:hover {
     opacity: 0.8;
+}
+
+.section.delete-account {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.warning-text {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+#password {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.continue-btn {
+    background-color: #f44336;
+    color: #fff;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.continue-btn:hover {
+    background-color: #d32f2f;
+}
+
+/* 모달 스타일 */
+/* 모달 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+}
+
+.modal-content h3 {
+    margin-bottom: 20px;
+}
+
+.modal-content .btn-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* 버튼 간의 간격 조절 */
+    margin-top: 10px;
+}
+
+.modal-content .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.confirm-btn {
+    background-color: #e74c3c;
+    color: #fff;
+}
+
+.cancel-btn {
+    background-color: #ccc;
+    color: #333;
 }
