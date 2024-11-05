@@ -4,6 +4,8 @@ Django settings for moodiecinema project.
 import os
 from pathlib import Path
 
+TMDB_API_KEY = "5f0eb3027f1b131897e4dcbe057e0931" ## --> 제 API KEY 입니다. 바꾸시고 싶으시면 API KEY를 발급 받아서 쓰시면 됩니다.
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
