@@ -1,0 +1,187 @@
+.profile-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f7f7f7;
+    border-radius: 8px;
+}
+
+/* 프로필 상단 영역에 여백 추가 */
+.profile-container {
+    margin-top: 80px; 
+}
+
+.profile-info .username {
+    font-size: 28px; /* 유저 네임의 글자 크기를 조정합니다 */
+    font-weight: bold;
+    margin: 0;
+    color: #fff; /* 원하는 색상으로 설정 */
+}
+
+.profile-info .membership-date {
+    font-size: 16px; /* 연월일 글자 크기를 조금 줄여서 유저 네임을 강조 */
+    color: #aaa;
+    margin-top: 5px;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    background-color: #181818;
+    color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #333;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: bold;
+    color: #fff;
+    margin-right: 20px;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info h2 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.profile-info p {
+    font-size: 14px;
+    margin: 5px 0;
+    color: #aaa;
+}
+
+.profile-stats {
+    display: flex;
+    margin-left: auto;
+    gap: 20px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #888;
+}
+
+.profile-tabs {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    border-bottom: 2px solid #ddd;
+}
+
+.profile-tabs .tab {
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    position: relative;
+}
+
+.profile-tabs .tab.active, .profile-tabs .tab:hover {
+    font-weight: bold;
+    color: #333;
+}
+
+.profile-tabs .tab:hover::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background-color: #333;
+}
+
+.profile-content {
+    padding: 20px;
+}
+
+.section {
+    margin-bottom: 20px;
+}
+
+.stats-details {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.stat-item {
+    width: 100px; /* 각 통계 항목의 고정 너비 설정 */
+    text-align: center;
+}
+
+.rating-distribution {
+    flex-grow: 1;
+    margin-left: 20px;
+    height: 150px; /* 평점 분포 그래프 공간 */
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    color: #666;
+}
+
+.btn-link {
+    color: #888;
+    text-decoration: none;
+    font-size: 14px;
+    margin-top: -25px;
+    display: flex;
+    justify-content: flex-end; /* 오른쪽 정렬 */
+}
+
+.btn-link:hover {
+    color: #333;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    color: #fff;
+    background-color: #333;
+}
+
+.edit-profile-btn {
+    background-color: #4CAF50;
+}
+
+.logout-btn {
+    background-color: #f44336;
+}
+
+.home-btn {
+    background-color: #2196F3;
+}
+
+.btn:hover {
+    opacity: 0.8;
+}
