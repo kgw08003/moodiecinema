@@ -53,3 +53,22 @@ class UserUpdateView(UpdateView):
     
 class CategoryView(TemplateView):
     template_name = 'moodiecinema/category.html'
+
+from django.views.generic import View
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+from django.contrib import messages
+
+class DeleteAccountView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        password = request.POST.get('password')
+        if request.user.check_password(password):
+            user = request.user
+            logout(request)
+            user.delete()
+            messages.success(request, "회원 탈퇴가 완료되었습니다.")
+            return redirect('home')  # 탈퇴 후 홈 페이지로 이동
+        else:
+            messages.error(request, "비밀번호가 틀렸습니다. 다시 시도해주세요.")
+            return redirect('profile')  # 비밀번호가 틀린 경우 프로필 페이지로 다시 이동

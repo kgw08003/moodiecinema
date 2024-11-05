@@ -9,7 +9,7 @@
 
 {% block content %}
 <div class="profile-container">
-    <div class="profile-header">
+    <div class="profile-header" id="profileHeader">
         <div class="profile-avatar">
             {% if user.user_profile %}
                 <img src="{{ user.user_profile.url }}" alt="프로필 사진">
@@ -18,7 +18,7 @@
             {% endif %}
         </div>
         <div class="profile-info">
-            <h2 class="username">{{ user.user_name }}</h2> <!-- user.username 대신 user.user_name으로 변경 -->
+            <h2 class="username">{{ user.user_name }}</h2>
             <p class="membership-date">{{ user.date_joined|date:"Y년 n월 d일"}}부터 회원</p>
         </div>
         <div class="profile-stats">
@@ -33,15 +33,16 @@
         </div>
     </div>
 
-    <div class="profile-tabs">
+    <div class="profile-tabs" id="profileTabs">
         <a href="#" class="tab">개요</a>
         <a href="#" class="tab">토론</a>
         <a href="#" class="tab">목록</a>
         <a href="#" class="tab">평가</a>
         <a href="#" class="tab">관심 목록</a>
+        <a href="#" class="tab" onclick="showDeleteSection()">회원</a>
     </div>
 
-    <div class="profile-content">
+    <div class="profile-content" id="profileContent">
         <div class="section stats">
             <h3>통계</h3>
             <div class="stats-details">
@@ -72,12 +73,61 @@
             <a href="#" class="btn-link">더보기</a>
         </div>
 
-        <!-- 버튼들 -->
         <div class="action-buttons">
             <a href="{% url 'update_profile' %}" class="btn edit-profile-btn">회원정보 수정</a>
             <a href="{% url 'logout' %}" class="btn logout-btn">로그아웃</a>
             <a href="{% url 'home' %}" class="btn home-btn">홈으로 이동</a>
         </div>
     </div>
+
+    <div class="section delete-account" id="deleteAccountSection" style="display: none;">
+        <h3>회원 탈퇴</h3>
+        <p class="warning-text">회원님께선 <strong>위험 구역</strong>에 진입하셨습니다! 정말로 계정 삭제를 원하신다면, 하단에 비밀번호를 입력해주세요.</p>
+        <input type="password" id="password" placeholder="계속하려면 현재 비밀번호를 입력하십시오...">
+        <button class="btn continue-btn" onclick="showConfirmModal()">계속</button>
+    </div>
 </div>
+
+<div id="confirmModal" class="modal">
+    <div class="modal-content">
+        <h3>회원 탈퇴 확인</h3>
+        <p>정말로 회원 탈퇴를 진행하시겠습니까?</p>
+        
+        <div class="btn-container">
+            <form id="deleteAccountForm" action="{% url 'delete_account' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="password" id="confirmPasswordInput">
+                <button type="submit" class="btn confirm-btn">예</button>
+            </form>
+            <button class="btn cancel-btn" onclick="closeModal()">아니오</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// '회원' 탭 클릭 시 탈퇴 섹션 표시 및 기존 프로필과 탭 숨기기
+function showDeleteSection() {
+    document.getElementById("profileHeader").style.display = "none";
+    document.getElementById("profileContent").style.display = "none";
+    document.getElementById("profileTabs").style.display = "none";
+    document.getElementById("deleteAccountSection").style.display = "block";
+}
+
+// 비밀번호 확인 후 모달 띄우기
+function showConfirmModal() {
+    var password = document.getElementById("password").value;
+    
+    if (password) {
+        document.getElementById("confirmPasswordInput").value = password;
+        document.getElementById("confirmModal").style.display = "block";
+    } else {
+        alert("비밀번호를 입력해주세요.");
+    }
+}
+
+// 모달 닫기
+function closeModal() {
+    document.getElementById("confirmModal").style.display = "none";
+}
+</script>
 {% endblock %}
