@@ -1,8 +1,12 @@
-{% extends 'moodiecinema/base.html' %}
+{% extends 'moodiecine/base.html' %}
 
 {% load static %}
 
 {% block title %}홈{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'home.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="movie-lists">
