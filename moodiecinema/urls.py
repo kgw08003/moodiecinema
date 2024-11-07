@@ -25,6 +25,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('users/', include('users.urls')),  # users 앱의 urls.py 포함
     path('auth/', include('social_django.urls', namespace='social')),
+    path('movies/', include('movies.urls')), 
 
 ]
 
