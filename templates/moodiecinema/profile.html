@@ -1,14 +1,133 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>프로필</title>
-    <link rel="stylesheet" href="{% static 'home.css' %}">
-</head>
-<body>
-    <h1>{{ user.username }}님의 프로필</h1>
-    <p>이메일: {{ user.email }}</p>
-    <!-- 추가적인 사용자 정보를 여기에 표시할 수 있습니다. -->
-    <a href="{% url 'logout' %}">로그아웃</a>
-</body>
-</html>
+{% extends 'moodiecinema/base.html' %}
+{% load static %}
+
+{% block title %}프로필{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% static 'profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header" id="profileHeader">
+        <div class="profile-avatar">
+            {% if user.user_profile %}
+                <img src="{{ user.user_profile.url }}" alt="프로필 사진">
+            {% else %}
+                <div class="avatar-initial">{{ user.user_name|slice:":1" }}</div> 
+            {% endif %}
+        </div>
+        <div class="profile-info">
+            <h2 class="username">{{ user.user_name }}</h2>
+            <p class="membership-date">{{ user.date_joined|date:"Y년 n월 d일"}}부터 회원</p>
+        </div>
+        <div class="profile-stats">
+            <div class="stat-item">
+                <p class="stat-value">0</p>
+                <span>평균 영화 점수</span>
+            </div>
+            <div class="stat-item">
+                <p class="stat-value">0</p>
+                <span>평균 TV 점수</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-tabs" id="profileTabs">
+        <a href="#" class="tab">개요</a>
+        <a href="#" class="tab">토론</a>
+        <a href="#" class="tab">목록</a>
+        <a href="#" class="tab">평가</a>
+        <a href="#" class="tab">관심 목록</a>
+        <a href="#" class="tab" onclick="showDeleteSection()">회원</a>
+    </div>
+
+    <div class="profile-content" id="profileContent">
+        <div class="section stats">
+            <h3>통계</h3>
+            <div class="stats-details">
+                <div class="stat-item">
+                    <p>총 편집 수: <span class="stat-value">0</span></p>
+                </div>
+                <div class="stat-item">
+                    <p>총 평가 수: <span class="stat-value">0</span></p>
+                </div>
+                <div class="rating-distribution">평점 분포 (그래프)</div>
+            </div>
+        </div>    
+
+        <div class="section upcoming">
+            <h3>관심 목록에서 개봉 예정인 항목</h3>
+            <p>관심 목록 중 개봉 예정인 항목이 없습니다.</p>
+            <a href="#" class="btn-link">관심 목록으로 이동</a>
+        </div>
+
+        <div class="section recent-discussions">
+            <h3>최근 토론</h3>
+            <p>어떤 토론 글도 구독중이지 않습니다.</p>
+        </div>
+
+        <div class="section recent-activity">
+            <h3>최근 활동</h3>
+            <p>회원님은 최근 어떤 편집도 하지 않았습니다.</p>
+            <a href="#" class="btn-link">더보기</a>
+        </div>
+
+        <div class="action-buttons">
+            <a href="{% url 'update_profile' %}" class="btn edit-profile-btn">회원정보 수정</a>
+            <a href="{% url 'logout' %}" class="btn logout-btn">로그아웃</a>
+            <a href="{% url 'home' %}" class="btn home-btn">홈으로 이동</a>
+        </div>
+    </div>
+
+    <div class="section delete-account" id="deleteAccountSection" style="display: none;">
+        <h3>회원 탈퇴</h3>
+        <p class="warning-text">회원님께선 <strong>위험 구역</strong>에 진입하셨습니다! 정말로 계정 삭제를 원하신다면, 하단에 비밀번호를 입력해주세요.</p>
+        <input type="password" id="password" placeholder="계속하려면 현재 비밀번호를 입력하십시오...">
+        <button class="btn continue-btn" onclick="showConfirmModal()">계속</button>
+    </div>
+</div>
+
+<div id="confirmModal" class="modal">
+    <div class="modal-content">
+        <h3>회원 탈퇴 확인</h3>
+        <p>정말로 회원 탈퇴를 진행하시겠습니까?</p>
+        
+        <div class="btn-container">
+            <form id="deleteAccountForm" action="{% url 'delete_account' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="password" id="confirmPasswordInput">
+                <button type="submit" class="btn confirm-btn">예</button>
+            </form>
+            <button class="btn cancel-btn" onclick="closeModal()">아니오</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// '회원' 탭 클릭 시 탈퇴 섹션 표시 및 기존 프로필과 탭 숨기기
+function showDeleteSection() {
+    document.getElementById("profileHeader").style.display = "none";
+    document.getElementById("profileContent").style.display = "none";
+    document.getElementById("profileTabs").style.display = "none";
+    document.getElementById("deleteAccountSection").style.display = "block";
+}
+
+// 비밀번호 확인 후 모달 띄우기
+function showConfirmModal() {
+    var password = document.getElementById("password").value;
+    
+    if (password) {
+        document.getElementById("confirmPasswordInput").value = password;
+        document.getElementById("confirmModal").style.display = "block";
+    } else {
+        alert("비밀번호를 입력해주세요.");
+    }
+}
+
+// 모달 닫기
+function closeModal() {
+    document.getElementById("confirmModal").style.display = "none";
+}
+</script>
+{% endblock %}
