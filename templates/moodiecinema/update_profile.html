@@ -2,28 +2,30 @@
 
 {% load static %}
 
-{% block title %}회원가입{% endblock %}
+{% block title %}회원 정보 수정{% endblock %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'signup.css' %}">
+  <link rel="stylesheet" href="{% static 'update_profile.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="signup-container">
-    <h2>회원가입</h2>
+<div class="update-profile-container">
+    <h2>회원 정보 수정</h2>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
         <div class="image-preview">
-            <img id="profilePreview" src="" alt="프로필 미리보기" style="display: none;">
+            {% if user.user_profile %}
+                <img id="profilePreview" src="{{ user.user_profile.url }}" alt="프로필 미리보기">
+            {% else %}
+                <img id="profilePreview" src="{% static 'default_profile.png' %}" alt="프로필 미리보기" style="display: none;">
+            {% endif %}
         </div>
         <label for="profilePicture">프로필 사진:</label>
         <input type="file" id="profilePicture" name="user_profile" accept="image/*" onchange="previewImage(event)">
 
-        {{ form.user_name.label_tag }} {{ form.user_name }}
         {{ form.user_email.label_tag }} {{ form.user_email }}
         
-        <!-- 생년월일 필드에만 wrapper div 추가 -->
         <div class="date-field">
             {{ form.user_birth.label_tag }} {{ form.user_birth }}
         </div>
@@ -31,7 +33,7 @@
         {{ form.user_password.label_tag }} {{ form.user_password }}
         {{ form.password_confirm.label_tag }} {{ form.password_confirm }}
 
-        <button type="submit">회원가입</button>
+        <button type="submit">저장</button>
     </form>
 </div>
 {% endblock %}

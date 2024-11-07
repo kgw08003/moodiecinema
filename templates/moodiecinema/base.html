@@ -20,15 +20,15 @@
     
     <div class="navigation">
       <ul>
-        <li><a href="#"><span class="fa fa-home"></span> <span>Home</span></a></li>
-        <li><a href="#"><span class="fa fa-search"></span> <span>카테고리</span></a></li>
+        <li><a href="{% url 'home' %}"><span class="fa fa-home"></span> <span>Home</span></a></li>
+        <li><a href="{% url 'category' %}"><span class="fa fa-search"></span> <span>카테고리</span></a></li>
         <li><a href="#"><span class="fa fas fa-book"></span> <span>Your Library</span></a></li>
       </ul>
     </div>
 
     <div class="navigation">
       <ul>
-        <li><a href="#"><span class="fa fas fa-plus-square"></span> <span>일기장</span></a></li>
+        <li><a href="{% url 'diary' %}"><span class="fa fas fa-plus-square"></span> <span>일기장</span></a></li>
         <li><a href="#"><span class="fa fas fa-heart"></span> <span>찜 목록</span></a></li>
       </ul>
     </div>

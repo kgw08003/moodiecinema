@@ -17,11 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from moodiecinema import views
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('users/', include('users.urls')),  # users 앱의 urls.py 포함
     path('auth/', include('social_django.urls', namespace='social')),
+    path('analyze_sentiment/', views.analyze_sentiment, name='analyze_sentiment'),
 
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

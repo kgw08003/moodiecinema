@@ -1,0 +1,105 @@
+/* 회원 정보 수정 페이지 스타일 */
+.update-profile-container {
+    max-width: 400px;
+    margin: 80px auto;
+    padding: 40px;
+    background-color: #181818;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.update-profile-container h2 {
+    color: #ffffff;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* 폼 필드 스타일 */
+.update-profile-container label {
+    color: #ffffff;
+}
+
+.update-profile-container input[type="email"],
+.update-profile-container input[type="password"],
+.update-profile-container input[type="file"],
+.update-profile-container button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    box-sizing: border-box;
+    color: #ffffff;
+}
+
+.update-profile-container input[type="email"],
+.update-profile-container input[type="password"],
+.update-profile-container input[type="file"] {
+    background-color: #333;
+    border: none;
+}
+
+.update-profile-container button {
+    padding: 12px;
+    background-color: #f7c948;
+    color: #000000;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.update-profile-container button:hover {
+    background-color: #ffc107;
+}
+
+/* 이미지 미리보기 스타일 */
+.image-preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.image-preview img {
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+/* 생년월일 필드 스타일 */
+.date-field {
+    margin-bottom: 15px;
+}
+
+.date-field input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #333;
+    color: #ffffff;
+    border: 1px solid #444;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+    text-align: center;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    appearance: none;
+}
+
+.date-field input[type="date"]::-webkit-inner-spin-button,
+.date-field input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+/* 생년월일 레이블과 필드의 간격 조정 */
+.date-field label {
+    display: block;
+    color: #ffffff;
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-align: center;
+}
