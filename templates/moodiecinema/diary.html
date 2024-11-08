@@ -152,27 +152,27 @@
     const diaryDetailUrl = "{% url 'diary_detail' %}";
 
     function openDiaryEntry(date) {
-        fetch(`${diaryDetailUrl}?date=${date}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);
-                } else {
-                    const diaries = data.diaries;
-                    if (diaries && diaries.length > 0) {
-                        document.getElementById("entryDate").innerText = `${date} 일기`;
-                        document.getElementById("diaryContent").innerText = diaries[0].content || "일기 내용이 없습니다.";
-                        document.querySelector('.emotion-box p').innerText = `감정 분석 결과: ${diaries[0].emotion || '분석 결과가 없습니다.'}`;
-                    }
-                    document.getElementById("calendar").style.display = "none";
-                    document.getElementById("diaryEntry").style.display = "block";
+    fetch(`${diaryDetailUrl}?date=${date}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                const diary = data.diary;
+                if (diary) {
+                    document.getElementById("entryDate").innerText = `${date} 일기`;
+                    document.getElementById("diaryContent").innerText = diary.content || "일기 내용이 없습니다.";
+                    document.querySelector('.emotion-box p').innerText = `감정 분석 결과: ${diary.emotion || '분석 결과가 없습니다.'}`;
                 }
-            })
-            .catch(error => {
-                console.error("Error fetching diary entry:", error);
-                alert("일기를 가져오는 데 실패했습니다.");
-            });
-    }
+                document.getElementById("calendar").style.display = "none";
+                document.getElementById("diaryEntry").style.display = "block";
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching diary entry:", error);
+            alert("일기를 가져오는 데 실패했습니다.");
+        });
+}
     function renderCalendar(year, month) {
         const calendarTitle = document.getElementById("calendarTitle");
         const calendarBody = document.getElementById("calendarBody");

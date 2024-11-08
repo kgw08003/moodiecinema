@@ -59,7 +59,7 @@ class Diary(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     created_at = models.DateField() 
-    emotion = models.CharField(max_length=50, null=True, blank=True)  # 감정 분석 결과 필드 추가
+    emotion = models.CharField(max_length=10, blank=True, null=True)
 
     def __str__(self):
         return self.title
