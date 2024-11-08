@@ -50,3 +50,16 @@ class User(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return True
 
+
+from django.db import models
+from django.conf import settings
+
+class Diary(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="diaries")
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    created_at = models.DateField() 
+    emotion = models.CharField(max_length=50, null=True, blank=True)  # 감정 분석 결과 필드 추가
+
+    def __str__(self):
+        return self.title

@@ -90,26 +90,6 @@
 </div>
 
 <script>
-    let db;
-    const request = indexedDB.open("DiaryDatabase", 1);
-    
-    request.onerror = function(event) {
-        console.error("Database error:", event.target.error);
-    };
-    
-    request.onsuccess = function(event) {
-        db = event.target.result;
-        console.log("Database opened successfully");
-    };
-    
-    request.onupgradeneeded = function(event) {
-        db = event.target.result;
-        if (!db.objectStoreNames.contains("diaries")) {
-            const diaryStore = db.createObjectStore("diaries", { keyPath: "date" });
-            diaryStore.createIndex("emotion", "emotion", { unique: false }); // 감정 분석 결과 필드 추가
-        }
-    };
-    
     function openDiaryModal() {
         document.getElementById("diaryModal").style.display = "flex";
     }
@@ -135,101 +115,64 @@
     }
     
     function saveDiaryEntry() {
-    if (!db) {
-        alert("데이터베이스가 아직 열리지 않았습니다. 잠시 후 다시 시도하세요.");
-        return;
-    }
+        const date = document.getElementById("entryDateInput").value;
+        const content = document.getElementById("entryContent").value;
 
-    const date = document.getElementById("entryDateInput").value;
-    const content = document.getElementById("entryContent").value;
-
-    if (!date || !content) {
-        alert("날짜와 내용을 모두 입력해주세요.");
-        return;
-    }
-
-    // 감정 분석 요청
-    fetch('/analyze_sentiment/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-CSRFToken': csrftoken
-        },
-        body: `content=${encodeURIComponent(content)}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("감정 분석 결과:", data); // 콘솔에 감정 분석 결과를 출력하여 확인
-        const emotion = data.sentiment || '분석 실패';
-
-        // 일기와 감정 분석 결과를 함께 저장
-        const transaction = db.transaction(["diaries"], "readwrite");
-        const store = transaction.objectStore("diaries");
-        const diaryData = { date, content, emotion };
-        console.log("저장할 일기 데이터:", diaryData);
-
-        const request = store.put(diaryData);
-        request.onsuccess = function() {
-            console.log("Diary entry and emotion saved successfully");
-            document.getElementById("entryDate").innerText = `${date} 일기`;
-            document.getElementById("diaryContent").innerText = content;
-            document.querySelector('.emotion-box p').innerText = `감정 분석 결과: ${diaryData.emotion || '분석 결과가 없습니다.'}`;
-            closeSecondModal();
-            document.getElementById("calendar").style.display = "none";
-            document.getElementById("diaryEntry").style.display = "block";
-        };
-        request.onerror = function(event) {
-            console.error("Data save error:", event.target.error);
-            alert("일기 저장에 실패했습니다. 다시 시도해 주세요.");
-        };
-    })
-    .catch(error => {
-        console.error("Error:", error);
-        alert('감정 분석 중 오류가 발생했습니다.');
-    });
-}
-
-function openDiaryEntry(date) {
-    if (!db) {
-        alert("데이터베이스가 아직 열리지 않았습니다. 잠시 후 다시 시도하세요.");
-        console.error("Database not opened yet when trying to open diary entry");
-        return;
-    }
-
-    console.log("Opening diary entry for date:", date);
-
-    const transaction = db.transaction(["diaries"], "readonly");
-    const store = transaction.objectStore("diaries");
-    const request = store.get(date);
-
-    request.onsuccess = function(event) {
-        const diaryData = event.target.result;
-        document.getElementById("entryDate").innerText = `${date} 일기`;
-        if (diaryData) {
-            document.getElementById("diaryContent").innerText = diaryData.content;
-            document.querySelector('.emotion-box p').innerText = `감정 분석 결과: ${diaryData.emotion || '분석 결과가 없습니다.'}`;
-            console.log("Diary entry and emotion found:", diaryData);
-        } else {
-            document.getElementById("diaryContent").innerText = "일기 내용이 없습니다.";
-            document.querySelector('.emotion-box p').innerText = "감정 분석 결과가 없습니다.";
-            console.warn("No diary entry found for date:", date);
+        if (!date || !content) {
+            alert("날짜와 내용을 모두 입력해주세요.");
+            return;
         }
 
-        document.getElementById("calendar").style.display = "none";
-        document.getElementById("diaryEntry").style.display = "block";
-    };
+        fetch('/users/diary/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({
+                date: date,
+                content: content,
+                emotion: "긍정"  // 예시로 고정된 값, 실제 감정 분석 결과 반영 가능
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert(data.message);
+                closeSecondModal();
+            } else if (data.error) {
+                alert(data.error);
+            }
+        })
+        .catch(error => {
+            console.error("Error saving diary entry:", error);
+            alert("일기 저장에 실패했습니다.");
+        });
+    }
+    const diaryDetailUrl = "{% url 'diary_detail' %}";
 
-    request.onerror = function(event) {
-        console.error("Error retrieving data:", event.target.error);
-        document.getElementById("diaryContent").innerText = "일기 내용이 없습니다.";
-        document.querySelector('.emotion-box p').innerText = "감정 분석 결과가 없습니다.";
-    };
-}
-
-    const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
-    let currentYear = new Date().getFullYear();
-    let currentMonth = new Date().getMonth();
-
+    function openDiaryEntry(date) {
+        fetch(`${diaryDetailUrl}?date=${date}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    const diaries = data.diaries;
+                    if (diaries && diaries.length > 0) {
+                        document.getElementById("entryDate").innerText = `${date} 일기`;
+                        document.getElementById("diaryContent").innerText = diaries[0].content || "일기 내용이 없습니다.";
+                        document.querySelector('.emotion-box p').innerText = `감정 분석 결과: ${diaries[0].emotion || '분석 결과가 없습니다.'}`;
+                    }
+                    document.getElementById("calendar").style.display = "none";
+                    document.getElementById("diaryEntry").style.display = "block";
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching diary entry:", error);
+                alert("일기를 가져오는 데 실패했습니다.");
+            });
+    }
     function renderCalendar(year, month) {
         const calendarTitle = document.getElementById("calendarTitle");
         const calendarBody = document.getElementById("calendarBody");
@@ -297,23 +240,27 @@ function openDiaryEntry(date) {
 
     const csrftoken = getCookie('csrftoken');
     function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-}
 
-function resetSkipToday() {
-    localStorage.removeItem("skipDiaryModal");
-    alert("오늘 하루 안보기 설정이 초기화되었습니다. 새로고침 후 모달이 다시 표시됩니다.");
-}
+    function resetSkipToday() {
+        localStorage.removeItem("skipDiaryModal");
+        alert("오늘 하루 안보기 설정이 초기화되었습니다. 새로고침 후 모달이 다시 표시됩니다.");
+    }
+
+    const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth();
 </script>
 {% endblock %}

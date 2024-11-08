@@ -57,3 +57,13 @@ class UserUpdateForm(forms.ModelForm): # 회원정보 수정
         if password and password != password_confirm:
             raise forms.ValidationError("비밀번호가 일치하지 않습니다.")
         return cleaned_data
+    
+
+
+from django import forms
+from .models import Diary
+
+class DiaryForm(forms.ModelForm):
+    class Meta:
+        model = Diary
+        fields = ['title', 'content']  # 감정 분석 결과는 뷰에서 추가
