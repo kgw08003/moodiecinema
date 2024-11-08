@@ -104,6 +104,12 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from moodiecinema.bertgpusentiment import predict_sentiment
+
+
+import logging
+logger = logging.getLogger(__name__)
+
 class DiaryDetailView(LoginRequiredMixin, View):
     def get(self, request):
         date_str = request.GET.get('date')
@@ -115,19 +121,24 @@ class DiaryDetailView(LoginRequiredMixin, View):
         except ValueError:
             return JsonResponse({'error': '잘못된 날짜 형식입니다.'}, status=400)
 
-        # 선택된 날짜와 일치하는 일기 필터링
-        diaries = Diary.objects.filter(user=request.user, created_at=selected_date).order_by('-created_at')
-
-        if not diaries.exists():
+        # 선택한 날짜에 해당하는 일기 불러오기
+        diary = Diary.objects.filter(user=request.user, created_at=selected_date).first()
+        if not diary:
             return JsonResponse({'error': '해당 날짜의 일기를 찾을 수 없습니다.'}, status=404)
 
-        diary_list = [{
+        # 감정 분석이 저장되어 있지 않다면 분석 후 저장
+        if not diary.emotion or diary.emotion == "긍정":  # 기존에 '긍정'으로 잘못 저장된 경우 갱신
+            diary.emotion = predict_sentiment(diary.content)
+            diary.save()
+            logger.info(f"Predicted emotion for '{diary.content}': {diary.emotion}")
+
+        diary_data = {
             'title': diary.title,
             'content': diary.content,
-            'emotion': getattr(diary, 'emotion', None)
-        } for diary in diaries]
+            'emotion': diary.emotion or '분석 결과 없음'
+        }
 
-        return JsonResponse({'diaries': diary_list})
+        return JsonResponse({'diary': diary_data})
     
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
