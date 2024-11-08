@@ -49,6 +49,13 @@
           <button type="button" class="fa fas fa-chevron-left"></button>
           <button type="button" class="fa fas fa-chevron-right"></button>
       </div>
+
+      
+      <script>
+        document.querySelector('.fa-chevron-left').addEventListener('click', () => window.history.back());
+        document.querySelector('.fa-chevron-right').addEventListener('click', () => window.history.forward());
+      </script>
+    
   
       <form class="search-form">
           <div class="search_box">
@@ -64,6 +71,7 @@
               <li><a href="#">아무거나</a></li>
               <li><a href="#">원하는거</a></li>
               <li><a href="#">추가예정</a></li>
+              <li class="divider">|</li>
               {% if user.is_authenticated %}
                   <li><a href="{% url 'profile' %}">프로필</a></li>
               {% else %}
