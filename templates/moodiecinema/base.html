@@ -28,7 +28,13 @@
 
     <div class="navigation">
       <ul>
-        <li><a href="{% url 'diary' %}"><span class="fa fas fa-plus-square"></span> <span>일기장</span></a></li>
+        <li>
+          {% if user.is_authenticated %}
+            <a href="{% url 'diary' %}"><span class="fa fas fa-plus-square"></span> <span>일기장</span></a>
+          {% else %}
+            <a href="{% url 'login' %}"><span class="fa fas fa-plus-square"></span> <span>일기장</span></a>
+          {% endif %}
+        </li>
         <li><a href="#"><span class="fa fas fa-heart"></span> <span>찜 목록</span></a></li>
       </ul>
     </div>
