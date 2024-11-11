@@ -1,0 +1,67 @@
+{% extends 'moodiecine/base.html' %}
+{% load static %}
+{% block content %}
+
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'movies.css' %}">
+{% endblock %}
+
+<body>
+    <section class="movie-detail-container">
+        <div class="movie-poster">
+            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
+        </div>
+        <div class="movie-info">
+            <h1>{{ movie.title }}</h1>
+            <p class="release-date"><strong>개봉일:</strong> {{ movie.release_date }}</p>
+            <p class="genres"><strong>장르:</strong> 
+                {% for genre in movie.genres %}
+                    {{ genre.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p class="rating"><strong>평점:</strong> {{ movie.vote_average }} / 10</p>
+            <p class="overview">{{ movie.overview }}</p>
+        </div>
+
+        <div class="additional-info">
+            <h3>예고편 보기</h3>
+            {% if youtube_trailers %}
+            {% for video in youtube_trailers %}
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video.key }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            {% endfor %}
+            {% else %}
+                <h3 style="color:white; margin:20px;">예고편이 없습니다.</h3>
+            {% endif %}
+            <h3>예매 링크</h3>
+            <a href="#">예매하기</a>
+        </div>
+
+        <section class="cast-list">
+            <h2>출연진</h2>
+            <ul>
+                {% for actor in cast %}
+                    <li><span>{{ actor.name }}</span> <em>역할:</em> {{ actor.character }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="similar-movies">
+            <h2 style="margin:20px;">유사한 영화</h2>
+            <div class="similar-movie-grid">
+                {% for similar_movie in similar_movies %}
+                <div class="similar-movie-item">
+                    <a href="{% url 'movie_detail' similar_movie.id %}">
+                        <img src="https://image.tmdb.org/t/p/w300{{ similar_movie.poster_path }}" alt="{{ similar_movie.title }}">
+                        <p>{{ similar_movie.title }}</p>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </section>
+    </div>
+
+    <script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
+</body>
+{% endblock %}
