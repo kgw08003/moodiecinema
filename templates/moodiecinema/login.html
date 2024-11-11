@@ -16,8 +16,18 @@
     <input type="text" name="username" placeholder="아이디" required>
     <input type="password" name="password" placeholder="비밀번호" required>
     <button type="submit">로그인</button>
-    <a href="{% url 'social:begin' 'google-oauth2' %}">구글로 로그인</a>
+    <a href="{% url 'social:begin' 'google-oauth2' %}" class="google-login-btn">
+      <img src="{% static 'images/google_logo.png' %}" alt="Google Logo" class="google-logo">
+      구글로 로그인
+  </a>
   </form>
+  
+  <!-- 아이디 찾기, 비밀번호 찾기 링크 추가 -->
+  <div class="additional-links">
+    <a href="{% url 'find_username' %}">아이디 찾기</a> | 
+    <a href="{% url 'password_reset_request' %}">비밀번호 찾기</a>
+  </div>
+  
   <a href="{% url 'signup' %}" class="signup-link">계정이 없으신가요? 회원가입</a>
 </div>
 {% endblock %}
