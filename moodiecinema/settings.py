@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',  
     'social_django',  # social_django 추가
     'movies',
+    'reviews',
 ]
 
 MIDDLEWARE = [
