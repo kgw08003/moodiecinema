@@ -13,7 +13,7 @@ SECRET_KEY = 'django-insecure-i^4dg$lv4d%)&wkni$y$*ici3ki8t_b3j#hvjd-w7s#&!2653&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -110,6 +110,8 @@ SITE_ID = 1
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',  # 구글 소셜 로그인 백엔드 추가
     'django.contrib.auth.backends.ModelBackend',  # 기본 백엔드
+    'social_core.backends.naver.NaverOAuth2', # 네이버 소셜 로그인 백엔드 추가
+    'social_core.backends.kakao.KakaoOAuth2',    # 카카오 소셜 로그인 백엔드
 )
 
 from decouple import config
@@ -118,6 +120,12 @@ from decouple import config
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = config('SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI')
+SOCIAL_AUTH_NAVER_KEY = config('SOCIAL_AUTH_NAVER_KEY')
+SOCIAL_AUTH_NAVER_SECRET = config('SOCIAL_AUTH_NAVER_SECRET')
+SOCIAL_AUTH_NAVER_REDIRECT_URI = 'http://127.0.0.1:8000/auth/complete/naver/'
+
+SOCIAL_AUTH_KAKAO_KEY = config('SOCIAL_AUTH_KAKAO_KEY')
+SOCIAL_AUTH_KAKAO_REDIRECT_URI = 'http://127.0.0.1:8000/auth/complete/kakao/'
 
 
 # Social Auth Pipeline
@@ -147,3 +155,8 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 기본 설정
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
