@@ -1,5 +1,6 @@
 # 데이터베이스 파일
 db.sqlite3
+db.sqlite3~Stashed changes
 
 # 가상 환경 관련 파일
 myenv/
@@ -14,3 +15,4 @@ __pycache__/
 
 # 라이브러리 폴더
 lib/
+.env

@@ -17,4 +17,4 @@ def home(request):
         'trending_movies': trending_movies,
         'recommended_movies': recommended_movies,
     }
-    return render(request, 'moodiecine/home.html', context)
+    return render(request, 'moodiecinema/home.html', context)
