@@ -1,8 +1,6 @@
 from django.urls import path
 from .views import SignUpView, UserProfileView, custom_logout, UserUpdateView, CategoryView, DeleteAccountView
 from django.contrib.auth.views import LoginView
-from . import views
-from .views import DiaryView, DiaryDetailView, DiaryCreateView
 
 urlpatterns = [
     path('login/', LoginView.as_view(template_name='moodiecinema/login.html'), name='login'),
@@ -12,8 +10,6 @@ urlpatterns = [
     path('profile/update/', UserUpdateView.as_view(), name='update_profile'),
     path('category/', CategoryView.as_view(), name='category'),
     path('delete_account/', DeleteAccountView.as_view(), name='delete_account'),
-    path('diary/', views.DiaryView.as_view(), name='diary'),    
-    path('diary/create/', DiaryCreateView.as_view(), name='diary_create'),
-    path('diary/detail/', DiaryDetailView.as_view(), name='diary_detail'),
+
 
 ]

@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'users',
     'django.contrib.sites',  
     'social_django',  # social_django 추가
+    'diary',
 ]
 
 MIDDLEWARE = [

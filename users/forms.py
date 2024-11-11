@@ -59,11 +59,3 @@ class UserUpdateForm(forms.ModelForm): # 회원정보 수정
         return cleaned_data
     
 
-
-from django import forms
-from .models import Diary
-
-class DiaryForm(forms.ModelForm):
-    class Meta:
-        model = Diary
-        fields = ['title', 'content']  # 감정 분석 결과는 뷰에서 추가
