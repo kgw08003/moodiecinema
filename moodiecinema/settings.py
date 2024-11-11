@@ -1,8 +1,10 @@
 """
 Django settings for moodiecinema project.
 """
-
+import os
 from pathlib import Path
+
+TMDB_API_KEY = "5f0eb3027f1b131897e4dcbe057e0931" ## --> 제 API KEY 입니다. 바꾸시고 싶으시면 API KEY를 발급 받아서 쓰시면 됩니다.
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,6 +22,9 @@ AUTH_USER_MODEL = 'users.User'
 LOGIN_REDIRECT_URL = 'home'  # 로그인 후 이동할 URL의 name
 LOGOUT_REDIRECT_URL = '/'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -31,6 +36,7 @@ INSTALLED_APPS = [
     'users',
     'django.contrib.sites',  
     'social_django',  # social_django 추가
+    'movies',
 ]
 
 MIDDLEWARE = [
@@ -56,6 +62,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media', 
             ],
         },
     },

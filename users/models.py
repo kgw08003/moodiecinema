@@ -31,6 +31,7 @@ class User(AbstractBaseUser):
     user_profile = models.ImageField(upload_to='profiles/', null=True, blank=True)
     user_email = models.EmailField(unique=True)
     user_birth = models.DateField(null=True, blank=True)
+    date_joined = models.DateTimeField(auto_now_add=True) 
     admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)  # 추가된 필드
     is_superuser = models.BooleanField(default=False)  # 추가된 필드
