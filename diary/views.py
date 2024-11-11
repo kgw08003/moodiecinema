@@ -7,6 +7,11 @@ from .models import Diary
 from .forms import DiaryForm
 from django.http import JsonResponse
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from moodiecinema.bertgpusentiment import predict_sentiment
+import json
+import logging
 
 class DiaryView(LoginRequiredMixin, ListView):
     template_name = 'moodiecinema/diary.html'
@@ -20,19 +25,6 @@ class DiaryView(LoginRequiredMixin, ListView):
         # `created_at` 필드와 `selected_date`를 사용하여 필터링
         return Diary.objects.filter(user=self.request.user, created_at=selected_date)
     
-from django.utils import timezone
-from django.http import JsonResponse
-from django.views import View
-from .models import Diary
-from django.shortcuts import get_object_or_404
-import logging
-
-logger = logging.getLogger(__name__)
-
-from moodiecinema.bertgpusentiment import predict_sentiment
-
-
-import logging
 logger = logging.getLogger(__name__)
 
 class DiaryDetailView(LoginRequiredMixin, View):
@@ -65,13 +57,6 @@ class DiaryDetailView(LoginRequiredMixin, View):
 
         return JsonResponse({'diary': diary_data})
     
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from django.http import JsonResponse
-from .models import Diary
-from django.views import View
-import json
-
 @method_decorator(csrf_exempt, name='dispatch')
 class DiaryCreateView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
