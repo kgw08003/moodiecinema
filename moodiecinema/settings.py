@@ -1,8 +1,10 @@
 """
 Django settings for moodiecinema project.
 """
-
+import os
 from pathlib import Path
+
+TMDB_API_KEY = "5f0eb3027f1b131897e4dcbe057e0931" ## --> 제 API KEY 입니다. 바꾸시고 싶으시면 API KEY를 발급 받아서 쓰시면 됩니다.
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,12 +15,15 @@ SECRET_KEY = 'django-insecure-i^4dg$lv4d%)&wkni$y$*ici3ki8t_b3j#hvjd-w7s#&!2653&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
 
 AUTH_USER_MODEL = 'users.User'
 
 LOGIN_REDIRECT_URL = 'home'  # 로그인 후 이동할 URL의 name
 LOGOUT_REDIRECT_URL = '/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Application definition
 INSTALLED_APPS = [
@@ -31,6 +36,9 @@ INSTALLED_APPS = [
     'users',
     'django.contrib.sites',  
     'social_django',  # social_django 추가
+    'diary',
+    'movies',
+    'reviews',
 ]
 
 MIDDLEWARE = [
@@ -56,6 +64,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media', 
             ],
         },
     },
@@ -105,6 +114,8 @@ SITE_ID = 1
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',  # 구글 소셜 로그인 백엔드 추가
     'django.contrib.auth.backends.ModelBackend',  # 기본 백엔드
+    'social_core.backends.naver.NaverOAuth2', # 네이버 소셜 로그인 백엔드 추가
+    'social_core.backends.kakao.KakaoOAuth2',    # 카카오 소셜 로그인 백엔드
 )
 
 from decouple import config
@@ -113,6 +124,12 @@ from decouple import config
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = config('SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI')
+SOCIAL_AUTH_NAVER_KEY = config('SOCIAL_AUTH_NAVER_KEY')
+SOCIAL_AUTH_NAVER_SECRET = config('SOCIAL_AUTH_NAVER_SECRET')
+SOCIAL_AUTH_NAVER_REDIRECT_URI = 'http://127.0.0.1:8000/auth/complete/naver/'
+
+SOCIAL_AUTH_KAKAO_KEY = config('SOCIAL_AUTH_KAKAO_KEY')
+SOCIAL_AUTH_KAKAO_REDIRECT_URI = 'http://127.0.0.1:8000/auth/complete/kakao/'
 
 
 # Social Auth Pipeline
@@ -127,3 +144,23 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
 )
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1']
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # .env 파일 로드
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 기본 설정
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = False

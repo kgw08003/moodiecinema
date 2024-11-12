@@ -74,6 +74,7 @@ body {
 }
 
 .main-container {
+  margin-top: 60px;
   margin-left: 245px;
   margin-bottom: 100px;
 }
@@ -81,8 +82,14 @@ body {
 .topbar {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   background-color: #101010;
   padding: 14px 30px;
+  position: fixed; /* 상단바 고정 */
+  top: 0;
+  left: 243px; /* 사이드바 너비만큼 좌측 마진 */
+  right: 0;
+  z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 조정 */
 }
 .topbar .prev-next-buttons button {
   color: #7a7a7a;
@@ -180,7 +187,7 @@ body {
     right: 10px;
     top: -60px;
     padding: 18px;
-    background-color: #1db954;
+    background-color: #FFFF33;
     border-radius: 100%;
     opacity: 0;
     transition: all ease 0.4s;
@@ -343,4 +350,92 @@ body {
 
 .navbar form button:hover {
   background-color: #f2f2f2;
+}
+
+/* 기본 스타일이 데스크톱에 적용됨 */
+
+@media screen and (max-width: 1024px) {
+  /* 태블릿 뷰 */
+  .sidebar {
+    width: 150px;
+    padding: 16px;
+  }
+
+  .sidebar .logo img {
+    width: 100px;
+  }
+
+  .main-container {
+    margin-left: 170px; /* 태블릿에 맞춘 좌측 마진 조정 */
+  }
+
+  .topbar .navbar ul li {
+    /* width: auto; 네비게이션 링크를 자동 너비로 설정
+     */
+     display: flex;
+     align-items: center;
+     flex-wrap: nowrap; /* 줄바꿈 방지 */
+  }
+
+  .movie-lists .list .item {
+    width: calc(50% - 10px); /* 두 개 열로 나열 */
+  }
+}
+
+@media screen and (max-width: 768px) {
+  /* 모바일 뷰 */
+  .sidebar {
+    display: none; /* 모바일에서는 사이드바 숨김 */
+  }
+
+  .main-container {
+    margin-left: 0; /* 사이드바가 없으므로 좌측 마진 제거 */
+  }
+
+  .topbar {
+    flex-direction: column; /* 모바일에서는 세로로 정렬 */
+    align-items: flex-start;
+  }
+
+  .topbar .search-form {
+    margin: 0 auto;
+    max-width: 100%;
+  }
+
+  .topbar .navbar ul {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    flex-direction: row; /* 가로 정렬 유지 */
+    gap: 8px; /* 각 항목 간의 간격 */
+  }
+
+  .movie-lists .list .item {
+    width: calc(100% - 10px); /* 한 줄에 한 개씩 */
+    margin-bottom: 20px;
+  }
+
+  .navbar form button,
+  .auth-button {
+    width: 100%; /* 버튼을 전체 너비로 확장 */
+    padding: 10px; /* 버튼 패딩 조정 */
+    margin-top: 10px;
+  }
+
+  .preview {
+    padding: 10px 20px;
+    flex-direction: column; /* 프리뷰 섹션을 세로로 정렬 */
+    text-align: center;
+  }
+  .topbar .navbar {
+    display: flex;
+    flex-direction: row; /* 가로 정렬 유지 */
+    justify-content: flex-end; /* 오른쪽 정렬 */
+    width: 100%;
+  }
+  .topbar .navbar form button,
+  .auth-button {
+    padding: 8px 20px; /* 버튼 패딩 조정 */
+    font-size: 14px; /* 폰트 크기 조정 */
+  }
 }
