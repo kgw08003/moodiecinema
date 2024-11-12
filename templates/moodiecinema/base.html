@@ -20,15 +20,21 @@
     
     <div class="navigation">
       <ul>
-        <li><a href="#"><span class="fa fa-home"></span> <span>Home</span></a></li>
-        <li><a href="#"><span class="fa fa-search"></span> <span>카테고리</span></a></li>
+        <li><a href="{% url 'home' %}"><span class="fa fa-home"></span> <span>Home</span></a></li>
+        <li><a href="{% url 'category' %}"><span class="fa fa-search"></span> <span>카테고리</span></a></li>
         <li><a href="#"><span class="fa fas fa-book"></span> <span>Your Library</span></a></li>
       </ul>
     </div>
 
     <div class="navigation">
       <ul>
-        <li><a href="#"><span class="fa fas fa-plus-square"></span> <span>일기장</span></a></li>
+        <li>
+          {% if user.is_authenticated %}
+            <a href="{% url 'diary' %}"><span class="fa fas fa-plus-square"></span> <span>일기장</span></a>
+          {% else %}
+            <a href="{% url 'login' %}"><span class="fa fas fa-plus-square"></span> <span>일기장</span></a>
+          {% endif %}
+        </li>
         <li><a href="#"><span class="fa fas fa-heart"></span> <span>찜 목록</span></a></li>
       </ul>
     </div>
@@ -49,6 +55,13 @@
           <button type="button" class="fa fas fa-chevron-left"></button>
           <button type="button" class="fa fas fa-chevron-right"></button>
       </div>
+
+      
+      <script>
+        document.querySelector('.fa-chevron-left').addEventListener('click', () => window.history.back());
+        document.querySelector('.fa-chevron-right').addEventListener('click', () => window.history.forward());
+      </script>
+    
   
       <form class="search-form">
           <div class="search_box">
@@ -64,6 +77,7 @@
               <li><a href="#">아무거나</a></li>
               <li><a href="#">원하는거</a></li>
               <li><a href="#">추가예정</a></li>
+              <li class="divider">|</li>
               {% if user.is_authenticated %}
                   <li><a href="{% url 'profile' %}">프로필</a></li>
               {% else %}

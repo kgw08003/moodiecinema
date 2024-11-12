@@ -1,3 +1,9 @@
+import warnings
+
+warnings.filterwarnings("ignore", message=".*Failed to initialize NumPy.*")
+warnings.filterwarnings("ignore", category=FutureWarning)
+
+
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
 import os

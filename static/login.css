@@ -58,3 +58,115 @@
 .signup-link:hover {
     color: #ffffff;
 }
+
+/* login.css */
+.additional-links {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.additional-links a {
+    color: #b3b3b3;
+    text-decoration: none;
+}
+
+.additional-links a:hover {
+    color: #ffffff;
+}
+
+/* 구글 로그인 버튼 스타일 */
+.google-login-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #ffffff;
+    color: #757575;
+    border: 1px solid #dadce0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, box-shadow 0.3s;
+    width: 145px;
+}
+
+.google-login-btn:hover {
+    background-color: #f7f7f7;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.google-login-btn:active {
+    background-color: #eeeeee;
+}
+
+.google-logo {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+}
+
+
+/* 네이버 로그인 버튼 스타일 */
+.naver-login-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #1EC800; /* 배경색을 녹색으로 변경 */
+    color: #ffffff; /* 글씨 색을 흰색으로 변경 */
+    border: 1px solid #1EC800; /* 테두리도 녹색으로 유지 */
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, box-shadow 0.3s;
+    margin-top: 10px; /* 버튼 사이의 마진 */
+}
+
+.naver-login-btn:hover {
+    background-color: #17b300; /* 호버 시 배경색을 좀 더 짙은 녹색으로 변경 */
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.naver-login-btn:active {
+    background-color: #14a100; /* 클릭 시 배경색을 조금 더 진한 녹색으로 변경 */
+}
+
+.naver-logo {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+}
+
+/* 카카오 로그인 버튼 스타일 */
+.kakao-login-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #F7E600; /* 배경색을 노란색으로 변경 */
+    color: #000000; /* 글씨 색을 검은색으로 변경 */
+    border: 1px solid #F7E600; /* 테두리도 노란색으로 유지 */
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, box-shadow 0.3s;
+    margin-top: 10px; /* 버튼 사이의 마진 */
+}
+
+.kakao-login-btn:hover {
+    background-color: #f7f7f7; /* 호버 시 배경색을 살짝 변경 */
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.kakao-login-btn:active {
+    background-color: #eeeeee; /* 클릭 시 배경색을 살짝 변경 */
+}
+
+.kakao-logo {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+}
