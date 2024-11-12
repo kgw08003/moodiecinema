@@ -27,6 +27,9 @@ urlpatterns = [
     path('diary/', include('diary.urls')),  # 다이어리 관련 URL 포함
     path('auth/', include('social_django.urls', namespace='social')),
     path('analyze_sentiment/', views.analyze_sentiment, name='analyze_sentiment'),
+    path('movies/', include('movies.urls')), 
+    path('reviews/',include('reviews.urls')),
+
 ]
 
 if settings.DEBUG:

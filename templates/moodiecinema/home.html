@@ -1,260 +1,97 @@
-
 {% extends 'moodiecinema/base.html' %}
 
 {% load static %}
 
 {% block title %}홈{% endblock %}
 
+{% block head %}
+    <link rel="stylesheet" href="{% static 'home.css' %}">
+{% endblock %}
+
 {% block content %}
-      <div class="movie-lists">
-        <h2>카테고리</h2>
-
-        <div class="list">
-          <div class="item">
-            <img src="{% static 'images/그대들은 어떻게 살 것인가.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>그대들은 어떻게 살 것인가</h4>
-            <p>화재로 어머니를 잃은 11살 소년 ‘마히토’는 아버지와 함께 어머니의 고향으로 간다...</p>
+<div class="movie-lists">
+  <h2>카테고리</h2>
+  <div class="list-container">
+    <button class="prev" onclick="scrollMovies('popular', -200)">&#10094;</button>
+    <div class="list" id="popular">
+      {% for movie in popular_movies|slice:":6" %}
+      <div class="item">
+        <a href="{% url 'movie_detail' movie.id %}">
+          <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} 포스터">
+          <div class="play">
+            <span class="fa fa-play"></span>
           </div>
-
-          <div class="item">
-            <img src="{% static 'images/가여운것들.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>가여운 것들</h4>
-            <p>천재적이지만 특이한 과학자 갓윈 백스터에 의해 새롭게 되살아난 벨라 백스터. 갓윈의 보호를 받으며...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/엔칸토.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>엔칸토: 마법의 세계</h4>
-            <p>콜롬비아의 깊은 산 속, 놀라운 마법과 활기찬 매력이 넘치는 세계 ‘엔칸토’. 그 곳에는 특별한 능력을...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/오펜하이머.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>오펜하이머</h4>
-            <p>“나는 이제 죽음이요, 세상의 파괴자가 되었다.” 세상을 구하기 위해 세상을 파괴할 지도 모르는...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/듄1.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>듄</h4>
-            <p>10191년, 아트레이데스 가문의 후계자인 폴은 시공을 초월한 존재이자 전 우주를 구원할...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/듄2.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>듄: 파트2</h4>
-            <p>황제의 모략으로 멸문한 가문의 유일한 후계자 폴 어머니 레디이 제시카와...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/더 배트맨.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>더 배트맨</h4>
-            <p>지난 2년간 고담시의 어둠 속에서 범법자들을 응징하며 배트맨으로 살아온...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/웡카.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>웡카</h4>
-            <p>세상에서 가장 달콤한 여정 좋은 일은 모두 꿈에서부터 시작된다!...</p>
-          </div>
-        </div>
+          <h4>{{ movie.title }}</h4>
+          <p>{{ movie.overview|truncatechars:100 }}</p>
+        </a>
       </div>
-
-      <div class="movie-lists">
-        <h2>지금 뜨는 콘텐츠</h2>
-        <div class="list">
-          <div class="item">
-            <img src="{% static 'images/스파이더맨 어크로스더유니버스.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>스파이더맨: 어크로스 더 유니버스</h4>
-            <p>스파이더맨 VS 스파이더맨?! 여러 성장통을 겪으며 새로운 스파이더맨이...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/바비.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>바비</h4>
-            <p>원하는 무엇이든 될 수 있는 '바비랜드'에서 살아가던 '바비'가...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/익스펜더블1.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>익스펜더블1</h4>
-            <p>바니 로스(실베스터 스텔론)는 두려움도 모르고 찔러도 피 한 방울 나오지...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/익스펜더블2.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>익스펜더블2</h4>
-            <p>스스로를 ‘익스펜더블’(소모품)이라 부르며 돈을 받고 격전의 현장에 목숨 걸고...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/익스펜더블3.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>익스펜더블3</h4>
-            <p>불가능한 미션이란 없는 절대 무적의 팀 익스펜더블. 더 이상 대항할 수 있는...</p>
-          </div>
-          
-          <div class="item">
-            <img src="{% static 'images/익스펜더블4.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>익스펜더블4</h4>
-            <p>베테랑 용병들이 새 인물을 수혈해 한층 강력한 전선을 구축했다...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/탈출.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>탈출</h4>
-            <p>연쇄 추돌 사고가 발생하면서 붕괴 위험에 놓인 다리. 그 위에 고립된....</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/경성크리처2.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>경성크리처 시즌2</h4>
-            <p>2024년 서울, 태상과 모든 것이 닮은 호재와 경성의 봄을 살아낸 채옥...</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="movie-lists">
-        <h2>회원님을 위해 엄선한 오늘의 콘텐츠</h2>
-        <div class="list">
-          <div class="item">
-            <img src="{% static 'images/경성1.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>경성크리처</h4>
-            <p>시대의 어둠이 가장 짙었던 1945년 봄, 생존이 전부였던 두 청춘...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/지옥시즌2.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>지옥 시즌2</h4>
-            <p>계속되는 지옥행 고지로 더욱 혼란스러워진 세상, 갑작스레 부활한...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/지옥시즌1.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>지옥 시즌1</h4>
-            <p>예고없이 등장한 지옥의 사자들에게 사람들이 지옥행 선고를...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/새도우의13.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>섀도우의 13</h4>
-            <p>살인 훈련을 받은 젊은 킬러가 무자비한 범죄 조직으로부터...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/독전1.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>독전1</h4>
-            <p>의문의 폭발 사고 후, 오랫동안 마약 조직을 추적해온 형사...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/독전2.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>독전2</h4>
-            <p>용산역에서 벌인 지독한 혈투 이후, 여전히 ‘이선생’을 쫓는 형사...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/전란.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>전, 란</h4>
-            <p>왜란이 일어난 혼란의 시대, 함께 자란 조선 최고 무신 집안의 아들...</p>
-          </div>
-
-          <div class="item">
-            <img src="{% static 'images/날씨의 아이.jfif' %}" />
-            <div class="play">
-              <span class="fa fa-play"></span>
-            </div>
-            <h4>날씨의 아이</h4>
-            <p>비가 그치지 않던 어느 여름날, 가출 소년 ‘호다카’는....</p>
-          </div>
-        </div>
-
-        <hr>
-      </div>
-
-      <div class="preview" id="diary-preview">
-        <div class="text">
-          <h6>일기장 바로가기</h6>
-          <p>일기를 작성하시면 해당 일기에 감정에 맞는 영화를 추천드려요!</p>
-        </div>
-        <div class="button">
-          <button type="button" onclick="hidePreview()">일기장 이동</button>
-        </div>
-      </div>
+      {% endfor %}
     </div>
+    <button class="next" onclick="scrollMovies('popular', 200)">&#10095;</button>
+  </div>
+</div>
 
-    <script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
-        <script>
-        function hidePreview() {
-            document.getElementById("diary-preview").style.display = "none"; // preview 요소 숨기기
-        }
-        </script>
+<!-- 카테고리: 지금 뜨는 콘텐츠 -->
+<div class="movie-lists">
+  <h2>지금 뜨는 콘텐츠</h2>
+  <div class="list-container">
+    <button class="prev" onclick="scrollMovies('trending', -200)">&#10094;</button>
+    <div class="list" id="trending">
+      {% for movie in trending_movies|slice:":6" %}
+      <div class="item">
+        <a href="{% url 'movie_detail' movie.id %}">
+          <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} 포스터">
+          <div class="play">
+            <span class="fa fa-play"></span>
+          </div>
+          <h4>{{ movie.title }}</h4>
+          <p>{{ movie.overview|truncatechars:100 }}</p>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    <button class="next" onclick="scrollMovies('trending', 200)">&#10095;</button>
+  </div>
+</div>
+
+<!-- 카테고리: 추천 콘텐츠 -->
+<div class="movie-lists">
+  <h2>회원님을 위해 엄선한 오늘의 콘텐츠</h2>
+  <div class="list-container">
+    <button class="prev" onclick="scrollMovies('recommended', -200)">&#10094;</button>
+    <div class="list" id="recommended">
+      {% for movie in recommended_movies|slice:":6" %}
+      <div class="item">
+        <a href="{% url 'movie_detail' movie.id %}">
+          <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} 포스터">
+          <div class="play">
+            <span class="fa fa-play"></span>
+          </div>
+          <h4>{{ movie.title }}</h4>
+          <p>{{ movie.overview|truncatechars:100 }}</p>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    <button class="next" onclick="scrollMovies('recommended', 200)">&#10095;</button>
+  </div>
+</div>
+
+<div class="preview" id="diary-preview">
+  <div class="text">
+    <h6>일기장 바로가기</h6>
+    <p>일기를 작성하시면 해당 일기에 감정에 맞는 영화를 추천드려요!</p>
+  </div>
+  <div class="button">
+    <button type="button" onclick="hidePreview()">일기장 이동</button>
+  </div>
+</div>
+</div>
+
+<script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
+<script>
+  function hidePreview() {
+    document.getElementById("diary-preview").style.display = "none"; // preview 요소 숨기기
+  }
+</script>
 {% endblock %}
