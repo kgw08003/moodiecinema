@@ -5,6 +5,7 @@
   <title>{% block title %}Moodie Cinema{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'home.css' %}">
 
+  {% block extra_css %}{% endblock %} <!-- extra_css 블록 추가 -->
   {% block head %}{% endblock %}
   {% block extra_js %}{% endblock %}
 </head>
@@ -21,7 +22,7 @@
     <div class="navigation">
       <ul>
         <li><a href="{% url 'home' %}"><span class="fa fa-home"></span> <span>Home</span></a></li>
-        <li><a href="{% url 'category' %}"><span class="fa fa-search"></span> <span>카테고리</span></a></li>
+        <li><a href="{% url 'genres:category' %}"><span class="fa fa-search"></span> <span>카테고리</span></a></li>
         <li><a href="#"><span class="fa fas fa-book"></span> <span>Your Library</span></a></li>
       </ul>
     </div>
@@ -56,13 +57,11 @@
           <button type="button" class="fa fas fa-chevron-right"></button>
       </div>
 
-      
       <script>
         document.querySelector('.fa-chevron-left').addEventListener('click', () => window.history.back());
         document.querySelector('.fa-chevron-right').addEventListener('click', () => window.history.forward());
       </script>
-    
-  
+
       <form class="search-form">
           <div class="search_box">
               <button type="submit" tabindex="2" class="search-button">
@@ -71,7 +70,7 @@
               <input type="text" maxlength="225" tabindex="1" placeholder="검색어를 입력하세요" class="search-input">
           </div>
       </form>
-  
+
       <div class="navbar">
           <ul>
               <li><a href="#">아무거나</a></li>
@@ -98,8 +97,6 @@
           {% endif %}
       </div>
   </div>
-
-  
 
     <!-- Content Block -->
     <div class="content">

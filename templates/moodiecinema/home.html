@@ -83,15 +83,15 @@
     <p>일기를 작성하시면 해당 일기에 감정에 맞는 영화를 추천드려요!</p>
   </div>
   <div class="button">
-    <button type="button" onclick="hidePreview()">일기장 이동</button>
+    <button type="button" onclick="goToDiary()">일기장 이동</button>
   </div>
-</div>
 </div>
 
 <script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
 <script>
-  function hidePreview() {
-    document.getElementById("diary-preview").style.display = "none"; // preview 요소 숨기기
+  function goToDiary() {
+    window.location.href = "{% url 'diary' %}";  // 일기장 페이지로 이동
   }
 </script>
+
 {% endblock %}

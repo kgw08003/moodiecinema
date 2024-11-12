@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'diary',
     'movies',
     'reviews',
+    'genres',
 ]
 
 MIDDLEWARE = [
