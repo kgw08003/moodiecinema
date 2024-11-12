@@ -59,3 +59,4 @@ class UserUpdateForm(forms.ModelForm): # 회원정보 수정
         return cleaned_data
     
 
+

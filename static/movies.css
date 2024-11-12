@@ -1,0 +1,246 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #111;
+    color: #fff;
+}
+
+.movie-detail-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.movie-poster img {
+    border-radius: 8px;
+    max-width: 100%;
+}
+
+.movie-info {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.movie-info h1 {
+    font-size: 2.5em;
+    color: #f5c518;
+}
+
+.release-date, .genres, .rating, .overview {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+.additional-info {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.additional-info h3 {
+    color: #f5c518;
+    font-size: 1.5em;
+}
+
+.booking-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #f5c518;
+    color: #111;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.cast-list {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.cast-list h2 {
+    font-size: 1.8em;
+    color: #f5c518;
+}
+
+.cast-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.cast-list li {
+    font-size: 1.2em;
+    margin: 5px 0;
+}
+
+.similar-movies {
+    margin-top: 50px;
+    width: 100%;
+    text-align: center;
+}
+
+.similar-movies h2 {
+    font-size: 1.8em;
+    color: #f5c518;
+}
+
+.similar-movie-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.similar-movie-item {
+    max-width: 150px;
+    text-align: center;
+}
+
+.similar-movie-item img {
+    width: 100%;
+    border-radius: 8px;
+    transition: transform 0.3s;
+}
+
+.similar-movie-item img:hover {
+    transform: scale(1.05);
+}
+
+.similar-movie-item p {
+    margin-top: 10px;
+    color: #ccc;
+    font-size: 1em;
+}
+
+/* movies.css 파일에 추가 */
+.reviews-section {
+    background-color: #1a1a1a;
+    padding: 30px;
+    border-radius: 10px;
+    margin-top: 40px;
+    color: #fff;
+}
+
+.reviews-title, .reviews-subtitle {
+    color: #ffd700; /* 금색 포인트 색상 */
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ffd700;
+    padding-bottom: 5px;
+}
+
+.review-form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+}
+
+.review-form input, .review-form textarea {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #666;
+    border-radius: 5px;
+    background-color: #333;
+    color: #fff;
+}
+
+.submit-button {
+    align-self: flex-start;
+    padding: 10px 20px;
+    background-color: #ffd700;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    color: #1a1a1a;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #e6c200;
+}
+
+.reviews-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.review-item {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border-left: 4px solid #ffd700;
+}
+
+.review-username {
+    font-weight: bold;
+    color: #ffd700;
+}
+
+.review-date {
+    font-size: 0.9em;
+    color: #aaa;
+}
+
+.review-rating {
+    color: #ffd700;
+    margin-top: 5px;
+    display: block;
+}
+
+.review-content {
+    color: #ddd;
+    line-height: 1.5;
+    margin-top: 10px;
+}
+
+.no-reviews-message {
+    text-align: center;
+    color: #aaa;
+    font-style: italic;
+}
+
+.tmdb-review-list {
+    list-style: none;
+    padding: 0;
+}
+
+.tmdb-review-list li {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border-left: 4px solid #ffd700;
+}
+
+.tmdb-review-list li a {
+    color: #ffd700;
+    text-decoration: underline;
+}
+
+.tmdb-review-list li a:hover {
+    color: #e6c200;
+}
+
+
+
+.like-dislike-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.like-button, .dislike-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+}
+
+

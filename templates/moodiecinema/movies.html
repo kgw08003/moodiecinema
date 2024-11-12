@@ -1,0 +1,154 @@
+{% extends 'moodiecinema/base.html' %}
+{% load static %}
+{% block content %}
+
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'movies.css' %}">
+{% endblock %}
+
+<body>
+    <section class="movie-detail-container">
+        <div class="movie-poster">
+            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
+        </div>
+        <div class="movie-info">
+            <h1>{{ movie.title }}</h1>
+            <p class="release-date"><strong>개봉일:</strong> {{ movie.release_date }}</p>
+            <p class="genres"><strong>장르:</strong> 
+                {% for genre in movie.genres %}
+                    {{ genre.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p class="rating"><strong>평점:</strong> {{ movie.vote_average }} / 10</p>
+            <p class="overview">{{ movie.overview }}</p>
+        </div>
+
+        <div class="additional-info">
+            <h3>예고편 보기</h3>
+            {% if youtube_trailers %}
+            {% for video in youtube_trailers %}
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video.key }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            {% endfor %}
+            {% else %}
+                <h3 style="color:white; margin:20px;">예고편이 없습니다.</h3>
+            {% endif %}
+            <h3>예매 링크</h3>
+            <a href="#">예매하기</a>
+        </div>
+
+        <section class="cast-list">
+            <h2>출연진</h2>
+            <ul>
+                {% for actor in cast %}
+                    <li><span>{{ actor.name }}</span> <em>역할:</em> {{ actor.character }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="similar-movies">
+            <h2 style="margin:20px;">유사한 영화</h2>
+            <div class="similar-movie-grid">
+                {% for similar_movie in similar_movies %}
+                <div class="similar-movie-item">
+                    <a href="{% url 'movie_detail' similar_movie.id %}">
+                        <img src="https://image.tmdb.org/t/p/w300{{ similar_movie.poster_path }}" alt="{{ similar_movie.title }}">
+                        <p>{{ similar_movie.title }}</p>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </section>
+    </div>
+
+    <script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
+    
+    <script>
+        function likeReview(reviewId) {
+            fetch(`/reviews/review/${reviewId}/like/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById(`like-count-${reviewId}`).innerText = data.like_count;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        
+        function dislikeReview(reviewId) {
+            fetch(`/reviews/review/${reviewId}/dislike/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById(`dislike-count-${reviewId}`).innerText = data.dislike_count;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+
+
+    <!-- 리뷰 섹션 추가 -->
+    <section class="reviews-section">
+        <h2 class="reviews-title">리뷰</h2>
+        <form method="post" action="{% url 'review_create' movie_id=movie_id %}" class="review-form">
+            {% csrf_token %}
+            {{ review_form.as_p }}
+            <button type="submit" class="submit-button">리뷰 작성</button>
+        </form>
+    
+        <h3 class="reviews-subtitle">작성된 리뷰</h3>
+        <ul class="reviews-list">
+            {% for review in reviews %}
+                <li class="review-item">
+                    <strong class="review-username">{{ review.user.username }}</strong> - 
+                    <span class="review-date">{{ review.created_at|date:"Y-m-d" }}</span><br>
+                    <span class="review-rating">평점: {{ review.rating }} / 5</span><br>
+                    <p class="review-content">{{ review.content }}</p>
+                    
+                    <div class="like-dislike-buttons">
+                        <button onclick="likeReview({{ review.id }})" class="like-button">
+                            👍 <span id="like-count-{{ review.id }}">{{ review.like_count }}</span>
+                        </button>
+                        <button onclick="dislikeReview({{ review.id }})" class="dislike-button">
+                            👎 <span id="dislike-count-{{ review.id }}">{{ review.dislike_count }}</span>
+                        </button>
+                    </div>
+                
+                </li>
+            {% empty %}
+                <p class="no-reviews-message">아직 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</p>
+            {% endfor %}
+        </ul>
+    
+        <!-- TMDb 리뷰 섹션을 작성된 리뷰와 유사한 형식으로 수정 -->
+        <h3 class="reviews-subtitle">TMDb 리뷰</h3>
+        <ul class="reviews-list tmdb-review-list">
+            {% if tmdb_reviews %}
+                {% for review in tmdb_reviews %}
+                    <li class="review-item">
+                        <strong class="review-username">{{ review.author }}</strong> - 
+                        <span class="review-date">{{ review.created_at|date:"Y-m-d H:i" }}</span><br>
+                        <span class="review-rating">평점: {{ review.author_details.rating }} / 10</span><br>
+                        <p class="review-content">{{ review.content }}</p>
+                        <a href="{{ review.url }}" target="_blank">원문 보기</a>
+                    </li>
+                {% endfor %}
+            {% else %}
+                <p class="no-reviews-message">이 영화에 대한 TMDb 리뷰가 없습니다.</p>
+            {% endif %}
+        </ul>
+    </section>
+
+</body>
+
+{% endblock %}

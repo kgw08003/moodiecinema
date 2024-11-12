@@ -1,0 +1,77 @@
+{% extends 'moodiecinema/base.html' %}
+{% load static %}
+
+{% block title %}리뷰 관리{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'reviews_manage.css' %}">
+{% endblock %}
+
+{% block content %}
+<h2 class="page-title">리뷰 관리</h2>
+<div class="review-list">
+    {% for review in reviews %}
+        <div class="review-item">
+            {% if review.movie.poster_path %}
+                <img src="https://image.tmdb.org/t/p/w200{{ review.movie.poster_path }}" alt="{{ review.movie.title }}">
+            {% endif %}
+            <div class="review-details">
+                <h3>{{ review.movie.title }}</h3>
+                <p1>{{ review.content }}</p1>
+                <p></p>
+                <p2>평점: {{ review.rating }}</p2>
+                <p class="review-date">작성일: {{ review.created_at|date:"Y-m-d H:i" }}</p> <!-- 작성 날짜 표시 -->
+                <button class="edit-button" data-review-id="{{ review.id }}" 
+                        data-review-content="{{ review.content|escapejs }}" 
+                        data-review-rating="{{ review.rating }}" 
+                        onclick="openModal(this)">수정</button>
+                <a href="{% url 'delete_review' review.id %}" class="delete-button">삭제</a>
+            </div>
+        </div>
+    {% empty %}
+        <p class="no-reviews-message">작성된 리뷰가 없습니다.</p>
+    {% endfor %}
+</div>
+
+<!-- 모달 창 HTML -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 class="modal-title">리뷰 수정</h2>
+        <form id="editForm" method="post" action="">
+            {% csrf_token %}
+            <label for="editContent">리뷰 내용</label>
+            <textarea id="editContent" name="content" rows="4"></textarea>
+            
+            <label for="editRating">평점</label>
+            <input type="number" id="editRating" name="rating" min="1" max="5">
+            
+            <button type="submit" class="submit-button">수정하기</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(button) {
+        const reviewId = button.getAttribute("data-review-id");
+        const reviewContent = button.getAttribute("data-review-content");
+        const reviewRating = button.getAttribute("data-review-rating");
+
+        document.getElementById("editModal").style.display = "block";
+        document.getElementById("editContent").value = reviewContent;
+        document.getElementById("editRating").value = reviewRating;
+        document.getElementById("editForm").action = `/reviews/review/${reviewId}/update/`;
+    }
+
+    function closeModal() {
+        document.getElementById("editModal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById("editModal");
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+{% endblock %}
