@@ -62,13 +62,13 @@
         document.querySelector('.fa-chevron-right').addEventListener('click', () => window.history.forward());
       </script>
 
-      <form class="search-form">
-          <div class="search_box">
-              <button type="submit" tabindex="2" class="search-button">
-                  <img src="{% static 'images/돋보기 로고.png' %}" alt="검색"> 
-              </button>
-              <input type="text" maxlength="225" tabindex="1" placeholder="검색어를 입력하세요" class="search-input">
-          </div>
+      <form class="search-form" action="{% url 'movie_search' %}" method="get">
+        <div class="search_box">
+            <button type="submit" tabindex="2" class="search-button">
+                <img src="{% static 'images/돋보기 로고.png' %}" alt="검색">
+            </button>
+            <input type="text" name="q" maxlength="225" tabindex="1" placeholder="검색어를 입력하세요" class="search-input">
+        </div>
       </form>
 
       <div class="navbar">
