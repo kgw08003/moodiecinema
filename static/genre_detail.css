@@ -1,50 +1,32 @@
-/* 영화 목록 스타일 */
+/* genre_detail.css */
 .movie-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 24px; /* 카드 사이 간격 */
+    gap: 20px;
     padding: 20px;
-    justify-content: center;
-    max-width: 1200px; /* 한 줄에 5개가 들어갈 수 있도록 최대 너비 설정 */
-    margin: 0 auto; /* 가운데 정렬 */
 }
 
 .movie-item {
-    width: 220px; /* 카드 너비 확대 */
+    width: 200px;
     background-color: #181818;
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.3s;
-    margin: 0;
-    padding: 0;
 }
 
 .movie-item:hover {
     transform: scale(1.05);
 }
 
-/* 링크 스타일 제거 */
-.movie-item a {
-    text-decoration: none; /* 링크 밑줄 제거 */
-    outline: none; /* 링크 outline 제거 */
-    border: none; /* 링크 border 제거 */
-}
-
 .movie-item img {
     width: 100%;
-    height: 330px; /* 이미지 높이를 키움 */
-    object-fit: cover;
-    display: block; /* inline 요소의 공백 문제 방지 */
-    vertical-align: top; /* 이미지 하단 여백 제거 */
-    border: none;
-    margin: 0;
-    padding: 0;
+    border-bottom: 2px solid #333;
 }
 
 .movie-item h3 {
-    color: #fff; 
-    font-size: 18px; 
-    margin: 10px 0 0 0; /* 상단만 마진 추가 */
+    color: #ffffff;
+    font-size: 16px;
+    margin: 10px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -52,66 +34,10 @@
 }
 
 .movie-item p {
-    color: #fff; 
+    color: #aaaaaa;
     font-size: 14px;
     padding: 10px;
     height: 60px;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-align: center;
-    margin: 0;
-}
-
-/* 페이지 네비게이션 스타일 */
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 30px;
-    gap: 10px;
-}
-
-.pagination a {
-    padding: 10px 15px;
-    background-color: #333;
-    color: #fff;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.3s, transform 0.3s;
-}
-
-.pagination a:hover {
-    background-color: #f0a500;
-    transform: scale(1.1);
-}
-
-.pagination span {
-    color: #fff;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-/* 'First', 'Previous', 'Next', 'Last' 버튼 스타일 */
-.pagination a:first-child, .pagination a:last-child {
-    font-size: 14px;
-}
-
-/* 현재 페이지 강조 스타일 */
-.pagination a.active {
-    background-color: #f0a500;
-    color: #181818;
-    cursor: default;
-}
-
-/* 장르 제목 스타일 */
-.genre-title {
-    color: #ffcc00; /* 노란색 */
-    font-size: 24px; /* 적절한 크기 */
-    text-align: center;
-    padding: 20px 0;
-    margin: 0; /* 상하 여백 제거 */
-    white-space: nowrap; /* 제목이 너무 길 경우 줄바꿈 방지 */
-    overflow: hidden; /* 제목이 길 때 잘리도록 설정 */
-    text-overflow: ellipsis; /* 제목이 길 경우 생략 기호(...) 표시 */
 }
