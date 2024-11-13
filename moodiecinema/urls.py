@@ -29,7 +29,8 @@ urlpatterns = [
     path('analyze_sentiment/', views.analyze_sentiment, name='analyze_sentiment'),
     path('movies/', include('movies.urls')), 
     path('reviews/',include('reviews.urls')),
-
+    path('genres/', include('genres.urls')),  # 'genres' 앱의 URL을 포함
+    path('search/', include('search.urls')),
 ]
 
 if settings.DEBUG:
