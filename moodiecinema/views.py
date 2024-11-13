@@ -38,3 +38,33 @@ def analyze_sentiment(request):
         print("Invalid request method:", request.method)  # 디버그 로그: POST가 아닐 때
     
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+from django.views.generic import ListView
+from movies.models import Movies  # Movie 모델 가져오기
+
+class SearchView(ListView):
+    model = Movies
+    template_name = 'moodiecinema/search_results.html'  # 템플릿 파일 경로 설정
+    context_object_name = 'results'  # 템플릿에서 사용할 객체 이름
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')  # GET 방식으로 전달된 검색어 가져오기
+        if query:
+            return Movies.objects.filter(title__icontains=query)  # 제목에 검색어가 포함된 영화 필터링
+        else:
+            return Movies.objects.none()  # 검색어가 없을 때 빈 QuerySet 반환
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('query')  # 검색어를 컨텍스트에 추가
+        return context
+
+
+from django.views.generic import DetailView
+from movies.models import Movies
+
+class MovieDetailView(DetailView):
+    model = Movies
+    template_name = 'moodiecinema/movie_detail.html'
+    context_object_name = 'movie'
