@@ -63,3 +63,5 @@ class GenreDetailView(View):
             'current_page': page,
             'genre_id': genre_id
         })
+
+

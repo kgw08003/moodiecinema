@@ -1,52 +1,107 @@
-/* 검색 결과 컨테이너 */
-.search-results-container {
-    padding: 20px;
-    text-align: center;
-}
-
 /* 검색 결과 제목 스타일 */
-h2 {
-    color: #ffffff;
+.search-title {
+    color: #ffcc00;
     font-size: 24px;
     text-align: center;
     padding: 20px 0;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    margin-bottom: 30px;
+}
+
+/* 장르 필터 스타일 */
+.genre-filter {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    color: #fff;
+    margin-bottom: 30px;
+    max-width: 100%;
+    text-align: center;
+}
+
+.genre-filter h3 {
+    color: #ffcc00;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+/* 장르 버튼 스타일 */
+.genre-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.genre-options label {
+    background-color: #444;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #fff;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s;
+    width: calc(20% - 10px); /* 5개씩 나오도록 설정 */
+    box-sizing: border-box;
+    justify-content: center;
+}
+
+.genre-options label:hover {
+    background-color: #555;
+}
+
+.genre-options input[type="checkbox"] {
+    margin-right: 5px;
+    accent-color: #f0a500;
+}
+
+/* 적용 버튼 스타일 */
+.apply-button {
+    display: inline-block;
+    background-color: #f0a500;
+    color: #181818;
+    padding: 10px 30px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+
+.apply-button:hover {
+    background-color: #ffcc00;
 }
 
 /* 영화 목록 스타일 */
 .movie-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 24px; /* 카드 사이 간격 */
-    padding: 20px;
+    gap: 24px;
     justify-content: center;
-    max-width: 1200px; /* 한 줄에 5개가 들어갈 수 있도록 최대 너비 설정 */
-    margin: 0 auto; /* 가운데 정렬 */
+    max-width: 100%;
 }
 
+/* 영화 아이템 스타일 */
 .movie-item {
-    width: 220px; /* 카드 너비 확대 */
+    width: 220px;
     background-color: #181818;
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.3s;
-    margin: 0;
-    padding: 0;
 }
 
 .movie-item:hover {
     transform: scale(1.05);
 }
 
-/* 링크 스타일 제거 */
 .movie-item a {
     text-decoration: none;
     outline: none;
     border: none;
-    color: inherit; /* 파란색 링크 방지 */
+    color: inherit;
 }
 
 .movie-item img {
@@ -54,15 +109,11 @@ h2 {
     height: 330px;
     object-fit: cover;
     display: block;
-    vertical-align: top;
-    border: none;
-    margin: 0;
-    padding: 0;
 }
 
 .movie-item h3 {
-    color: #ffffff; 
-    font-size: 18px; 
+    color: #ffffff;
+    font-size: 18px;
     margin: 10px 0 0 0;
     white-space: nowrap;
     overflow: hidden;
@@ -71,7 +122,7 @@ h2 {
 }
 
 .movie-item p {
-    color: #aaaaaa; 
+    color: #aaaaaa;
     font-size: 14px;
     padding: 10px;
     height: 60px;
@@ -88,6 +139,7 @@ h2 {
     align-items: center;
     margin-top: 30px;
     gap: 10px;
+    width: 100%;
 }
 
 .pagination a {
@@ -111,12 +163,6 @@ h2 {
     font-weight: bold;
 }
 
-/* 'First', 'Previous', 'Next', 'Last' 버튼 스타일 */
-.pagination a:first-child, .pagination a:last-child {
-    font-size: 14px;
-}
-
-/* 현재 페이지 강조 스타일 */
 .pagination a.active {
     background-color: #f0a500;
     color: #181818;
