@@ -1,0 +1,40 @@
+{% extends 'moodiecinema/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'search_results.css' %}">
+{% endblock %}
+
+{% block content %}
+<h2>검색 결과: {{ query }}</h2>
+<div class="search-results-container">
+    <div class="movie-list">
+        {% for movie in movies %}
+        <div class="movie-item">
+            <a href="{% url 'movie_detail' movie.id %}">
+                <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_path }}" alt="{{ movie.title }}">
+                <h3>{{ movie.title }}</h3>
+                <p>{{ movie.overview|truncatechars:100 }}</p>
+            </a>
+        </div>
+        {% empty %}
+        <p>검색 결과가 없습니다.</p>
+        {% endfor %}
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div class="pagination">
+        {% if current_page > 1 %}
+            <a href="?q={{ query }}&page=1">처음</a>
+            <a href="?q={{ query }}&page={{ current_page|add:-1 }}">이전</a>
+        {% endif %}
+
+        <span>페이지 {{ current_page }} / {{ total_pages }}</span>
+
+        {% if current_page < total_pages %}
+            <a href="?q={{ query }}&page={{ current_page|add:1 }}">다음</a>
+            <a href="?q={{ query }}&page={{ total_pages }}">마지막</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -3,7 +3,7 @@
 
 {% block title %}카테고리{% endblock %}
 
-{% block head %}
+{% block extra_css %}
     <link rel="stylesheet" href="{% static 'category.css' %}">
 {% endblock %}
 
@@ -11,82 +11,18 @@
     <div class="movie-lists">
         <h2>카테고리</h2>
         <div class="list">
-            <div class="item">
-                <img src="https://example.com/image_sf.jpg" alt="SF">
-                <h4>SF</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_tv.jpg" alt="TV 영화">
-                <h4>TV 영화</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_family.jpg" alt="가족">
-                <h4>가족</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_horror.jpg" alt="공포">
-                <h4>공포</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_documentary.jpg" alt="다큐멘터리">
-                <h4>다큐멘터리</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_drama.jpg" alt="드라마">
-                <h4>드라마</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_romance.jpg" alt="로맨스">
-                <h4>로맨스</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_adventure.jpg" alt="모험">
-                <h4>모험</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_mystery.jpg" alt="미스터리">
-                <h4>미스터리</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_crime.jpg" alt="범죄">
-                <h4>범죄</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_western.jpg" alt="서부">
-                <h4>서부</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_thriller.jpg" alt="스릴러">
-                <h4>스릴러</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_animation.jpg" alt="애니메이션">
-                <h4>애니메이션</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_action.jpg" alt="액션">
-                <h4>액션</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_history.jpg" alt="역사">
-                <h4>역사</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_music.jpg" alt="음악">
-                <h4>음악</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_war.jpg" alt="전쟁">
-                <h4>전쟁</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_comedy.jpg" alt="코미디">
-                <h4>코미디</h4>
-            </div>
-            <div class="item">
-                <img src="https://example.com/image_fantasy.jpg" alt="판타지">
-                <h4>판타지</h4>
-            </div>
+            {% if genres %}
+                {% for genre in genres %}
+                    <div class="item">
+                        <a href="{% url 'genres:genre_detail' genre_id=genre.genre_id %}">
+                            <img src="https://image.tmdb.org/t/p/w500{{ genre.image_path|default:'' }}" alt="{{ genre.name }}">
+                            <h4>{{ genre.name }}</h4>
+                        </a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>장르 정보를 불러올 수 없습니다.</p>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

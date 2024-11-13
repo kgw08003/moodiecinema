@@ -1,0 +1,124 @@
+/* 검색 결과 컨테이너 */
+.search-results-container {
+    padding: 20px;
+    text-align: center;
+}
+
+/* 검색 결과 제목 스타일 */
+h2 {
+    color: #ffffff;
+    font-size: 24px;
+    text-align: center;
+    padding: 20px 0;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 영화 목록 스타일 */
+.movie-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px; /* 카드 사이 간격 */
+    padding: 20px;
+    justify-content: center;
+    max-width: 1200px; /* 한 줄에 5개가 들어갈 수 있도록 최대 너비 설정 */
+    margin: 0 auto; /* 가운데 정렬 */
+}
+
+.movie-item {
+    width: 220px; /* 카드 너비 확대 */
+    background-color: #181818;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s;
+    margin: 0;
+    padding: 0;
+}
+
+.movie-item:hover {
+    transform: scale(1.05);
+}
+
+/* 링크 스타일 제거 */
+.movie-item a {
+    text-decoration: none;
+    outline: none;
+    border: none;
+    color: inherit; /* 파란색 링크 방지 */
+}
+
+.movie-item img {
+    width: 100%;
+    height: 330px;
+    object-fit: cover;
+    display: block;
+    vertical-align: top;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.movie-item h3 {
+    color: #ffffff; 
+    font-size: 18px; 
+    margin: 10px 0 0 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.movie-item p {
+    color: #aaaaaa; 
+    font-size: 14px;
+    padding: 10px;
+    height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    margin: 0;
+}
+
+/* 페이지 네비게이션 스타일 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    gap: 10px;
+}
+
+.pagination a {
+    padding: 10px 15px;
+    background-color: #333;
+    color: #ffffff;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #f0a500;
+    transform: scale(1.1);
+}
+
+.pagination span {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* 'First', 'Previous', 'Next', 'Last' 버튼 스타일 */
+.pagination a:first-child, .pagination a:last-child {
+    font-size: 14px;
+}
+
+/* 현재 페이지 강조 스타일 */
+.pagination a.active {
+    background-color: #f0a500;
+    color: #181818;
+    cursor: default;
+}
