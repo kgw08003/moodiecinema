@@ -227,7 +227,20 @@
     diaryEntry.style.backgroundAttachment = "fixed"; // 고정 배경
 }
 
-
+// 기존 방식 (배경 없는 버전)
+// <div id="diaryEntry" class="diary-entry" style="display: none;">
+//         <h2 id="entryDate">일기 날짜
+//             <button class="btn open-modal-btn" onclick="openDiaryModal()">일기 작성하기</button>
+//         </h2>
+        
+//         <div class="entry-content">
+//             <div class="entry-text">
+//                 <h3>일기 내용</h3>
+//                 <div class="diary-box">
+//                     <p id="diaryContent">여기에 일기 내용이 표시됩니다...</p>
+//                 </div>
+//             </div>
+//         </div>
 
     function renderCalendar(year, month) {
         const calendarTitle = document.getElementById("calendarTitle");

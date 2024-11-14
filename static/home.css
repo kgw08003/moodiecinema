@@ -2,6 +2,9 @@
   padding: 0;
   margin: 0;
 }
+a {
+  text-decoration-line: none 
+}
 body {
   background-color: #121212;
   font-family: 'Montserrat', sans-serif;
@@ -93,7 +96,7 @@ body {
 }
 .topbar .prev-next-buttons button {
   color: #7a7a7a;
-  cursor: not-allowed;
+  cursor: pointer; /* 클릭 가능 상태로 변경 */
   width: 34px;
   height: 34px;
   border-radius: 100%;
@@ -101,6 +104,9 @@ body {
   border: 0px;
   background-color: #090909;
   margin-right: 10px;
+}
+.topbar .prev-next-buttons button:hover {
+  background-color: #333333; /* 마우스를 올렸을 때 색상 변경 */
 }
 .topbar .navbar {
   display: flex;
@@ -219,7 +225,7 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(to right, #ae2896, #509bf5);
+  background: linear-gradient(to right, #ae2896, #f7c948);
   padding: 15px 40px;
   display: flex;
   justify-content: space-between;
@@ -438,4 +444,13 @@ body {
     padding: 8px 20px; /* 버튼 패딩 조정 */
     font-size: 14px; /* 폰트 크기 조정 */
   }
+}
+.nav-link {
+  color: white; /* 기본 텍스트 색상 흰색 */
+  text-decoration: none; /* 밑줄 제거 */
+}
+
+/* OST 음악 링크 hover 상태 */
+.nav-link:hover {
+  color: #FFFF00; /* 마우스를 올렸을 때 텍스트 색상 노란색 */
 }
