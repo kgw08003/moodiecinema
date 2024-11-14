@@ -57,18 +57,20 @@
 
     <!-- 선택된 날짜의 일기 세부 페이지 -->
     <div id="diaryEntry" class="diary-entry" style="display: none;">
-        <h2 id="entryDate">일기 날짜
-            <button class="btn open-modal-btn" onclick="openDiaryModal()">일기 작성하기</button>
-        </h2>
-        
-        <div class="entry-content">
-            <div class="entry-text">
-                <h3>일기 내용</h3>
-                <div class="diary-box">
-                    <p id="diaryContent">여기에 일기 내용이 표시됩니다...</p>
+        <div class="diary-background"></div> <!-- 배경 이미지 레이어 -->
+        <div class="diary-content"> <!-- 실제 내용 -->
+            <h2 id="entryDate">일기 날짜
+                <button class="btn open-modal-btn" onclick="openDiaryModal()">일기 작성하기</button>
+            </h2>
+            
+            <div class="entry-content">
+                <div class="entry-text">
+                    <h3>일기 내용</h3>
+                    <div class="diary-box">
+                        <p id="diaryContent">여기에 일기 내용이 표시됩니다...</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
         <!-- 감정 분석 결과 박스 -->
         <div class="emotion-analysis">
@@ -148,46 +150,81 @@
             alert("일기 저장에 실패했습니다.");
         });
     }
+
     const diaryDetailUrl = "{% url 'diary_detail' %}";
 
     function openDiaryEntry(date) {
-    fetch(`${diaryDetailUrl}?date=${date}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                alert(data.error);
-            } else {
-                const diary = data.diary;
-                if (diary) {
-                    document.getElementById("entryDate").innerText = `${date} 일기`;
-                    document.getElementById("diaryContent").innerText = diary.content || "일기 내용이 없습니다.";
-                    document.querySelector('.emotion-box p').innerText = `감정 분석 결과: ${diary.emotion || '분석 결과가 없습니다.'}`;
+        fetch(`${diaryDetailUrl}?date=${date}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    const diary = data.diary;
+                    if (diary) {
+                        document.getElementById("entryDate").innerText = `${date} 일기`;
+                        document.getElementById("diaryContent").innerText = diary.content || "일기 내용이 없습니다.";
+                        document.querySelector('.emotion-box p').innerText = `감정 분석 결과: ${diary.emotion || '분석 결과가 없습니다.'}`;
 
-                    // Populate the recommended movie list with links
-                    const movieList = document.getElementById("movieList");
-                    movieList.innerHTML = ''; // Clear any existing content
-                    diary.recommended_movies.forEach(movie => {
-                        if (movie.id) {  // Ensure each movie has a valid ID
-                            const movieItem = document.createElement('div');
-                            movieItem.classList.add('movie-item');
-                            movieItem.innerHTML = `
-                                <a href="/movies/${movie.id}/">
-                                    <img src="https://image.tmdb.org/t/p/w200${movie.poster_path}" alt="${movie.title}">
-                                    <h3>${movie.title}</h3>
-                                </a>
-                            `;
-                            movieList.appendChild(movieItem);
-                        }
-                    });
+                        // Populate the recommended movie list with links
+                        const movieList = document.getElementById("movieList");
+                        movieList.innerHTML = ''; // Clear any existing content
+                        diary.recommended_movies.forEach(movie => {
+                            if (movie.id) {  // Ensure each movie has a valid ID
+                                const movieItem = document.createElement('div');
+                                movieItem.classList.add('movie-item');
+                                movieItem.innerHTML = `
+                                    <a href="/movies/${movie.id}/">
+                                        <img src="https://image.tmdb.org/t/p/w200${movie.poster_path}" alt="${movie.title}">
+                                        <h3>${movie.title}</h3>
+                                    </a>
+                                `;
+                                movieList.appendChild(movieItem);
+                            }
+                        });
+
+                        // Update background based on emotion
+                        changeBackgroundByEmotion(diary.emotion);
+                    }
+                    document.getElementById("calendar").style.display = "none";
+                    document.getElementById("diaryEntry").style.display = "block";
                 }
-                document.getElementById("calendar").style.display = "none";
-                document.getElementById("diaryEntry").style.display = "block";
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching diary entry:", error);
-            alert("일기를 가져오는 데 실패했습니다.");
-        });
+            })
+            .catch(error => {
+                console.error("Error fetching diary entry:", error);
+                alert("일기를 가져오는 데 실패했습니다.");
+            });
+    }
+
+    function changeBackgroundByEmotion(emotion) {
+    const diaryEntry = document.querySelector('.diary-entry');
+    let imageUrl = "";
+
+    switch (emotion) {
+        case "슬픔":
+            imageUrl = "{% static 'images/슬픔.jpg' %}";
+            break;
+        case "공포":
+            imageUrl = "{% static 'images/공포.jpg' %}";
+            break;
+        case "분노":
+            imageUrl = "{% static 'images/분노.jpg' %}";
+            break;
+        case "평온":
+            imageUrl = "{% static 'images/평온.jpg' %}";
+            break;
+        case "기쁨":
+            imageUrl = "{% static 'images/기쁨.jpg' %}";
+            break;
+        default:
+            imageUrl = "{% static 'images/기쁨.jpg' %}";
+    }
+
+    // 배경 이미지를 diary-entry에만 적용
+    diaryEntry.style.backgroundImage = `url('${imageUrl}')`;
+    diaryEntry.style.backgroundSize = "cover"; // 화면에 꽉 차게
+    diaryEntry.style.backgroundPosition = "center"; // 중앙 정렬
+    diaryEntry.style.backgroundAttachment = "fixed"; // 고정 배경
 }
 
 
