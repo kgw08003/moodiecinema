@@ -12,10 +12,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, T
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from .forms import ReviewForm
-
-from django.http import JsonResponse
-
-
+from rest_framework.renderers import JSONRenderer
 
 class FeedbackViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
@@ -37,40 +34,6 @@ class FeedbackAnalysisView(APIView):
             'average_rating': avg_rating,
         }
         return Response(data)
-
-## 원본 코드 ##
-# class ReviewListView(ListView):
-#     model = Review
-#     template_name = 'moodiecinema/movie.html'
-#     context_object_name = 'reviews'
-
-#     def get_queryset(self):
-#         # 특정 영화의 리뷰만 필터링
-#         movie_id = self.kwargs.get('movie_id')
-#         return Review.objects.filter(movie__movie_id=movie_id)
-
-# class ReviewListView(ListView):
-#     model = Review
-#     template_name = 'moodiecinema/movie.html'
-#     context_object_name = 'reviews'
-
-#     def get_queryset(self):
-#         # 특정 영화의 리뷰만 필터링
-#         movie_id = self.kwargs.get('movie_id')
-#         queryset = Review.objects.filter(movie__movie_id=movie_id)
-
-#         # 정렬 옵션 받아오기
-#         sort_option = self.request.GET.get('sort', 'newest')
-#         if sort_option == 'highest_rating':
-#             queryset = queryset.order_by('-rating')
-#         elif sort_option == 'lowest_rating':
-#             queryset = queryset.order_by('rating')
-#         elif sort_option == 'most_likes':
-#             queryset = queryset.order_by('-like_count')
-#         else:  # 기본값으로 최신순 정렬
-#             queryset = queryset.order_by('-created_at')
-
-#         return queryset
 
 class ReviewListView(ListView):
     model = Review
@@ -193,25 +156,64 @@ class DislikeReviewView(APIView):
         review.save()
         return Response({'like_count': review.like_count, 'dislike_count': review.dislike_count}, status=status.HTTP_200_OK)
 
+# class ReviewReportAPIView(APIView):
+#     renderer_classes = [JSONRenderer]
+
+#     def post(self, request, review_id):
+#         review = get_object_or_404(Review, id=review_id)
+#         data = request.data  # JSON 데이터 받아오기
+#         report_reason = data.get('reason')
+
+#         # ReviewReport 생성 및 저장
+#         ReviewReport.objects.create(
+#             review=review,
+#             reported_by=request.user,  # 신고자
+#             reason=report_reason
+#         )
+#         return Response({"message": "리뷰가 신고되었습니다."})
 
 
-from rest_framework.renderers import JSONRenderer
-
-import json
 class ReviewReportAPIView(APIView):
-    renderer_classes = [JSONRenderer]
-
     def post(self, request, review_id):
-        # Review 객체를 가져옵니다.
         review = get_object_or_404(Review, id=review_id)
+        data = request.data
+        report_reason = data.get('reason')
 
-        # request.data를 사용하여 JSON 데이터를 읽습니다.
-        report_reason = request.data.get('reason')
+        # 신고 데이터 저장
+        ReviewReport.objects.create(
+            review=review,
+            reported_by=request.user,
+            reason=report_reason,
+        )
 
-        # 신고 처리 로직
-        review.reported_count += 1
+        # 신고 횟수 업데이트
         review.is_reported = True
-        # 신고 이유를 필요에 따라 저장합니다.
         review.save()
 
-        return Response({"message": "리뷰가 신고되었습니다."})
+        return Response({"message": "신고가 접수되었습니다."})
+
+
+
+
+
+
+from reviews.models import ReviewReport
+
+class ReportListView(UserPassesTestMixin, ListView):
+    model = ReviewReport
+    template_name = 'moodiecinema/reviews_report_list.html'
+    context_object_name = 'reports'
+
+    def test_func(self):
+        # 현재 사용자가 관리자 권한을 가지고 있는지 확인
+        return self.request.user.is_staff
+
+    def get_queryset(self):
+        return ReviewReport.objects.all().order_by('-reported_at')  # 최신 신고부터 표시
+    
+    def handle_no_permission(self):
+        # 권한이 없는 경우 리디렉션
+        from django.shortcuts import redirect
+        from django.contrib import messages
+        messages.error(self.request, "접근 권한이 없습니다.")
+        return redirect('home')  # 리디렉션할 URL

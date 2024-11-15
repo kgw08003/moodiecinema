@@ -125,9 +125,9 @@
                     {% csrf_token %}
                     <input type="hidden" id="review-id" name="review_id">
                     
-                    <label><input type="radio" name="report_reason" value="스팸" required> 스팸</label><br>
-                    <label><input type="radio" name="report_reason" value="부적절한 내용"> 부적절한 내용</label><br>
-                    <label><input type="radio" name="report_reason" value="거짓 정보"> 거짓 정보</label><br>
+                    <label><input type="radio" name="report_reason" value="spam" required> 도배성 게시물</label><br>
+                    <label><input type="radio" name="report_reason" value="inappropriate"> 부적절한 내용</label><br>
+                    <label><input type="radio" name="report_reason" value="false_info"> 거짓 정보</label><br>
                     
                     <button type="button" onclick="submitReport()">신고 제출</button>
                 </form>

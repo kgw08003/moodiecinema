@@ -35,3 +35,22 @@ class ReviewLike(models.Model):
 
     class Meta:
         unique_together = ('review', 'user')  # 한 사용자당 하나의 리뷰에 대해 한 번만 반응 가능
+
+
+class ReviewReport(models.Model):
+    REVIEW_REPORT_REASONS = [
+        ('spam', '도배성 게시물'),
+        ('inappropriate', '부적절한 내용'),
+        ('false_info', '거짓 정보'),
+    ]
+
+    review = models.ForeignKey('Review', on_delete=models.CASCADE, related_name='reports')  # 신고된 리뷰
+    reported_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # 신고자
+    reason = models.CharField(max_length=50, choices=REVIEW_REPORT_REASONS)  # 신고 사유
+    reported_at = models.DateTimeField(auto_now_add=True)  # 신고 일시
+
+    def __str__(self):
+        return f"Report by {self.reported_by} on Review {self.review.id}"
+
+    
+    

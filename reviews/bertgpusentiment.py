@@ -37,7 +37,7 @@ def load_model():
     model = BERTGRUSentiment(bert, hidden_dim=256, output_dim=1, n_layers=2, bidirectional=True, dropout=0.25)
 
     model_path = os.path.join(os.path.dirname(__file__), 'tut6-model.pt')
-    model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'), weights_only=True))
+    model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
     model.eval()
     return model
 
