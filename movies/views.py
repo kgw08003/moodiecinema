@@ -100,3 +100,6 @@ class MovieDetailView(TemplateView):
             "with_genres": ",".join(map(str, genre_ids))
         })
         return response.json().get("results", [])
+    
+    
+    
