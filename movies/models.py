@@ -32,3 +32,4 @@ class Movies(models.Model):
                 movie.poster_path = movie_data.get('poster_path', '')
                 movie.save()
         return movie
+

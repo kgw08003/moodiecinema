@@ -1,24 +1,32 @@
+a {
+    color: #fff; /* 모든 링크를 흰색으로 설정 /
+    text-decoration: none; / 밑줄 제거 */
+}
 body {
     font-family: Arial, sans-serif;
     background-color: #111;
     color: #fff;
+    margin: 0;
+    padding: 0;
 }
 
 .movie-detail-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 20px;
+}
+
+.movie-header {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    padding: 20px 0;
+    border-bottom: 2px solid #333;
 }
 
 .movie-poster img {
     border-radius: 8px;
-    max-width: 100%;
-}
-
-.movie-info {
-    margin-top: 20px;
-    text-align: center;
+    max-width: 300px;
 }
 
 .movie-info h1 {
@@ -31,85 +39,98 @@ body {
     margin: 10px 0;
 }
 
-.additional-info {
+.director-item {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    margin-top: 20px; 
+}
+
+.director-item img {
+    width: 150px; 
+    height: 225px; 
+    border-radius: 8px;
+    margin-bottom: 10px; 
+    object-fit: cover;
+}
+
+.cast-list-container {
     margin-top: 30px;
     text-align: center;
 }
 
-.additional-info h3 {
-    color: #f5c518;
-    font-size: 1.5em;
-}
-
-.booking-link {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #f5c518;
-    color: #111;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
+.cast-slider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .cast-list {
-    margin-top: 40px;
+    display: flex;
+    gap: 30px;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+.cast-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+    width: 150px;
 }
 
-.cast-list h2 {
-    font-size: 1.8em;
-    color: #f5c518;
+.cast-item img {
+    width: 100px;
+    height: 150px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    object-fit: cover;
 }
 
-.cast-list ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.cast-list li {
-    font-size: 1.2em;
-    margin: 5px 0;
-}
-
-.similar-movies {
+.youtube-videos-container {
     margin-top: 50px;
-    width: 100%;
     text-align: center;
 }
 
-.similar-movies h2 {
-    font-size: 1.8em;
-    color: #f5c518;
+.similar-movies-container {
+    margin-top: 50px;
+    text-align: center;
 }
 
-.similar-movie-grid {
+.slider-wrapper {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.horizontal-scroll {
+    display: flex;
     gap: 20px;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
 }
 
-.similar-movie-item {
-    max-width: 150px;
-    text-align: center;
+.slider-container {
+    display: flex;
+    transition: transform 0.3s ease;
 }
 
-.similar-movie-item img {
-    width: 100%;
-    border-radius: 8px;
-    transition: transform 0.3s;
+.scroll-button {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 2em;
+    border-radius: 50%;
 }
 
-.similar-movie-item img:hover {
-    transform: scale(1.05);
+.scroll-button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
-.similar-movie-item p {
-    margin-top: 10px;
-    color: #ccc;
-    font-size: 1em;
-}
 
 /* movies.css 파일에 추가 */
 .reviews-section {

@@ -18,3 +18,12 @@ lib/
 .env
 
 tut6-model.pt
+
+# 환경 변수 파일 무시
+.env
+
+# moodiecinema 폴더 내 tut6-model.pt 파일 무시
+moodiecinema/tut6-model.pt
+
+# moodiecinema 폴더 내 모든 .pt 파일 무시
+moodiecinema/*.pt
