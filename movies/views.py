@@ -5,7 +5,7 @@ from reviews.views import ReviewListView, ReviewCreateView
 from .models import Movies
 
 class MovieDetailView(TemplateView):
-    template_name = 'moodiecine/movies.html'
+    template_name = 'moodiecinema/movies.html'
     api_key = '5f0eb3027f1b131897e4dcbe057e0931'
     base_url = 'https://api.themoviedb.org/3/movie/'
 
@@ -24,7 +24,7 @@ class MovieDetailView(TemplateView):
 
         # 데이터 구성
         context['movie'] = movie_data
-        context['cast'] = credits_data.get('cast', [])[:5] if credits_data else []
+        context['cast'] = credits_data.get('cast', []) if credits_data else []
         context['director'] = credits_data.get('director')
         
         genre_ids = [genre['id'] for genre in movie_data.get('genres', [])]
@@ -33,18 +33,31 @@ class MovieDetailView(TemplateView):
         youtube_videos = [video for video in videos_data.get('results', []) if video['site'] == 'YouTube']
         context['youtube_trailers'] = youtube_videos[:2] if youtube_videos else None
 
-        # TMDB 리뷰
-        tmdb_reviews_response = requests.get(f'{self.base_url}{movie_id}/reviews', params={
-            'api_key': self.api_key,
-            'language': 'en-US'
-        })
+        # TMDb 영어 리뷰 가져오기
+        tmdb_reviews_response = requests.get(f'{self.base_url}{movie_id}/reviews?api_key={self.api_key}&language=en-US')
+
         if tmdb_reviews_response.status_code == 200:
-            context['tmdb_reviews'] = tmdb_reviews_response.json().get('results', [])
+            tmdb_reviews = tmdb_reviews_response.json().get('results', [])
+            
+            # 정렬 옵션 가져오기
+            sort_option = self.request.GET.get('sort_tmdb', 'newest')
+            
+            # 정렬 옵션에 따른 TMDb 리뷰 정렬
+            if sort_option == 'highest_rating':
+                tmdb_reviews = sorted(tmdb_reviews, key=lambda x: x['author_details'].get('rating', 0), reverse=True)
+            elif sort_option == 'lowest_rating':
+                tmdb_reviews = sorted(tmdb_reviews, key=lambda x: x['author_details'].get('rating', 0))
+            else:  # 최신순
+                tmdb_reviews = sorted(tmdb_reviews, key=lambda x: x['created_at'], reverse=True)
+            
+            context['tmdb_reviews'] = tmdb_reviews
         else:
             context['tmdb_reviews'] = []
 
+
         # 사용자 리뷰
         review_list_view = ReviewListView()
+        review_list_view.request = self.request
         review_list_view.kwargs = {'movie_id': movie_id}
         context['reviews'] = review_list_view.get_queryset()
         context['review_form'] = ReviewCreateView.form_class()
@@ -101,7 +114,7 @@ class MovieDetailView(TemplateView):
 
 
 class ActorMoviesView(TemplateView):
-    template_name = 'moodiecine/actor_movies.html'
+    template_name = 'moodiecinema/actor_movies.html'
     api_key = '5f0eb3027f1b131897e4dcbe057e0931'
 
     def get_context_data(self, **kwargs):
@@ -138,7 +151,7 @@ class ActorMoviesView(TemplateView):
 
 
 class DirectorMoviesView(TemplateView):
-    template_name = 'moodiecine/director_movies.html'
+    template_name = 'moodiecinema/director_movies.html'
     api_key = '5f0eb3027f1b131897e4dcbe057e0931'
 
     def get_context_data(self, **kwargs):

@@ -1,6 +1,6 @@
 # review/urls.py
 from django.urls import path
-from .views import ReviewListView, ReviewCreateView,ReviewUpdateView,ReviewDeleteView,ReviewsManageView,LikeReviewView,DislikeReviewView
+from .views import ReviewListView, ReviewCreateView,ReviewUpdateView,ReviewDeleteView,ReviewsManageView,LikeReviewView,DislikeReviewView, ReviewReportAPIView,ReportListView
 
 urlpatterns = [
     path('movie/<int:movie_id>/reviews/', ReviewListView.as_view(), name='review_list'),  # 리뷰 리스트
@@ -10,4 +10,6 @@ urlpatterns = [
     path('profile/reviews/manage/', ReviewsManageView.as_view(), name='reviews_manage'),
     path('review/<int:review_id>/like/', LikeReviewView.as_view(), name='like_review'), 
     path('review/<int:review_id>/dislike/', DislikeReviewView.as_view(), name='dislike_review'),  
+    path('review/<int:review_id>/report/', ReviewReportAPIView.as_view(), name='report_review'),#사용자->리뷰 신고
+    path('reports/', ReportListView.as_view(), name='report_list'), #관리자->리뷰 신고 목록 조회
 ]
