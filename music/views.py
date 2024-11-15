@@ -1,7 +1,7 @@
 from django.views import View
 from django.shortcuts import render, redirect
 from django.conf import settings
-from django.utils import timezone  # 현재 날짜를 가져오기 위해 임포트
+from django.utils import timezone
 import requests
 from diary.models import Diary
 
@@ -9,9 +9,9 @@ class MusicRecommendationView(View):
     def get(self, request):
         # 오늘 날짜의 일기에서 감정 분석 결과 가져오기
         today = timezone.now().date()  # 오늘 날짜
-        
-        # created_at이 DateField인 경우
-        latest_diary = Diary.objects.filter(user=request.user, created_at__year=today.year, created_at__month=today.month, created_at__day=today.day).first()
+
+        # created_at 필드가 DateField일 경우, created_at=today로 비교
+        latest_diary = Diary.objects.filter(user=request.user, created_at=today).first()
 
         if not latest_diary:
             return redirect('diary:create')  # 오늘 날짜의 일기가 없으면 일기 작성 페이지로 리디렉션
