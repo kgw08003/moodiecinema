@@ -24,7 +24,7 @@ class MovieDetailView(TemplateView):
 
         # 데이터 구성
         context['movie'] = movie_data
-        context['cast'] = credits_data.get('cast', [])[:5] if credits_data else []
+        context['cast'] = credits_data.get('cast', []) if credits_data else []
         context['director'] = credits_data.get('director')
         
         genre_ids = [genre['id'] for genre in movie_data.get('genres', [])]
