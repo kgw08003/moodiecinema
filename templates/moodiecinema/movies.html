@@ -24,43 +24,67 @@
             <p class="overview">{{ movie.overview }}</p>
         </div>
 
+        <!-- 출연진 슬라이더 -->
+    <section class="cast-list-container">
+        <h2>출연진</h2>
+        <div class="cast-slider">
+            <button class="scroll-button left" onclick="scrollCast('left')">&lt;</button>
+            <div class="cast-list" id="cast-slider">
+                {% for actor in cast %}
+                    <div class="cast-item">
+                        <a href="{% url 'actor_movies' actor.id %}">
+                            <img src="{% if actor.profile_image_url %}{{ actor.profile_image_url }}{% else %}{% static 'images/no-image.png' %}{% endif %}" alt="{{ actor.name }}" width="50" height="75">
+                            <span>{{ actor.name }}</span> <em>역할:</em> {{ actor.character }}
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="scroll-button right" onclick="scrollCast('right')">&gt;</button>
+        </div>
+    </section>
+
+    <!-- 예고편 -->
+    <section class="youtube-videos-container">
         <div class="additional-info">
-            <h3>예고편 보기</h3>
+            <h2>예고편</h2>
             {% if youtube_trailers %}
-            {% for video in youtube_trailers %}
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video.key }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            {% endfor %}
+                {% for video in youtube_trailers %}
+                    <iframe width="560" height="315" 
+                            src="https://www.youtube.com/embed/{{ video.key }}" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen 
+                            onerror="handleVideoError(this)">
+                    </iframe>
+                {% endfor %}
             {% else %}
                 <h3 style="color:white; margin:20px;">예고편이 없습니다.</h3>
             {% endif %}
             <h3>예매 링크</h3>
             <a href="#">예매하기</a>
         </div>
-
-        <section class="cast-list">
-            <h2>출연진</h2>
-            <ul>
-                {% for actor in cast %}
-                    <li><span>{{ actor.name }}</span> <em>역할:</em> {{ actor.character }}</li>
-                {% endfor %}
-            </ul>
-        </section>
-
-        <section class="similar-movies">
-            <h2 style="margin:20px;">유사한 영화</h2>
-            <div class="similar-movie-grid">
-                {% for similar_movie in similar_movies %}
-                <div class="similar-movie-item">
-                    <a href="{% url 'movie_detail' similar_movie.id %}">
-                        <img src="https://image.tmdb.org/t/p/w300{{ similar_movie.poster_path }}" alt="{{ similar_movie.title }}">
-                        <p>{{ similar_movie.title }}</p>
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
     </section>
-    </div>
+
+    <!-- 유사한 영화 슬라이더 -->
+    <section class="similar-movies-container">
+        <h2>유사한 영화</h2>
+        <div class="slider-wrapper">
+            <button class="scroll-button left" onclick="slideLeft()"><</button>
+            <div class="horizontal-scroll">
+                <div class="slider-container" id="similar-slider">
+                    {% for similar_movie in similar_movies %}
+                        <div class="slider-item">
+                            <a href="{% url 'movie_detail' similar_movie.id %}">
+                                <img src="https://image.tmdb.org/t/p/w300{{ similar_movie.poster_path }}" alt="{{ similar_movie.title }}">
+                                <p>{{ similar_movie.title }}</p>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <button class="scroll-button right" onclick="slideRight()">></button>
+        </div>
+    </section>
 
     <script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
