@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'movies',
     'reviews',
     'genres',
+
 ]
 
 MIDDLEWARE = [
@@ -165,3 +166,9 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 기본 설정
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
+
+# 스포티파이 음악 설정
+load_dotenv()
+
+SPOTIFY_CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
+SPOTIFY_CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
