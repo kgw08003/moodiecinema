@@ -93,5 +93,46 @@
     window.location.href = "{% url 'diary' %}";  // 일기장 페이지로 이동
   }
 </script>
+<script>
+  async function scrollMovies(category, direction) {
+    const list = document.getElementById(category);
+    const scrollAmount = 200;  // 스크롤 양을 설정합니다.
+    
+    if (direction === 'left') {
+        list.scrollLeft -= scrollAmount;  // 왼쪽으로 스크롤
+    } else if (direction === 'right') {
+        list.scrollLeft += scrollAmount;  // 오른쪽으로 스크롤
+    }
 
+    // 현재 스크롤 위치가 끝에 도달하면 다음 페이지의 영화를 불러옵니다.
+    const currentPage = parseInt(list.getAttribute("data-page"));
+    const maxScrollLeft = list.scrollWidth - list.clientWidth;
+    if (list.scrollLeft >= maxScrollLeft - 10) {
+        const nextPage = currentPage + 1;
+        const response = await fetch(`/load_more_movies/${category}/${nextPage}`);
+        if (response.ok) {
+            const movies = await response.json();
+            movies.forEach(movie => {
+                const item = document.createElement("div");
+                item.className = "item";
+                item.innerHTML = `
+                    <a href="/movie_detail/${movie.id}">
+                        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title} 포스터">
+                        <div class="play">
+                            <span class="fa fa-play"></span>
+                        </div>
+                        <h4>${movie.title}</h4>
+                        <p>${movie.overview}</p>
+                    </a>`;
+                list.appendChild(item);
+            });
+            list.setAttribute("data-page", nextPage);
+        }
+    }
+  }
+
+  function hidePreview() {
+    document.getElementById("diary-preview").style.display = "none";
+  }
+</script>
 {% endblock %}
