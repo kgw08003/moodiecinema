@@ -5,7 +5,7 @@ from reviews.views import ReviewListView, ReviewCreateView
 from .models import Movies
 
 class MovieDetailView(TemplateView):
-    template_name = 'moodiecine/movies.html'
+    template_name = 'moodiecinema/movies.html'
     api_key = '5f0eb3027f1b131897e4dcbe057e0931'
     base_url = 'https://api.themoviedb.org/3/movie/'
 
@@ -101,7 +101,7 @@ class MovieDetailView(TemplateView):
 
 
 class ActorMoviesView(TemplateView):
-    template_name = 'moodiecine/actor_movies.html'
+    template_name = 'moodiecinema/actor_movies.html'
     api_key = '5f0eb3027f1b131897e4dcbe057e0931'
 
     def get_context_data(self, **kwargs):
@@ -138,7 +138,7 @@ class ActorMoviesView(TemplateView):
 
 
 class DirectorMoviesView(TemplateView):
-    template_name = 'moodiecine/director_movies.html'
+    template_name = 'moodiecinema/director_movies.html'
     api_key = '5f0eb3027f1b131897e4dcbe057e0931'
 
     def get_context_data(self, **kwargs):
