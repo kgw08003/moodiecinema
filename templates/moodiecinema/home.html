@@ -12,9 +12,9 @@
 <div class="movie-lists">
   <h2>카테고리</h2>
   <div class="list-container">
-    <button class="prev" onclick="scrollMovies('popular', -200)">&#10094;</button>
-    <div class="list" id="popular">
-      {% for movie in popular_movies|slice:":6" %}
+    <button class="scroll-button left" onclick="scrollMovies('popular', 'left')">&lt;</button>
+    <div class="list" id="popular" data-page="1">
+      {% for movie in popular_movies %}
       <div class="item">
         <a href="{% url 'movie_detail' movie.id %}">
           <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} 포스터">
@@ -27,17 +27,16 @@
       </div>
       {% endfor %}
     </div>
-    <button class="next" onclick="scrollMovies('popular', 200)">&#10095;</button>
+    <button class="scroll-button right" onclick="scrollMovies('popular', 'right')">&gt;</button>
   </div>
 </div>
 
-<!-- 카테고리: 지금 뜨는 콘텐츠 -->
 <div class="movie-lists">
   <h2>지금 뜨는 콘텐츠</h2>
   <div class="list-container">
-    <button class="prev" onclick="scrollMovies('trending', -200)">&#10094;</button>
-    <div class="list" id="trending">
-      {% for movie in trending_movies|slice:":6" %}
+    <button class="scroll-button left" onclick="scrollMovies('trending', 'left')">&lt;</button>
+    <div class="list" id="trending" data-page="1">
+      {% for movie in trending_movies %}
       <div class="item">
         <a href="{% url 'movie_detail' movie.id %}">
           <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} 포스터">
@@ -50,17 +49,16 @@
       </div>
       {% endfor %}
     </div>
-    <button class="next" onclick="scrollMovies('trending', 200)">&#10095;</button>
+    <button class="scroll-button right" onclick="scrollMovies('trending', 'right')">&gt;</button>
   </div>
 </div>
 
-<!-- 카테고리: 추천 콘텐츠 -->
 <div class="movie-lists">
   <h2>회원님을 위해 엄선한 오늘의 콘텐츠</h2>
   <div class="list-container">
-    <button class="prev" onclick="scrollMovies('recommended', -200)">&#10094;</button>
-    <div class="list" id="recommended">
-      {% for movie in recommended_movies|slice:":6" %}
+    <button class="scroll-button left" onclick="scrollMovies('recommended', 'left')">&lt;</button>
+    <div class="list" id="recommended" data-page="1">
+      {% for movie in recommended_movies %}
       <div class="item">
         <a href="{% url 'movie_detail' movie.id %}">
           <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} 포스터">
@@ -73,7 +71,7 @@
       </div>
       {% endfor %}
     </div>
-    <button class="next" onclick="scrollMovies('recommended', 200)">&#10095;</button>
+    <button class="scroll-button right" onclick="scrollMovies('recommended', 'right')">&gt;</button>
   </div>
 </div>
 
@@ -88,23 +86,20 @@
 </div>
 
 <script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
-<script>
-  function goToDiary() {
-    window.location.href = "{% url 'diary' %}";  // 일기장 페이지로 이동
-  }
-</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   async function scrollMovies(category, direction) {
     const list = document.getElementById(category);
-    const scrollAmount = 200;  // 스크롤 양을 설정합니다.
+    const scrollAmount = 200;
     
+    // 스크롤 방향에 따라 스크롤 이동
     if (direction === 'left') {
-        list.scrollLeft -= scrollAmount;  // 왼쪽으로 스크롤
+        list.scrollLeft -= scrollAmount;
     } else if (direction === 'right') {
-        list.scrollLeft += scrollAmount;  // 오른쪽으로 스크롤
+        list.scrollLeft += scrollAmount;
     }
 
-    // 현재 스크롤 위치가 끝에 도달하면 다음 페이지의 영화를 불러옵니다.
+    // 스크롤이 끝에 도달하면 다음 페이지 영화를 불러옴
     const currentPage = parseInt(list.getAttribute("data-page"));
     const maxScrollLeft = list.scrollWidth - list.clientWidth;
     if (list.scrollLeft >= maxScrollLeft - 10) {
