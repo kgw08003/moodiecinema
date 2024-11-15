@@ -12,9 +12,9 @@
 <div class="movie-lists">
   <h2>카테고리</h2>
   <div class="list-container">
-    <button class="prev" onclick="scrollMovies('popular', -200)">&#10094;</button>
-    <div class="list" id="popular">
-      {% for movie in popular_movies|slice:":6" %}
+    <button class="scroll-button left" onclick="scrollMovies('popular', 'left')">&lt;</button>
+    <div class="list" id="popular" data-page="1">
+      {% for movie in popular_movies %}
       <div class="item">
         <a href="{% url 'movie_detail' movie.id %}">
           <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} 포스터">
@@ -27,17 +27,16 @@
       </div>
       {% endfor %}
     </div>
-    <button class="next" onclick="scrollMovies('popular', 200)">&#10095;</button>
+    <button class="scroll-button right" onclick="scrollMovies('popular', 'right')">&gt;</button>
   </div>
 </div>
 
-<!-- 카테고리: 지금 뜨는 콘텐츠 -->
 <div class="movie-lists">
   <h2>지금 뜨는 콘텐츠</h2>
   <div class="list-container">
-    <button class="prev" onclick="scrollMovies('trending', -200)">&#10094;</button>
-    <div class="list" id="trending">
-      {% for movie in trending_movies|slice:":6" %}
+    <button class="scroll-button left" onclick="scrollMovies('trending', 'left')">&lt;</button>
+    <div class="list" id="trending" data-page="1">
+      {% for movie in trending_movies %}
       <div class="item">
         <a href="{% url 'movie_detail' movie.id %}">
           <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} 포스터">
@@ -50,17 +49,16 @@
       </div>
       {% endfor %}
     </div>
-    <button class="next" onclick="scrollMovies('trending', 200)">&#10095;</button>
+    <button class="scroll-button right" onclick="scrollMovies('trending', 'right')">&gt;</button>
   </div>
 </div>
 
-<!-- 카테고리: 추천 콘텐츠 -->
 <div class="movie-lists">
   <h2>회원님을 위해 엄선한 오늘의 콘텐츠</h2>
   <div class="list-container">
-    <button class="prev" onclick="scrollMovies('recommended', -200)">&#10094;</button>
-    <div class="list" id="recommended">
-      {% for movie in recommended_movies|slice:":6" %}
+    <button class="scroll-button left" onclick="scrollMovies('recommended', 'left')">&lt;</button>
+    <div class="list" id="recommended" data-page="1">
+      {% for movie in recommended_movies %}
       <div class="item">
         <a href="{% url 'movie_detail' movie.id %}">
           <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} 포스터">
@@ -73,7 +71,7 @@
       </div>
       {% endfor %}
     </div>
-    <button class="next" onclick="scrollMovies('recommended', 200)">&#10095;</button>
+    <button class="scroll-button right" onclick="scrollMovies('recommended', 'right')">&gt;</button>
   </div>
 </div>
 
@@ -83,15 +81,53 @@
     <p>일기를 작성하시면 해당 일기에 감정에 맞는 영화를 추천드려요!</p>
   </div>
   <div class="button">
-    <button type="button" onclick="hidePreview()">일기장 이동</button>
+    <button type="button" onclick="goToDiary()">일기장 이동</button>
   </div>
-</div>
 </div>
 
 <script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+  async function scrollMovies(category, direction) {
+    const list = document.getElementById(category);
+    const scrollAmount = 200;
+    
+    // 스크롤 방향에 따라 스크롤 이동
+    if (direction === 'left') {
+        list.scrollLeft -= scrollAmount;
+    } else if (direction === 'right') {
+        list.scrollLeft += scrollAmount;
+    }
+
+    // 스크롤이 끝에 도달하면 다음 페이지 영화를 불러옴
+    const currentPage = parseInt(list.getAttribute("data-page"));
+    const maxScrollLeft = list.scrollWidth - list.clientWidth;
+    if (list.scrollLeft >= maxScrollLeft - 10) {
+        const nextPage = currentPage + 1;
+        const response = await fetch(`/load_more_movies/${category}/${nextPage}`);
+        if (response.ok) {
+            const movies = await response.json();
+            movies.forEach(movie => {
+                const item = document.createElement("div");
+                item.className = "item";
+                item.innerHTML = `
+                    <a href="/movie_detail/${movie.id}">
+                        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title} 포스터">
+                        <div class="play">
+                            <span class="fa fa-play"></span>
+                        </div>
+                        <h4>${movie.title}</h4>
+                        <p>${movie.overview}</p>
+                    </a>`;
+                list.appendChild(item);
+            });
+            list.setAttribute("data-page", nextPage);
+        }
+    }
+  }
+
   function hidePreview() {
-    document.getElementById("diary-preview").style.display = "none"; // preview 요소 숨기기
+    document.getElementById("diary-preview").style.display = "none";
   }
 </script>
 {% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'moodiecinema/base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'director.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="director-profile-container">
+    <div class="director-info">
+        <img src="{{ person.profile_image_url }}" alt="{{ person.name }}">
+        <h1>{{ person.name }}</h1>
+    </div>
+
+    <!-- 감독 작품 섹션 -->
+    <section class="director-movies-list">
+        <h2>{{ person.name }}님의 감독 작품들</h2>
+        <div class="movies-grid">
+            {% for movie in director_movies %}
+                <div class="movie-item">
+                    <a href="{% url 'movie_detail' movie.id %}">
+                        <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}" alt="{{ movie.title }}">
+                        <p>{{ movie.title }}</p>
+                        <p>{{ movie.release_date }}</p>
+                    </a>
+                </div>
+            {% empty %}
+                <p>감독한 영화가 없습니다.</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

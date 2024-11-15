@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>리뷰 분석 결과</h1>
+    <p>긍정 리뷰: {{ positive_reviews }}</p>
+    <p>중립 리뷰: {{ neutral_reviews }}</p>
+    <p>부정 리뷰: {{ negative_reviews }}</p>
+    <p>평균 평점: {{ average_rating }}</p>
+
+    <!-- Chart.js 그래프 -->
+    <div id="sentiment-chart" style="width: 400px; height: 400px;">
+        <canvas id="chart"></canvas>
+    </div>
+
+    <script>
+        // Django 템플릿 변수를 JavaScript에서 사용할 수 있도록 숫자로 변환
+        const positiveReviews = Number("{{ positive_reviews }}");
+        const neutralReviews = Number("{{ neutral_reviews }}");
+        const negativeReviews = Number("{{ negative_reviews }}");
+
+        const data = {
+            labels: ["긍정", "중립", "부정"],
+            datasets: [{
+                label: "감정 분포",
+                data: [positiveReviews, neutralReviews, negativeReviews],
+                backgroundColor: ["#4CAF50", "#FFC107", "#F44336"]
+            }]
+        };
+
+        const config = {
+            type: "pie",
+            data: data
+        };
+
+        // Chart 객체 생성
+        new Chart(document.getElementById("chart"), config);
+    </script>
+</body>
+</html>

@@ -8,61 +8,185 @@
     <meta name="csrf-token" content="{{ csrf_token }}">
 {% endblock %}
 
-<body>
+<body data-movie-id="{{ movie.id }}">
     <section class="movie-detail-container">
-        <div class="movie-poster">
-            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
-        </div>
-        <div class="movie-info">
-            <h1>{{ movie.title }}</h1>
-            <p class="release-date"><strong>개봉일:</strong> {{ movie.release_date }}</p>
-            <p class="genres"><strong>장르:</strong> 
-                {% for genre in movie.genres %}
-                    {{ genre.name }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </p>
-            <p class="rating"><strong>평점:</strong> {{ movie.vote_average }} / 10</p>
-            <p class="overview">{{ movie.overview }}</p>
-        </div>
+        <div class="movie-header">
+            <!-- 영화 포스터 -->
+            <div class="movie-poster">
+                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
+            </div>
 
+            <!-- 영화 정보 -->
+            <div class="movie-info">
+                <h1>{{ movie.title }}</h1>
+                <p class="release-date"><strong>개봉일:</strong> {{ movie.release_date }}</p>
+                <p class="genres"><strong>장르:</strong>
+                    {% for genre in movie.genres %}
+                        {{ genre.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <p class="rating"><strong>평점:</strong> {{ movie.vote_average }} / 10</p>
+                <p class="overview"><strong>개요:</strong> {{ movie.overview|default:"개요 없음" }}</p>
+                
+                <h2>감독</h2>
+                {% if director %}
+                    <div class="director-item">
+                        <a href="{% url 'director_movies' director.id %}">
+                            <img src="{% if director.profile_path %}https://image.tmdb.org/t/p/w200{{ director.profile_path }}{% else %}{% static 'images/default-profile.png' %}{% endif %}" alt="{{ director.name }}">
+                            <span>{{ director.name }}</span>
+                        </a>
+                    </div>
+                {% else %}
+                    <p>감독 정보가 없습니다.</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+        <!-- 출연진 슬라이더 -->
+    <section class="cast-list-container">
+        <h2>출연진</h2>
+        <div class="cast-slider">
+            <button class="scroll-button left" onclick="scrollCast('left')">&lt;</button>
+            <div class="cast-list" id="cast-slider">
+                {% for actor in cast %}
+                    <div class="cast-item">
+                        <a href="{% url 'actor_movies' actor.id %}">
+                            <img src="{% if actor.profile_image_url %}{{ actor.profile_image_url }}{% else %}{% static 'images/no-image.png' %}{% endif %}" alt="{{ actor.name }}" width="50" height="75">
+                            <span>{{ actor.name }}</span> <em>역할:</em> {{ actor.character }}
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+            <button class="scroll-button right" onclick="scrollCast('right')">&gt;</button>
+        </div>
+    </section>
+
+    <!-- 예고편 -->
+    <section class="youtube-videos-container">
         <div class="additional-info">
-            <h3>예고편 보기</h3>
+            <h2>예고편</h2>
             {% if youtube_trailers %}
-            {% for video in youtube_trailers %}
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video.key }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            {% endfor %}
+                {% for video in youtube_trailers %}
+                    <iframe width="560" height="315" 
+                            src="https://www.youtube.com/embed/{{ video.key }}" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen 
+                            onerror="handleVideoError(this)">
+                    </iframe>
+                {% endfor %}
             {% else %}
                 <h3 style="color:white; margin:20px;">예고편이 없습니다.</h3>
             {% endif %}
             <h3>예매 링크</h3>
             <a href="#">예매하기</a>
         </div>
-
-        <section class="cast-list">
-            <h2>출연진</h2>
-            <ul>
-                {% for actor in cast %}
-                    <li><span>{{ actor.name }}</span> <em>역할:</em> {{ actor.character }}</li>
-                {% endfor %}
-            </ul>
-        </section>
-
-        <section class="similar-movies">
-            <h2 style="margin:20px;">유사한 영화</h2>
-            <div class="similar-movie-grid">
-                {% for similar_movie in similar_movies %}
-                <div class="similar-movie-item">
-                    <a href="{% url 'movie_detail' similar_movie.id %}">
-                        <img src="https://image.tmdb.org/t/p/w300{{ similar_movie.poster_path }}" alt="{{ similar_movie.title }}">
-                        <p>{{ similar_movie.title }}</p>
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
     </section>
-    </div>
     
+    
+
+    <!-- 유사한 영화 슬라이더 -->
+    <section class="similar-movies-container">
+        <h2>유사한 영화</h2>
+        <div class="slider-wrapper">
+            <button class="scroll-button left" onclick="slideLeft()"><</button>
+            <div class="horizontal-scroll">
+                <div class="slider-container" id="similar-slider">
+                    {% for similar_movie in similar_movies %}
+                        <div class="slider-item">
+                            <a href="{% url 'movie_detail' similar_movie.id %}">
+                                <img src="https://image.tmdb.org/t/p/w300{{ similar_movie.poster_path }}" alt="{{ similar_movie.title }}">
+                                <p>{{ similar_movie.title }}</p>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <button class="scroll-button right" onclick="slideRight()">></button>
+        </div>
+    </section>
+
+    <script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let currentIndex = 0;
+        const itemWidth = 300; // 아이템의 너비 (슬라이드 한 번에 이동할 거리)
+        const slider = document.getElementById('similar-slider');
+        const castList = document.getElementById('cast-slider');
+        const items = slider.children;
+        const castItems = castList.children;
+
+        // 유사 영화 슬라이더 왼쪽으로 이동
+        function slideLeft() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                slider.style.transform = `translateX(-${currentIndex * itemWidth}px)`; // backtick 사용
+            }
+        }
+        
+        // 유사 영화 슬라이더 오른쪽으로 이동
+        function slideRight() {
+            if (currentIndex < items.length - 3) {
+                currentIndex++;
+                slider.style.transform = `translateX(-${currentIndex * itemWidth}px)`; // backtick 사용
+            }
+        }
+
+        // 출연진 슬라이더 왼쪽으로 이동
+        function scrollCast(direction) {
+            const list = document.getElementById('cast-slider');
+            const totalItems = castItems.length;
+            if (direction === 'left') {
+                list.scrollLeft -= itemWidth;
+            } else if (direction === 'right') {
+                list.scrollLeft += itemWidth;
+            }
+        }
+
+        function handleVideoError(iframe) {
+            // 오류가 발생하면 예고편이 없다는 메시지를 표시
+            const trailerSection = iframe.closest('.additional-info');
+            const noTrailerMessage = trailerSection.querySelector('h3');
+            noTrailerMessage.textContent = '예고편이 없습니다.';
+            noTrailerMessage.style.color = 'white';
+            noTrailerMessage.style.margin = '20px';
+        }
+    </script>
+    <script>
+        function likeReview(reviewId) {
+            fetch(`/reviews/review/${reviewId}/like/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById(`like-count-${reviewId}`).innerText = data.like_count;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        
+        function dislikeReview(reviewId) {
+            fetch(`/reviews/review/${reviewId}/dislike/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById(`dislike-count-${reviewId}`).innerText = data.dislike_count;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+
+
+    <!-- 리뷰 섹션 추가 -->
     <section class="reviews-section">
         <h2 class="reviews-title">리뷰</h2>
 

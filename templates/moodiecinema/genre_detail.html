@@ -1,0 +1,42 @@
+{% extends 'moodiecinema/base.html' %}
+{% load static %}
+
+{% block title %}{{ genre_name }} 장르{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'genre_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<h2 class="genre-title">{{ genre_name }} 장르의 영화 목록</h2>
+    <div class="movie-list">
+        {% for movie in movies %}
+        <div class="movie-item">
+            <a href="{% url 'movie_detail' movie.id %}">
+                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
+                <h3>{{ movie.title }}</h3>
+                <p>{{ movie.overview|truncatechars:100 }}</p>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- 페이지 네비게이션 -->
+    <div class="pagination">
+      {% if current_page > 1 %}
+          <a href="?page=1">처음</a>
+          <a href="?page={{ current_page|add:-1 }}">이전</a>
+      {% endif %}
+
+      <span>페이지 {{ current_page }} / {{ total_pages }}</span>
+
+      {% if current_page < total_pages %}
+          <a href="?page={{ current_page|add:1 }}">다음</a>
+          <a href="?page={{ total_pages }}">마지막</a>
+      {% endif %}
+    </div>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,106 @@
+a {
+    color: #fff; /* 모든 링크를 흰색으로 설정 /
+    text-decoration: none; / 밑줄 제거 */
+}
+/* 기본 설정 */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #111;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+/* 배우 프로필 컨테이너 */
+.actor-profile-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    color: #ddd;
+}
+
+.actor-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    justify-content: center;
+}
+
+.actor-info img {
+    width: 120px;
+    height: 180px;
+    border-radius: 8px;
+    object-fit: cover;
+    background-color: #333;
+}
+
+.actor-info h1 {
+    font-size: 2em;
+    color: #f5c518;
+    margin: 0;
+    text-align: center;
+}
+
+.actor-info p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-top: 10px;
+    color: #bbb;
+    text-align: center;
+}
+
+/* 배우 작품 목록 */
+.actor-movies-list {
+    margin-top: 30px;
+}
+
+.actor-movies-list h2 {
+    font-size: 1.8em;
+    color: #f5c518;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 0 20px;
+}
+
+.movie-item {
+    background-color: #222;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.3s ease;
+    color: #fff;
+}
+
+.movie-item:hover {
+    transform: scale(1.05);
+}
+
+.movie-item a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.movie-item img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    background-color: #333;
+}
+
+.movie-item p {
+    margin: 10px 0;
+    font-size: 1em;
+    color: #ddd;
+}
+
+.movie-item p:last-child {
+    font-size: 0.9em;
+    color: #aaa;
+}

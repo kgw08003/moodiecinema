@@ -24,10 +24,14 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('users/', include('users.urls')),  # users 앱의 urls.py 포함
+    path('diary/', include('diary.urls')),  # 다이어리 관련 URL 포함
     path('auth/', include('social_django.urls', namespace='social')),
+    path('analyze_sentiment/', views.analyze_sentiment, name='analyze_sentiment'),
     path('movies/', include('movies.urls')), 
     path('reviews/',include('reviews.urls')),
-
+    path('genres/', include('genres.urls')),  # 'genres' 앱의 URL을 포함
+    path('search/', include('search.urls')),
+    path('music/', include('music.urls')), 
 ]
 
 if settings.DEBUG:

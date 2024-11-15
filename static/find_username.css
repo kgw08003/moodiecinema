@@ -1,0 +1,44 @@
+/* find_username.css */
+
+.find-username-container {
+    max-width: 400px;
+    margin: 200px auto;
+    padding: 30px;
+    background-color: #181818;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    color: #ffffff;
+}
+
+.find-username-container h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.find-username-container input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #333;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.find-username-container button {
+    width: 100%;
+    padding: 12px;
+    background-color: #f7c948;
+    color: #000000;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.find-username-container button:hover {
+    background-color: #ffc107;
+}
