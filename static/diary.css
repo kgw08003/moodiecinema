@@ -271,4 +271,5 @@ a:hover {
     border-radius: 8px; /* 모서리 둥글게 */
     overflow: hidden; /* 배경 이미지가 모서리 밖으로 나가지 않도록 */
     color: #fff; /* 텍스트가 배경 위에서 잘 보이도록 설정 */
+    background-attachment: fixed;
 }
