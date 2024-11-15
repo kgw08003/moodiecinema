@@ -1,4 +1,4 @@
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import render,get_object_or_404,redirect
 from django.urls import reverse
 from reviews import models
 from .models import Review, Movies,ReviewLike
@@ -38,17 +38,63 @@ class FeedbackAnalysisView(APIView):
         }
         return Response(data)
 
+## 원본 코드 ##
+# class ReviewListView(ListView):
+#     model = Review
+#     template_name = 'moodiecinema/movie.html'
+#     context_object_name = 'reviews'
+
+#     def get_queryset(self):
+#         # 특정 영화의 리뷰만 필터링
+#         movie_id = self.kwargs.get('movie_id')
+#         return Review.objects.filter(movie__movie_id=movie_id)
+
+# class ReviewListView(ListView):
+#     model = Review
+#     template_name = 'moodiecinema/movie.html'
+#     context_object_name = 'reviews'
+
+#     def get_queryset(self):
+#         # 특정 영화의 리뷰만 필터링
+#         movie_id = self.kwargs.get('movie_id')
+#         queryset = Review.objects.filter(movie__movie_id=movie_id)
+
+#         # 정렬 옵션 받아오기
+#         sort_option = self.request.GET.get('sort', 'newest')
+#         if sort_option == 'highest_rating':
+#             queryset = queryset.order_by('-rating')
+#         elif sort_option == 'lowest_rating':
+#             queryset = queryset.order_by('rating')
+#         elif sort_option == 'most_likes':
+#             queryset = queryset.order_by('-like_count')
+#         else:  # 기본값으로 최신순 정렬
+#             queryset = queryset.order_by('-created_at')
+
+#         return queryset
 
 class ReviewListView(ListView):
     model = Review
-    template_name = 'moodiecinema/movie.html'
+    template_name = 'moodiecinema/movies.html'
     context_object_name = 'reviews'
 
     def get_queryset(self):
         # 특정 영화의 리뷰만 필터링
         movie_id = self.kwargs.get('movie_id')
-        return Review.objects.filter(movie__movie_id=movie_id)
-    
+        queryset = Review.objects.filter(movie__movie_id=movie_id, is_reported=False)
+
+        # 정렬 옵션 받아오기
+        sort_option = self.request.GET.get('sort', 'newest')
+        if sort_option == 'highest_rating':
+            queryset = queryset.order_by('-rating')
+        elif sort_option == 'lowest_rating':
+            queryset = queryset.order_by('rating')
+        elif sort_option == 'most_likes':
+            queryset = queryset.order_by('-like_count')
+        else:
+            queryset = queryset.order_by('-created_at')
+        
+        return queryset
+
 
 class ReviewCreateView(CreateView):
     model = Review
@@ -60,15 +106,14 @@ class ReviewCreateView(CreateView):
         form.instance.movie = movie
         form.instance.user = self.request.user
         return super().form_valid(form)
-    
+
     def get_success_url(self):
-        # 리뷰 생성 후 이동할 URL 설정
         return reverse('movie_detail', kwargs={'movie_id': self.kwargs['movie_id']})
     
 class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Review
     form_class = ReviewForm
-    template_name = 'moodiecinema/review_form.html'
+    
     
     def get_success_url(self):
         return reverse_lazy('reviews_manage')  # 수정 후 리뷰 관리 페이지로 리디렉션
@@ -147,4 +192,26 @@ class DislikeReviewView(APIView):
 
         review.save()
         return Response({'like_count': review.like_count, 'dislike_count': review.dislike_count}, status=status.HTTP_200_OK)
-    
+
+
+
+from rest_framework.renderers import JSONRenderer
+
+import json
+class ReviewReportAPIView(APIView):
+    renderer_classes = [JSONRenderer]
+
+    def post(self, request, review_id):
+        # Review 객체를 가져옵니다.
+        review = get_object_or_404(Review, id=review_id)
+
+        # request.data를 사용하여 JSON 데이터를 읽습니다.
+        report_reason = request.data.get('reason')
+
+        # 신고 처리 로직
+        review.reported_count += 1
+        review.is_reported = True
+        # 신고 이유를 필요에 따라 저장합니다.
+        review.save()
+
+        return Response({"message": "리뷰가 신고되었습니다."})

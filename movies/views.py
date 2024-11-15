@@ -77,16 +77,28 @@ class MovieDetailView(TemplateView):
 
         # TMDb 영어 리뷰 가져오기
         tmdb_reviews_response = requests.get(f'{self.base_url}{movie_id}/reviews?api_key={self.api_key}&language=en-US')
+
         if tmdb_reviews_response.status_code == 200:
-            tmdb_reviews_data = tmdb_reviews_response.json()
-            context['tmdb_reviews'] = tmdb_reviews_data.get('results', [])
+            tmdb_reviews = tmdb_reviews_response.json().get('results', [])
+            
+            # 정렬 옵션 가져오기
+            sort_option = self.request.GET.get('sort_tmdb', 'newest')
+            
+            # 정렬 옵션에 따른 TMDb 리뷰 정렬
+            if sort_option == 'highest_rating':
+                tmdb_reviews = sorted(tmdb_reviews, key=lambda x: x['author_details'].get('rating', 0), reverse=True)
+            elif sort_option == 'lowest_rating':
+                tmdb_reviews = sorted(tmdb_reviews, key=lambda x: x['author_details'].get('rating', 0))
+            else:  # 최신순
+                tmdb_reviews = sorted(tmdb_reviews, key=lambda x: x['created_at'], reverse=True)
+            
+            context['tmdb_reviews'] = tmdb_reviews
         else:
-            context['tmdb_reviews'] = []  # 리뷰 데이터가 없을 때 빈 리스트 설정
+            context['tmdb_reviews'] = []
 
-        # 사용자 리뷰 가져오기
-
-        ####### 리뷰 리스트 추가 #######
+        # 기존 리뷰 정렬 및 다른 context 설정
         review_list_view = ReviewListView()
+        review_list_view.request = self.request
         review_list_view.kwargs = {'movie_id': movie_id}
         context['reviews'] = review_list_view.get_queryset()
         context['review_form'] = ReviewCreateView.form_class()

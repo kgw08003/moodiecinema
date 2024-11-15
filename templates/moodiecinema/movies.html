@@ -5,6 +5,7 @@
 
 {% block head %}
     <link rel="stylesheet" href="{% static 'movies.css' %}">
+    <meta name="csrf-token" content="{{ csrf_token }}">
 {% endblock %}
 
 <body>
@@ -61,60 +62,42 @@
         </section>
     </section>
     </div>
-
-    <script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
     
-    <script>
-        function likeReview(reviewId) {
-            fetch(`/reviews/review/${reviewId}/like/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json'
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById(`like-count-${reviewId}`).innerText = data.like_count;
-            })
-            .catch(error => console.error('Error:', error));
-        }
-        
-        function dislikeReview(reviewId) {
-            fetch(`/reviews/review/${reviewId}/dislike/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json'
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById(`dislike-count-${reviewId}`).innerText = data.dislike_count;
-            })
-            .catch(error => console.error('Error:', error));
-        }
-    </script>
-
-
-    <!-- 리뷰 섹션 추가 -->
     <section class="reviews-section">
         <h2 class="reviews-title">리뷰</h2>
-        <form method="post" action="{% url 'review_create' movie_id=movie_id %}" class="review-form">
+
+        <!-- 리뷰 작성 폼 -->
+        <form method="post" action="{% url 'review_create' movie_id=movie.id %}" class="review-form">
             {% csrf_token %}
             {{ review_form.as_p }}
             <button type="submit" class="submit-button">리뷰 작성</button>
         </form>
-    
-        <h3 class="reviews-subtitle">작성된 리뷰</h3>
+        
+        <!-- 정렬 옵션과 리뷰 목록 -->
+        <form method="get" action="" class="sort-form">
+            <label for="sort" class="sort-label">정렬 기준:</label>
+            <select name="sort" id="sort" onchange="this.form.submit()">
+                <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>최신순</option>
+                <option value="highest_rating" {% if request.GET.sort == 'highest_rating' %}selected{% endif %}>평점 높은 순</option>
+                <option value="lowest_rating" {% if request.GET.sort == 'lowest_rating' %}selected{% endif %}>평점 낮은 순</option>
+                <option value="most_likes" {% if request.GET.sort == 'most_likes' %}selected{% endif %}>좋아요 많은 순</option>
+            </select>
+        </form>
+
         <ul class="reviews-list">
             {% for review in reviews %}
                 <li class="review-item">
-                    <strong class="review-username">{{ review.user.username }}</strong> - 
+                    <strong class="review-username">{{ review.user.user_name }}</strong> - 
                     <span class="review-date">{{ review.created_at|date:"Y-m-d" }}</span><br>
                     <span class="review-rating">평점: {{ review.rating }} / 5</span><br>
                     <p class="review-content">{{ review.content }}</p>
-                    
+                    <!-- 감정 분석 결과 표시 -->
+                    <div class="emotion-analysis">
+                        <h3>감정 분석 결과</h3>
+                        <div class="emotion-box">
+                            <p>{{ review.emotion|default:"분석 결과 없음" }}</p>
+                        </div>
+                    </div>
                     <div class="like-dislike-buttons">
                         <button onclick="likeReview({{ review.id }})" class="like-button">
                             👍 <span id="like-count-{{ review.id }}">{{ review.like_count }}</span>
@@ -123,15 +106,125 @@
                             👎 <span id="dislike-count-{{ review.id }}">{{ review.dislike_count }}</span>
                         </button>
                     </div>
-                
+
+                    <!-- 모달 버튼 및 모달 요소 -->
+                    <button onclick="openReportModal({{ review.id }})" class="report-button">🚨 신고</button>
                 </li>
             {% empty %}
                 <p class="no-reviews-message">아직 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</p>
             {% endfor %}
         </ul>
+
+        <!-- 신고 모달 창 -->
+        <div id="report-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeReportModal()">&times;</span>
+                <h2>신고 사유를 선택하세요</h2>
+                
+                <form id="report-form">
+                    {% csrf_token %}
+                    <input type="hidden" id="review-id" name="review_id">
+                    
+                    <label><input type="radio" name="report_reason" value="스팸" required> 스팸</label><br>
+                    <label><input type="radio" name="report_reason" value="부적절한 내용"> 부적절한 내용</label><br>
+                    <label><input type="radio" name="report_reason" value="거짓 정보"> 거짓 정보</label><br>
+                    
+                    <button type="button" onclick="submitReport()">신고 제출</button>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            function getCsrfToken() {
+                return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            }
+
+            function likeReview(reviewId) {
+                fetch(`/reviews/review/${reviewId}/like/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken(),  // getCsrfToken() 함수 사용
+                        'Content-Type': 'application/json'
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById(`like-count-${reviewId}`).innerText = data.like_count;
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        
+            function dislikeReview(reviewId) {
+                fetch(`/reviews/review/${reviewId}/dislike/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken(),  // getCsrfToken() 함수 사용
+                        'Content-Type': 'application/json'
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById(`dislike-count-${reviewId}`).innerText = data.dislike_count;
+                })
+                .catch(error => console.error('Error:', error));
+            }
+
+            function openReportModal(reviewId) {
+                document.getElementById('report-modal').style.display = 'flex';
+                document.getElementById('review-id').value = reviewId;
+
+                // localStorage에 모달이 열렸다는 상태 저장
+                localStorage.setItem('modalOpened', 'true');
+            }
+            function closeReportModal() {
+                document.getElementById('report-modal').style.display = 'none';
+
+                // 모달이 닫히면 상태 삭제
+                localStorage.removeItem('modalOpened');
+            }
+
+            // 페이지 로드 시 모달 자동 표시 방지
+            document.addEventListener('DOMContentLoaded', function() {
+                if (localStorage.getItem('modalOpened') !== 'true') {
+                    closeReportModal();
+                }
+            });
+
+            function submitReport() {
+                const reviewId = document.getElementById('review-id').value;
+                const reportReason = document.querySelector('input[name="report_reason"]:checked').value;
+
+                fetch(`/reviews/review/${reviewId}/report/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken(),  // getCsrfToken() 함수 사용
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ reason: reportReason })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert("신고가 완료되었습니다.");
+                    closeReportModal();
+                    location.reload();  // 페이지 새로고침으로 변경 반영
+                })
+                .catch(error => console.error("Error:", error));
+            }
+        </script>
     
         <!-- TMDb 리뷰 섹션을 작성된 리뷰와 유사한 형식으로 수정 -->
-        <h3 class="reviews-subtitle">TMDb 리뷰</h3>
+        <h3 class="reviews-subtitle">TMDB 리뷰</h3>
+
+        <!-- TMDb 리뷰 정렬 옵션 추가 -->
+        <form method="get" action="" class="sort-form">
+            <label for="sort_tmdb" class="sort-label">정렬 기준:</label>
+            <select name="sort_tmdb" id="sort_tmdb" onchange="this.form.submit()">
+                <option value="newest" {% if request.GET.sort_tmdb == 'newest' %}selected{% endif %}>최신순</option>
+                <option value="highest_rating" {% if request.GET.sort_tmdb == 'highest_rating' %}selected{% endif %}>평점 높은 순</option>
+                <option value="lowest_rating" {% if request.GET.sort_tmdb == 'lowest_rating' %}selected{% endif %}>평점 낮은 순</option>
+            </select>
+        </form>
+
         <ul class="reviews-list tmdb-review-list">
             {% if tmdb_reviews %}
                 {% for review in tmdb_reviews %}
@@ -144,11 +237,10 @@
                     </li>
                 {% endfor %}
             {% else %}
-                <p class="no-reviews-message">이 영화에 대한 TMDb 리뷰가 없습니다.</p>
+                <p class="no-reviews-message">이 영화에 대한 TMDB 리뷰가 없습니다.</p>
             {% endif %}
         </ul>
     </section>
-
 </body>
 
 {% endblock %}
