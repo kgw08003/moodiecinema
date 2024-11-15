@@ -16,3 +16,5 @@ __pycache__/
 # 라이브러리 폴더
 lib/
 .env
+
+tut6-model.pt

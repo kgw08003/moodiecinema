@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'social_django',  # social_django 추가
     'movies',
     'reviews',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -135,3 +136,11 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
 )
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.TemplateHTMLRenderer',  # HTML 렌더링 추가
+    ),
+}

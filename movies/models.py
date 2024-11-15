@@ -15,7 +15,7 @@ class Movies(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)  # 영화 제목
 
     def __str__(self):
-        return f'{self.user.username} - {self.movie_id}'
+        return f'{self.user.user_name} - {self.movie_id}'
     
 
     @classmethod
