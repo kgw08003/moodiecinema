@@ -1,0 +1,94 @@
+/* 신고 목록 테이블 스타일 */
+.container {
+    margin: 20px auto;
+    max-width: 1200px;
+    padding: 20px;
+    background-color: #000000;
+    border-radius: 8px;
+    color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #FFD700; /* 금색 */
+}
+
+.report-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.report-list-table th, 
+.report-list-table td {
+    border: 1px solid #444444;
+    text-align: center;
+    padding: 12px;
+}
+
+.report-list-table th {
+    background-color: #333333;
+    color: #FFD700; /* 금색 */
+    font-weight: bold;
+}
+
+.report-list-table tr:nth-child(even) {
+    background-color: #2a2a2a;
+}
+
+.report-list-table tr:nth-child(odd) {
+    background-color: #1e1e1e;
+}
+
+.report-list-table tr:hover {
+    background-color: #3a3a3a;
+}
+
+/* 상태 레이블 */
+.processed-label {
+    color: #4CAF50; /* 초록색 */
+    font-weight: bold;
+}
+
+.not-processed-label {
+    color: #FF5733; /* 주황색 */
+    font-weight: bold;
+}
+
+.blocked-label {
+    color: #FF0000; /* 빨간색 */
+    font-weight: bold;
+}
+
+.not-blocked-label {
+    color: #FFFFFF; /* 흰색 */
+}
+
+/* 처리 버튼 스타일 */
+.process-btn {
+    padding: 8px 12px;
+    background-color: #FFD700; /* 금색 */
+    color: #1e1e1e;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.process-btn:hover {
+    background-color: #E6C200; /* 약간 어두운 금색 */
+}
+
+.process-btn:active {
+    background-color: #CCAA00;
+}
+
+/* 테이블 비어있을 때 */
+.report-list-table td[colspan="9"] {
+    text-align: center;
+    color: #aaaaaa;
+    font-style: italic;
+}
