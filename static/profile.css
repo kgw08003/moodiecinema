@@ -205,7 +205,6 @@
 }
 
 /* 모달 스타일 */
-/* 모달 스타일 */
 .modal {
     display: none;
     position: fixed;
@@ -255,4 +254,29 @@
 .cancel-btn {
     background-color: #ccc;
     color: #333;
+}
+
+/*주요 영화 타임라인*/
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 10px 15px;
+    margin: 0 5px;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.pagination button.active {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
+}
+
+.pagination button:hover {
+    background-color: #ddd;
 }

@@ -5,16 +5,18 @@
 
 {% block head %}
   <link rel="stylesheet" href="{% static 'profile.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
 {% block content %}
 <div class="profile-container">
-    <div class="profile-header" id="profileHeader">
+    <!-- 프로필 헤더 -->
+    <div class="profile-header">
         <div class="profile-avatar">
             {% if user.user_profile %}
                 <img src="{{ user.user_profile.url }}" alt="프로필 사진">
             {% else %}
-                <div class="avatar-initial">{{ user.user_name|slice:":1" }}</div> 
+                <div class="avatar-initial">{{ user.user_name|slice:":1" }}</div>
             {% endif %}
         </div>
         <div class="profile-info">
@@ -33,102 +35,230 @@
         </div>
     </div>
 
-    <div class="profile-tabs" id="profileTabs">
-        <a href="#" class="tab">개요</a>
-        <a href="#" class="tab">토론</a>
-        <a href="#" class="tab">목록</a>
-        <a href="#" class="tab">평가</a>
-        <a href="#" class="tab">관심 목록</a>
-        <a href="#" class="tab" onclick="showDeleteSection()">회원</a>
+    <!-- 탭 네비게이션 -->
+    <div class="profile-tabs">
+        <button class="tab" onclick="showSection('year')">연도</button>
+        <button class="tab" onclick="showSection('era')">시대</button>
+        <button class="tab" onclick="showSection('tech')">기술 발전</button>
+        <button class="tab" onclick="showSection('timeline')">영화 평점별 순위</button>
+        <button class="tab" onclick="showSection('reviewManage')">리뷰 관리</button>
+        <button class="tab" onclick="showSection('deleteAccountSection')">회원 탈퇴</button>
     </div>
 
-    <div class="profile-content" id="profileContent">
-        <div class="section stats">
-            <h3>통계</h3>
-            <div class="stats-details">
-                <div class="stat-item">
-                    <p>총 편집 수: <span class="stat-value">0</span></p>
-                </div>
-                <div class="stat-item">
-                    <p>총 평가 수: <span class="stat-value">0</span></p>
-                </div>
-                <div class="rating-distribution">평점 분포 (그래프)</div>
-            </div>
-        </div>    
-
-        <div class="section upcoming">
-            <h3>관심 목록에서 개봉 예정인 항목</h3>
-            <p>관심 목록 중 개봉 예정인 항목이 없습니다.</p>
-            <a href="#" class="btn-link">관심 목록으로 이동</a>
-        </div>
-
-        <div class="section recent-discussions">
-            <h3>최근 토론</h3>
-            <p>어떤 토론 글도 구독중이지 않습니다.</p>
-        </div>
-
-        <div class="section recent-activity">
-            <h3>최근 활동</h3>
-            <p>회원님은 최근 어떤 편집도 하지 않았습니다.</p>
-            <a href="#" class="btn-link">더보기</a>
-        </div>
-
-        <div class="action-buttons">
-            <a href="{% url 'update_profile' %}" class="btn edit-profile-btn">회원정보 수정</a>
-            <a href="{% url 'logout' %}" class="btn logout-btn">로그아웃</a>
-            <a href="{% url 'home' %}" class="btn home-btn">홈으로 이동</a>
-            <a href="{% url 'reviews_manage' %}" class="btn home-btn">리뷰 관리</a>
-        </div>
+    <!-- 연도별 영화 데이터 -->
+    <div id="year" class="profile-section">
+        <h3>연도별 영화 데이터</h3>
+        <canvas id="yearChart"></canvas>
     </div>
 
-    <div class="section delete-account" id="deleteAccountSection" style="display: none;">
+    <!-- 시대별 영화 트렌드 -->
+    <div id="era" class="profile-section" style="display: none;">
+        <h3>시대별 영화 트렌드</h3>
+        <canvas id="eraChart"></canvas>
+    </div>
+
+    <!-- 기술 발전 -->
+    <div id="tech" class="profile-section" style="display: none;">
+        <h3>기술 발전</h3>
+        <ul id="techList"></ul>
+    </div>
+
+    <!-- 주요 영화 타임라인 -->
+    <div id="timeline" class="profile-section" style="display: none;">
+        <h3>영화 평점별 순위(TMDB기준)</h3>
+        <ul id="timelineList"></ul>
+        <div id="paginationButtons" class="pagination"></div>
+    </div>
+
+    <!-- 리뷰 관리 -->
+    <div id="reviewManage" class="profile-section" style="display: none;">
+        <h3>리뷰 관리</h3>
+        <p>작성한 리뷰 목록을 관리할 수 있습니다.</p>
+        <ul id="reviewList">
+            <!-- 리뷰 데이터가 JavaScript를 통해 동적으로 추가됩니다 -->
+        </ul>
+    </div>
+
+    <!-- 회원 탈퇴 -->
+    <div id="deleteAccountSection" class="profile-section" style="display: none;">
         <h3>회원 탈퇴</h3>
         <p class="warning-text">회원님께선 <strong>위험 구역</strong>에 진입하셨습니다! 정말로 계정 삭제를 원하신다면, 하단에 비밀번호를 입력해주세요.</p>
         <input type="password" id="password" placeholder="계속하려면 현재 비밀번호를 입력하십시오...">
         <button class="btn continue-btn" onclick="showConfirmModal()">계속</button>
     </div>
-</div>
 
-<div id="confirmModal" class="modal">
-    <div class="modal-content">
-        <h3>회원 탈퇴 확인</h3>
-        <p>정말로 회원 탈퇴를 진행하시겠습니까?</p>
-        
-        <div class="btn-container">
-            <form id="deleteAccountForm" action="{% url 'delete_account' %}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="password" id="confirmPasswordInput">
-                <button type="submit" class="btn confirm-btn">예</button>
-            </form>
-            <button class="btn cancel-btn" onclick="closeModal()">아니오</button>
+    <!-- 회원 탈퇴 확인 모달 -->
+    <div id="confirmModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>회원 탈퇴 확인</h3>
+            <p>정말로 회원 탈퇴를 진행하시겠습니까?</p>
+            <div class="btn-container">
+                <form id="deleteAccountForm" action="{% url 'delete_account' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="password" id="confirmPasswordInput">
+                    <button type="submit" class="btn confirm-btn">예</button>
+                </form>
+                <button class="btn cancel-btn" onclick="closeModal()">아니오</button>
+            </div>
         </div>
+    </div>
+
+    <!-- 하단 버튼 -->
+    <div class="action-buttons">
+        <a href="{% url 'update_profile' %}" class="btn edit-profile-btn">회원정보 수정</a>
+        <a href="{% url 'logout' %}" class="btn logout-btn">로그아웃</a>
+        <a href="{% url 'home' %}" class="btn home-btn">홈으로 이동</a>
+        <a href="{% url 'reviews_manage' %}" class="btn home-btn">리뷰 관리</a>
     </div>
 </div>
 
 <script>
-// '회원' 탭 클릭 시 탈퇴 섹션 표시 및 기존 프로필과 탭 숨기기
-function showDeleteSection() {
-    document.getElementById("profileHeader").style.display = "none";
-    document.getElementById("profileContent").style.display = "none";
-    document.getElementById("profileTabs").style.display = "none";
-    document.getElementById("deleteAccountSection").style.display = "block";
-}
-
-// 비밀번호 확인 후 모달 띄우기
-function showConfirmModal() {
-    var password = document.getElementById("password").value;
-    
-    if (password) {
-        document.getElementById("confirmPasswordInput").value = password;
-        document.getElementById("confirmModal").style.display = "block";
-    } else {
-        alert("비밀번호를 입력해주세요.");
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('.profile-section');
+        sections.forEach(section => {
+            section.style.display = 'none';
+        });
+        document.getElementById(sectionId).style.display = 'block';
     }
+
+    function showConfirmModal() {
+        const password = document.getElementById("password").value;
+        if (password) {
+            document.getElementById("confirmPasswordInput").value = password;
+            document.getElementById("confirmModal").style.display = "block";
+        } else {
+            alert("비밀번호를 입력해주세요.");
+        }
+    }
+
+    function closeModal() {
+        document.getElementById("confirmModal").style.display = "none";
+    }
+
+    async function fetchData(url) {
+        const response = await fetch(url);
+        return await response.json();
+    }
+
+    async function loadYearChart() {
+        const data = await fetchData('/userprofile/api/movies-by-year/');
+        const ctx = document.getElementById('yearChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.years,
+                datasets: [{
+                    label: '영화 수',
+                    data: data.counts,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: { responsive: true }
+        });
+    }
+
+    async function loadEraChart() {
+    const data = await fetchData('/userprofile/api/movies-by-era/');
+    const ctx = document.getElementById('eraChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.eras,
+            datasets: [{
+                label: '영화 수',
+                data: data.counts,
+                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const genre = data.popular_genres[context.dataIndex];
+                            return `영화 수: ${context.raw} (${genre} 장르)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
 }
 
-// 모달 닫기
-function closeModal() {
-    document.getElementById("confirmModal").style.display = "none";
-}
+    async function loadTechData() {
+        const data = await fetchData('/userprofile/api/tech-advancements/');
+        const techList = document.getElementById('techList');
+        techList.innerHTML = data.map(item => `<li>${item.year}: ${item.description}</li>`).join('');
+    }
+
+    async function loadTimelineData() {
+        const data = await fetchData('/userprofile/api/movie-timeline/');
+        const timelineList = document.getElementById('timelineList');
+        timelineList.innerHTML = data.map(item => `<li>${item.year}: ${item.movie}</li>`).join('');
+    }
+
+    async function loadReviewData() {
+        const data = await fetchData('/userprofile/api/reviews/');
+        const reviewList = document.getElementById('reviewList');
+        reviewList.innerHTML = data.map(review => `<li>${review.title}: ${review.comment}</li>`).join('');
+    }
+
+    async function loadMovieTimeline(page = 1) {
+        const data = await fetch(`/userprofile/api/movie-timeline/?page=${page}`).then(res => res.json());
+
+        const timelineList = document.getElementById("timelineList");
+        timelineList.innerHTML = "";
+
+        data.movies.forEach(movie => {
+            const listItem = document.createElement("li");
+            listItem.textContent = `${movie.year}: ${movie.movie} (평점: ${movie.rating})`;
+            timelineList.appendChild(listItem);
+        });
+
+        const paginationButtons = document.getElementById("paginationButtons");
+        paginationButtons.innerHTML = "";
+
+        const currentPage = data.current_page;
+        const totalPages = data.total_pages;
+        const maxButtons = 10;
+        const startPage = Math.floor((currentPage - 1) / maxButtons) * maxButtons + 1;
+        const endPage = Math.min(startPage + maxButtons - 1, totalPages);
+
+        if (startPage > 1) {
+            const prevButton = document.createElement("button");
+            prevButton.textContent = "이전";
+            prevButton.onclick = () => loadMovieTimeline(startPage - 1);
+            paginationButtons.appendChild(prevButton);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            const button = document.createElement("button");
+            button.textContent = i;
+            button.className = i === currentPage ? "active" : "";
+            button.onclick = () => loadMovieTimeline(i);
+            paginationButtons.appendChild(button);
+        }
+
+        if (endPage < totalPages) {
+            const nextButton = document.createElement("button");
+            nextButton.textContent = "다음";
+            nextButton.onclick = () => loadMovieTimeline(endPage + 1);
+            paginationButtons.appendChild(nextButton);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadYearChart();
+        loadEraChart();
+        loadTechData();
+        loadTimelineData();
+        loadMovieTimeline();
+        loadReviewData();
+    });
 </script>
 {% endblock %}

@@ -1,24 +1,32 @@
+a {
+    color: #fff; /* 모든 링크를 흰색으로 설정 */
+    text-decoration: none; /* 밑줄 제거 */
+}
 body {
     font-family: Arial, sans-serif;
     background-color: #111;
     color: #fff;
+    margin: 0;
+    padding: 0;
 }
 
 .movie-detail-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 20px;
+}
+
+.movie-header {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    padding: 20px 0;
+    border-bottom: 2px solid #333;
 }
 
 .movie-poster img {
     border-radius: 8px;
-    max-width: 100%;
-}
-
-.movie-info {
-    margin-top: 20px;
-    text-align: center;
+    max-width: 300px;
 }
 
 .movie-info h1 {
@@ -31,85 +39,98 @@ body {
     margin: 10px 0;
 }
 
-.additional-info {
+.director-item {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    margin-top: 20px; 
+}
+
+.director-item img {
+    width: 150px; 
+    height: 225px; 
+    border-radius: 8px;
+    margin-bottom: 10px; 
+    object-fit: cover;
+}
+
+.cast-list-container {
     margin-top: 30px;
     text-align: center;
 }
 
-.additional-info h3 {
-    color: #f5c518;
-    font-size: 1.5em;
-}
-
-.booking-link {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #f5c518;
-    color: #111;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
+.cast-slider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .cast-list {
-    margin-top: 40px;
+    display: flex;
+    gap: 30px;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+.cast-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+    width: 150px;
 }
 
-.cast-list h2 {
-    font-size: 1.8em;
-    color: #f5c518;
+.cast-item img {
+    width: 100px;
+    height: 150px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    object-fit: cover;
 }
 
-.cast-list ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.cast-list li {
-    font-size: 1.2em;
-    margin: 5px 0;
-}
-
-.similar-movies {
+.youtube-videos-container {
     margin-top: 50px;
-    width: 100%;
     text-align: center;
 }
 
-.similar-movies h2 {
-    font-size: 1.8em;
-    color: #f5c518;
+.similar-movies-container {
+    margin-top: 50px;
+    text-align: center;
 }
 
-.similar-movie-grid {
+.slider-wrapper {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.horizontal-scroll {
+    display: flex;
     gap: 20px;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
 }
 
-.similar-movie-item {
-    max-width: 150px;
-    text-align: center;
+.slider-container {
+    display: flex;
+    transition: transform 0.3s ease;
 }
 
-.similar-movie-item img {
-    width: 100%;
-    border-radius: 8px;
-    transition: transform 0.3s;
+.scroll-button {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 2em;
+    border-radius: 50%;
 }
 
-.similar-movie-item img:hover {
-    transform: scale(1.05);
+.scroll-button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
-.similar-movie-item p {
-    margin-top: 10px;
-    color: #ccc;
-    font-size: 1em;
-}
 
 /* movies.css 파일에 추가 */
 .reviews-section {
@@ -243,4 +264,100 @@ body {
     color: #ffffff;
 }
 
+/*찜목록 부분*/
+.action-buttons {
+    display: flex;
+    justify-content: center; /* 버튼을 중앙에 위치 */
+    margin-top: 20px;
+}
 
+.wishlist-container {
+    display: flex; /* 가로로 버튼 배치 */
+    gap: 20px; /* 버튼 간 간격 설정 */
+}
+
+.wishlist-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    margin: 0; /* 기존 margin 제거 */
+    background-color: #ffd700; /* 금색 배경 */
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #111; /* 텍스트 색상 */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    white-space: nowrap; /* 버튼 텍스트 줄바꿈 방지 */
+}
+
+.wishlist-button:hover {
+    background-color: #e6c200; /* 호버 시 더 어두운 금색 */
+    transform: translateY(-2px); /* 살짝 떠오르는 효과 */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.wishlist-button:active {
+    background-color: #cca700; /* 클릭 시 더 어두운 금색 */
+    transform: translateY(0); /* 클릭 시 원래 위치 */
+    box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.1);
+}
+
+.add-to-wishlist {
+    background-color: #28a745; /* 초록색 배경 */
+    color: #fff;
+}
+
+.add-to-wishlist:hover {
+    background-color: #218838; /* 호버 시 더 어두운 초록색 */
+}
+
+.remove-from-wishlist {
+    background-color: #dc3545; /* 빨간색 배경 */
+    color: #fff;
+}
+
+.remove-from-wishlist:hover {
+    background-color: #c82333; /* 호버 시 더 어두운 빨간색 */
+}
+
+/**/
+.notification {
+    position: fixed;
+    top: 14px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    font-size: 1rem;
+    font-weight: bold;
+    z-index: 1000;
+    opacity: 0; /* 기본적으로 숨김 */
+    transform: translateY(-20px); /* 살짝 위로 이동 */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* 애니메이션 효과 */
+}
+
+/* 성공 스타일 */
+.notification.success {
+    background-color: #28a745; /* 초록색 배경 */
+    color: white; /* 텍스트 흰색 */
+}
+
+/* 에러 스타일 */
+.notification.error {
+    background-color: #dc3545; /* 빨간색 배경 */
+    color: white; /* 텍스트 흰색 */
+}
+
+.notification.show {
+    opacity: 1; /* 보이기 */
+    transform: translateY(0); /* 제자리로 이동 */
+}
+
+.notification.hide {
+    opacity: 0; /* 숨기기 */
+    transform: translateY(-20px); /* 다시 위로 이동 */
+}
