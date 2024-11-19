@@ -147,3 +147,172 @@ class MovieTimelineAPIView(View):
             })
         else:
             return JsonResponse({"error": "Failed to fetch timeline data"}, status=500)
+
+class GenreRatingsAPIView(View):
+    def get(self, request):
+        api_key = settings.TMDB_API_KEY
+        genre_map = {
+            28: '액션',
+            18: '드라마',
+            35: '코미디',
+            12: '모험',
+            16: '애니메이션',
+            80: '범죄',
+            99: '다큐멘터리',
+            10751: '가족',
+            14: '판타지',
+            36: '역사',
+            27: '공포',
+            10402: '음악',
+            9648: '미스터리',
+            10749: '로맨스',
+            878: 'SF',
+            10770: 'TV 영화',
+            53: '스릴러',
+            10752: '전쟁',
+            37: '서부'
+        }
+        genres_data = []
+
+        for genre_id, genre_name in genre_map.items():
+            url = f"https://api.themoviedb.org/3/discover/movie"
+            params = {
+                "api_key": api_key,
+                "with_genres": genre_id,
+                "vote_count.gte": 10,  # 최소한의 평점 수 필터링
+                "sort_by": "vote_average.desc"
+            }
+            response = requests.get(url, params=params)
+            if response.status_code == 200:
+                data = response.json()
+                ratings = [movie["vote_average"] for movie in data.get("results", [])]
+                if ratings:
+                    genres_data.append({
+                        "genre": genre_name,
+                        "average_rating": sum(ratings) / len(ratings),
+                        "max_rating": max(ratings),
+                        "min_rating": min(ratings)
+                    })
+        
+        return JsonResponse(genres_data, safe=False)
+
+
+class RemakeMoviesAPIView(View):
+    def get(self, request):
+        api_key = settings.TMDB_API_KEY
+        base_url = "https://api.themoviedb.org/3"
+
+        # 사전에 정의된 리메이크 영화 리스트 (리메이크와 원작 타이틀 쌍)
+        predefined_remakes = [
+            {"remake_title": "Let Me In", "original_title": "Let the Right One In"},
+            {"remake_title": "The Departed", "original_title": "Infernal Affairs"},
+            {"remake_title": "Oldboy", "original_title": "Oldeuboi"},
+            {"remake_title": "Insomnia", "original_title": "Insomnia"},
+            {"remake_title": "Scarface", "original_title": "Scarface"},
+            {"remake_title": "A Fistful of Dollars", "original_title": "Yojimbo"},
+            {"remake_title": "The Magnificent Seven", "original_title": "Seven Samurai"},
+            {"remake_title": "12 Monkeys", "original_title": "La Jetée"},
+            {"remake_title": "True Lies", "original_title": "La Totale!"},
+            {"remake_title": "The Birdcage", "original_title": "La Cage aux Folles"},
+        ]
+
+        remake_comparison = []
+        for pair in predefined_remakes:
+            # 원작 영화 검색 (한국어)
+            url = f"{base_url}/search/movie"
+            params = {"api_key": api_key, "query": pair["original_title"], "language": "ko-KR"}
+            original_response = requests.get(url, params=params)
+            
+            # 리메이크 영화 검색 (한국어)
+            params = {"api_key": api_key, "query": pair["remake_title"], "language": "ko-KR"}
+            remake_response = requests.get(url, params=params)
+
+            if original_response.status_code == 200 and remake_response.status_code == 200:
+                original_data = original_response.json()
+                remake_data = remake_response.json()
+
+                if original_data["results"] and remake_data["results"]:
+                    # 가장 적합한 결과를 필터링 (예: 개봉 연도)
+                    original_movie = next(
+                        (movie for movie in original_data["results"]
+                        if "release_date" in movie and "1997" in movie["release_date"]),
+                        original_data["results"][0]
+                    )
+                    remake_movie = next(
+                        (movie for movie in remake_data["results"]
+                        if "release_date" in movie and "2002" in movie["release_date"]),
+                        remake_data["results"][0]
+                    )
+
+                    remake_comparison.append({
+                        "remake_title": remake_movie["title"],
+                        "original_title": original_movie["title"],
+                        "remake_vote_average": remake_movie["vote_average"],
+                        "original_vote_average": original_movie["vote_average"]
+                    })
+
+        return JsonResponse(remake_comparison, safe=False)
+
+
+class RemakeMoviesRevenueAPIView(View):
+    def get(self, request):
+        api_key = settings.TMDB_API_KEY
+        base_url = "https://api.themoviedb.org/3"
+
+        predefined_remakes = [
+            {"remake_title": "Let Me In", "original_title": "Let the Right One In"},
+            {"remake_title": "The Departed", "original_title": "Infernal Affairs"},
+            {"remake_title": "Oldboy", "original_title": "Oldeuboi"},
+            {"remake_title": "The Magnificent Seven", "original_title": "Seven Samurai"},
+            {"remake_title": "The Birdcage", "original_title": "La Cage aux Folles"},
+        ]
+
+        remake_comparison = []
+        for pair in predefined_remakes:
+            # 원작 영화 검색
+            original_response = requests.get(
+                f"{base_url}/search/movie",
+                params={"api_key": api_key, "query": pair["original_title"], "language": "ko-KR"}
+            )
+            # 리메이크 영화 검색
+            remake_response = requests.get(
+                f"{base_url}/search/movie",
+                params={"api_key": api_key, "query": pair["remake_title"], "language": "ko-KR"}
+            )
+
+            if original_response.status_code == 200 and remake_response.status_code == 200:
+                original_data = original_response.json()
+                remake_data = remake_response.json()
+
+                if original_data["results"] and remake_data["results"]:
+                    # 원작과 리메이크 영화 ID 가져오기
+                    original_movie = original_data["results"][0]
+                    remake_movie = remake_data["results"][0]
+
+                    # 원작 영화 상세 정보
+                    original_details_response = requests.get(
+                        f"{base_url}/movie/{original_movie['id']}",
+                        params={"api_key": api_key, "language": "ko-KR"}
+                    )
+                    # 리메이크 영화 상세 정보
+                    remake_details_response = requests.get(
+                        f"{base_url}/movie/{remake_movie['id']}",
+                        params={"api_key": api_key, "language": "ko-KR"}
+                    )
+
+                    if original_details_response.status_code == 200 and remake_details_response.status_code == 200:
+                        original_details = original_details_response.json()
+                        remake_details = remake_details_response.json()
+
+                        # 수익 데이터를 비교하여 추가
+                        original_revenue = original_details.get("revenue", 0)
+                        remake_revenue = remake_details.get("revenue", 0)
+
+                        remake_comparison.append({
+                            "remake_title": remake_details["title"],
+                            "original_title": original_details["title"],
+                            "remake_revenue": remake_revenue,
+                            "original_revenue": original_revenue,
+                        })
+
+        return JsonResponse(remake_comparison, safe=False)

@@ -4,6 +4,7 @@
 {% block title %}프로필{% endblock %}
 
 {% block head %}
+  <!-- CSS와 Chart.js 라이브러리 추가 -->
   <link rel="stylesheet" href="{% static 'profile.css' %}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
@@ -14,16 +15,20 @@
     <div class="profile-header">
         <div class="profile-avatar">
             {% if user.user_profile %}
+            <!-- 사용자가 업로드한 프로필 사진 -->
                 <img src="{{ user.user_profile.url }}" alt="프로필 사진">
             {% else %}
+            <!-- 프로필 사진이 없는 경우 사용자 이름의 첫 글자로 표시 -->
                 <div class="avatar-initial">{{ user.user_name|slice:":1" }}</div>
             {% endif %}
         </div>
         <div class="profile-info">
+            <!-- 사용자 이름과 가입 날짜 표시 -->
             <h2 class="username">{{ user.user_name }}</h2>
             <p class="membership-date">{{ user.date_joined|date:"Y년 n월 d일"}}부터 회원</p>
         </div>
         <div class="profile-stats">
+             <!-- 평균 영화 점수와 TV 점수 -->
             <div class="stat-item">
                 <p class="stat-value">0</p>
                 <span>평균 영화 점수</span>
@@ -37,13 +42,18 @@
 
     <!-- 탭 네비게이션 -->
     <div class="profile-tabs">
+        <!-- 각 버튼 클릭 시 특정 섹션 표시 -->
         <button class="tab" onclick="showSection('year')">연도</button>
         <button class="tab" onclick="showSection('era')">시대</button>
         <button class="tab" onclick="showSection('tech')">기술 발전</button>
         <button class="tab" onclick="showSection('timeline')">영화 평점별 순위</button>
+        <button class="tab" onclick="showSection('genre')">장르</button>
+        <button class="tab" onclick="showSection('remakeComparison')">리메이크</button>
+        <button class="tab" onclick="showSection('revenueComparison_money')">수익비교</button>
         <button class="tab" onclick="showSection('deleteAccountSection')">회원 탈퇴</button>
     </div>
 
+    <!-- 각 섹션의 콘텐츠 -->
     <!-- 연도별 영화 데이터 -->
     <div id="year" class="profile-section">
         <h3>연도별 영화 데이터</h3>
@@ -69,6 +79,18 @@
         <div id="paginationButtons" class="pagination"></div>
     </div>
 
+    <!-- 장르별 평점 타임라인 -->
+    <div id="genre" class="profile-section" style="display: none;">
+        <h3>장르별 평점 비교</h3>
+        <canvas id="genreChart"></canvas>
+    </div>
+
+    <!-- 리메이크 원작 비교 타임라인 -->
+    <div id="remakeComparison" class="profile-section" style="display: none;">
+        <h3>리메이크 영화 원작 영화 평점 비교</h3>
+        <canvas id="remakeChart"></canvas>
+    </div>
+
     <!-- 회원 탈퇴 -->
     <div id="deleteAccountSection" class="profile-section" style="display: none;">
         <h3>회원 탈퇴</h3>
@@ -77,12 +99,19 @@
         <button class="btn continue-btn" onclick="showConfirmModal()">계속</button>
     </div>
 
+    <div id="revenueComparison_money" class="profile-section" style="display: none;"> 
+        <h3>리메이크 영화와 원작 영화 수익 비교</h3>
+        <canvas id="revenueChart"></canvas>
+    </div>
+    
+
     <!-- 회원 탈퇴 확인 모달 -->
     <div id="confirmModal" class="modal" style="display: none;">
         <div class="modal-content">
             <h3>회원 탈퇴 확인</h3>
             <p>정말로 회원 탈퇴를 진행하시겠습니까?</p>
             <div class="btn-container">
+                <!-- 계정 삭제 확인 폼 -->
                 <form id="deleteAccountForm" action="{% url 'delete_account' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="password" id="confirmPasswordInput">
@@ -121,15 +150,18 @@
         }
     }
 
+    // 탈퇴 확인 모달 닫기
     function closeModal() {
         document.getElementById("confirmModal").style.display = "none";
     }
 
+    // API 데이터를 비동기로 가져오는 함수
     async function fetchData(url) {
         const response = await fetch(url);
         return await response.json();
     }
 
+    // 연도별 영화 데이터를 차트로 로드
     async function loadYearChart() {
         const data = await fetchData('/userprofile/api/movies-by-year/');
         const ctx = document.getElementById('yearChart').getContext('2d');
@@ -149,6 +181,7 @@
         });
     }
 
+    // 리메이크 영화 비교 차트 로드
     async function loadEraChart() {
     const data = await fetchData('/userprofile/api/movies-by-era/');
     const ctx = document.getElementById('eraChart').getContext('2d');
@@ -242,13 +275,163 @@
         }
     }
 
+    // 페이지가 로드될 때 각 차트와 데이터를 초기화
     document.addEventListener('DOMContentLoaded', () => {
-        loadYearChart();
-        loadEraChart();
-        loadTechData();
-        loadTimelineData();
-        loadMovieTimeline();
-        loadReviewData();
+        loadYearChart();// 연도별 차트 로드
+        loadEraChart(); // 시대별 차트 로드
+        loadTechData(); // 기술 발전 데이터 로드
+        loadTimelineData();// 영화 타임라인 데이터 로드
+        loadMovieTimeline();// 영화 타임라인 페이징 처리
+        loadReviewData();// 리뷰 데이터 로드
+        loadRemakeComparisonChart();// 리메이크 영화 차트 로드
+        loadRemakeRevenueChart();
     });
+
+/* 장르 */
+    async function loadGenreChart() {
+        const data = await fetchData('/userprofile/api/genre-ratings/');
+        const ctx = document.getElementById('genreChart').getContext('2d');
+
+        const labels = data.map(item => item.genre);
+        const avgRatings = data.map(item => item.average_rating);
+        const maxRatings = data.map(item => item.max_rating);
+        const minRatings = data.map(item => item.min_rating);
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '평균 평점',
+                    data: avgRatings,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const index = context.dataIndex;
+                                return `평균: ${avgRatings[index].toFixed(1)}, 최고: ${maxRatings[index]}, 최저: ${minRatings[index]}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadGenreChart();
+    });
+
+    /* 원작 영화와 리메이크 영화 비교 */
+
+    async function loadRemakeComparisonChart() {
+    const response = await fetch('/userprofile/api/remake-movies/');
+    const data = await response.json();
+
+    const labels = data.map(item => item.remake_title);
+    const originalVotes = data.map(item => item.original_vote_average);
+    const remakeVotes = data.map(item => item.remake_vote_average);
+
+    const ctx = document.getElementById('remakeChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: '원작 평점',
+                    data: originalVotes,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',  // 파란색
+                    borderColor: 'rgba(54, 162, 235, 1)', 
+                    borderWidth: 1
+                },
+                {
+                    label: '리메이크 평점',
+                    data: remakeVotes,
+                    backgroundColor: 'rgba(255, 206, 86, 0.5)', // 노란색
+                    borderColor: 'rgba(255, 206, 86, 1)',  
+                    borderWidth: 1
+                },
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadRemakeComparisonChart();
+});
+
+/**/
+async function loadRemakeRevenueChart() {
+    const response = await fetch('/userprofile/api/remake-revenues/');
+    const data = await response.json();
+
+    const labels = data.map(item => item.remake_title);
+    const originalRevenues = data.map(item => item.original_revenue);
+    const remakeRevenues = data.map(item => item.remake_revenue);
+
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: '원작 수익',
+                    data: originalRevenues,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)', // 파란색
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: '리메이크 수익',
+                    data: remakeRevenues,
+                    backgroundColor: 'rgba(255, 206, 86, 0.5)', // 노란색
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return `$${value.toLocaleString()}`; // 수익 데이터를 달러로 표시
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// 차트를 로드할 때 호출
+document.addEventListener('DOMContentLoaded', () => {
+    loadRemakeRevenueChart();
+});
+    
 </script>
 {% endblock %}
