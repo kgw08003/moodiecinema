@@ -18,7 +18,8 @@ class Review(models.Model):
 
     reported_count = models.IntegerField(default=0)
     is_reported = models.BooleanField(default=False)
-    
+    #is_active = models.BooleanField(default=True)  # 리뷰 활성화 여부
+
     def save(self, *args, **kwargs):
         # 리뷰가 새로 생성될 때만 감정 분석 수행
         if not self.emotion:
@@ -26,7 +27,7 @@ class Review(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Review by {self.user} for {self.movie}"
+        return f"{self.user.user_name}의 리뷰: {self.content[:20]}"
     
 class ReviewLike(models.Model):
     review = models.ForeignKey(Review, on_delete=models.CASCADE)
@@ -48,9 +49,10 @@ class ReviewReport(models.Model):
     reported_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # 신고자
     reason = models.CharField(max_length=50, choices=REVIEW_REPORT_REASONS)  # 신고 사유
     reported_at = models.DateTimeField(auto_now_add=True)  # 신고 일시
+    processed = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Report by {self.reported_by} on Review {self.review.id}"
+        return f"Report for Review {self.review.id} by {self.reported_by.user_name}"
 
     
     

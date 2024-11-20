@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'reviews',
     'rest_framework',
     'genres',
-
+    'jjim',
+    'user_profile',
+    'chatbot',
 ]
 
 MIDDLEWARE = [
