@@ -83,7 +83,15 @@
   <div class="button">
     <button type="button" onclick="goToDiary()">일기장 이동</button>
   </div>
+  <input type="hidden" id="diary-url" value="{% url 'diary' %}">
 </div>
+
+<script>
+function goToDiary() {
+  const diaryUrl = document.getElementById('diary-url').value;
+  window.location.href = diaryUrl;
+}
+</script>
 
 <script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

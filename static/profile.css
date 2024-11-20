@@ -205,7 +205,6 @@
 }
 
 /* 모달 스타일 */
-/* 모달 스타일 */
 .modal {
     display: none;
     position: fixed;
@@ -255,4 +254,168 @@
 .cancel-btn {
     background-color: #ccc;
     color: #333;
+}
+
+/*주요 영화 타임라인*/
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 10px 15px;
+    margin: 0 5px;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.pagination button.active {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
+}
+
+.pagination button:hover {
+    background-color: #ddd;
+}
+
+
+/* 연령대 섹션 스타일 */
+#ageRatingContainer {
+    margin-top: 20px;
+}
+
+#ageRatingContainer table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+#ageRatingContainer table th,
+#ageRatingContainer table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#ageRatingContainer table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.pagination button {
+    margin: 5px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.pagination button.active {
+    background-color: #007bff;
+    color: #fff;
+    border: 1px solid #007bff;
+}
+
+.pagination button:hover {
+    background-color: #e9e9e9;
+}
+
+
+/* profile.css */
+
+/* 공통 스타일 */
+.profile-section h3 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+.profile-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.profile-section ul li {
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    font-size: 1em;
+    line-height: 1.4em;
+}
+
+.profile-section ul li:hover {
+    background-color: #f1f1f1;
+    transition: background-color 0.3s;
+}
+
+/* 기술 발전 섹션 스타일 */
+#techList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#techList li {
+    width: 90%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 영화 평점 순위 섹션 스타일 */
+#timelineList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+#timelineList li {
+    width: calc(50% - 20px);
+    padding: 15px;
+    background: linear-gradient(135deg, #ffffff, #e6e6e6);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+#timelineList li:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+.pagination {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.pagination button {
+    padding: 10px 15px;
+    margin: 5px;
+    font-size: 1em;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    color: #333;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.pagination button.active {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
+    border-color: #007bff;
+}
+
+.pagination button:hover {
+    background-color: #0056b3;
+    color: #fff;
+    transition: background-color 0.3s ease;
 }

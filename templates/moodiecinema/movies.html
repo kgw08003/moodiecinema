@@ -42,6 +42,19 @@
                     <p>감독 정보가 없습니다.</p>
                 {% endif %}
             </div>
+            <!-- 찜 목록에 추가 버튼 -->
+            <div class="action-buttons">
+                <div class="wishlist-container">
+                    <button class="wishlist-button add-to-wishlist" onclick="addToWishlist({{ movie.id }})">
+                        <i class="fas fa-heart"></i> 찜 추가
+                    </button>
+                    <button class="wishlist-button remove-from-wishlist" onclick="removeFromWishlist({{ movie.id }})">
+                        <i class="fas fa-times"></i> 찜 삭제
+                    </button>
+                </div>
+                <!-- 알림 팝업 -->
+                <div id="notification" class="notification"></div>
+            </div>
         </div>
     </section>
 
@@ -106,7 +119,58 @@
             <button class="scroll-button right" onclick="slideRight()">></button>
         </div>
     </section>
-
+    <script>
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message; // 메시지 업데이트
+            
+            // 타입에 따라 클래스 추가
+            if (type === 'success') {
+                notification.classList.remove('error'); // 기존 에러 클래스 제거
+                notification.classList.add('success'); // 성공 클래스 추가
+            } else if (type === 'error') {
+                notification.classList.remove('success'); // 기존 성공 클래스 제거
+                notification.classList.add('error'); // 에러 클래스 추가
+            }
+    
+            notification.classList.add('show'); // 알림 표시
+            
+            // 3초 후에 자동으로 숨기기
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    
+        function addToWishlist(movieId) {
+            fetch(`/wishlist/add-to-wishlist/${movieId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                showNotification('영화가 찜 목록에 추가되었습니다.', 'success');
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    
+        function removeFromWishlist(movieId) {
+            fetch(`/wishlist/remove-from-wishlist/${movieId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                showNotification('영화가 찜 목록에서 삭제되었습니다.', 'error'); // 삭제 시 에러 스타일
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
     <script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -184,7 +248,6 @@
             .catch(error => console.error('Error:', error));
         }
     </script>
-
 
     <!-- 리뷰 섹션 추가 -->
     <section class="reviews-section">
@@ -389,5 +452,4 @@
         </ul>
     </section>
 </body>
-
 {% endblock %}
