@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'diary',
     'movies',
     'reviews',
+    'rest_framework',
     'genres',
     'jjim',
     'user_profile',
@@ -148,6 +149,14 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
 )
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.TemplateHTMLRenderer',  # HTML 렌더링 추가
+    ),
+}
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1']
 

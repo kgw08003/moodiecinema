@@ -459,6 +459,49 @@ body {
 }
 
 
+
+
+/* 향은님 추가 버전 */
+.topbar .navbar {
+  display: flex;
+  align-items: center;
+}
+
+.topbar .navbar form {
+  display: inline-block; /* form을 다른 항목처럼 가로로 정렬 */
+  margin: 0;
+  padding: 0;
+}
+.topbar .navbar ul {
+  background-color: rgba(0, 0, 255, 0.1); /* 파란색 (컨테이너 확인용) */
+  list-style: none;
+  display: flex; /* 플렉스 컨테이너로 설정 */
+  align-items: center;
+  gap: 6px; /* 모든 항목 간 간격을 12px로 균등 설정 */
+  margin: 0;
+  padding: 0;
+  justify-content: space-between;
+
+}
+.topbar .navbar ul li {
+  background-color: rgba(255, 0, 0, 0.1); /* 빨간색 (개별 항목 확인용) */
+  display: inline-block;
+  margin: 0px 8px;
+  min-width: 70px;
+}
+.topbar .navbar ul li.divider {
+
+
+  color: #ffffff;
+  font-size: 18px;
+  margin: 0 5px; /* 좌우 여백을 최소화 */
+  padding: 0 3px; /* 내부 여백 최소화 */
+  width: 15px; /* 고정 너비 */
+  text-align: center; /* 텍스트 정렬 */
+  display: inline-block; /* 가로 정렬 유지 */
+
+}
+
 /**/
 /* 챗봇 */
 #chatbot-widget {

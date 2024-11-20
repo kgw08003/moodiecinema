@@ -4,6 +4,7 @@ body, .page-title, .review-details h3, .review-details p, .no-reviews-message {
 }
 
 .page-title {
+    margin-top: 100px; /* 상단 여백을 추가 */
     font-size: 2.5em;
     color: #ffd700;
     text-align: center;
