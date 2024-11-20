@@ -14,27 +14,6 @@ from django.urls import reverse_lazy
 from .forms import ReviewForm
 from rest_framework.renderers import JSONRenderer
 
-class FeedbackViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-
-    permission_classes = [permissions.IsAuthenticated]  # 로그인된 사용자만 허용
-    def perform_create(self, serializer):
-      serializer.save(user=self.request.user)
-
-
-class FeedbackAnalysisView(APIView):
-    permission_classes = [permissions.IsAdminUser]
-
-    def get(self, request):
-        total_reviews = Review.objects.count()
-        avg_rating = Review.objects.aggregate(models.Avg('rating'))['rating__avg']
-        data = {
-            'total_reviews': total_reviews,
-            'average_rating': avg_rating,
-        }
-        return Response(data)
-
 class ReviewListView(ListView):
     model = Review
     template_name = 'moodiecinema/movies.html'
@@ -58,7 +37,6 @@ class ReviewListView(ListView):
         
         return queryset
 
-
 class ReviewCreateView(CreateView):
     model = Review
     form_class = ReviewForm
@@ -76,7 +54,6 @@ class ReviewCreateView(CreateView):
 class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Review
     form_class = ReviewForm
-    
     
     def get_success_url(self):
         return reverse_lazy('reviews_manage')  # 수정 후 리뷰 관리 페이지로 리디렉션
@@ -156,22 +133,6 @@ class DislikeReviewView(APIView):
         review.save()
         return Response({'like_count': review.like_count, 'dislike_count': review.dislike_count}, status=status.HTTP_200_OK)
 
-# class ReviewReportAPIView(APIView):
-#     renderer_classes = [JSONRenderer]
-
-#     def post(self, request, review_id):
-#         review = get_object_or_404(Review, id=review_id)
-#         data = request.data  # JSON 데이터 받아오기
-#         report_reason = data.get('reason')
-
-#         # ReviewReport 생성 및 저장
-#         ReviewReport.objects.create(
-#             review=review,
-#             reported_by=request.user,  # 신고자
-#             reason=report_reason
-#         )
-#         return Response({"message": "리뷰가 신고되었습니다."})
-
 
 class ReviewReportAPIView(APIView):
     def post(self, request, review_id):
@@ -193,10 +154,6 @@ class ReviewReportAPIView(APIView):
         return Response({"message": "신고가 접수되었습니다."})
 
 
-
-
-
-
 from reviews.models import ReviewReport
 
 class ReportListView(UserPassesTestMixin, ListView):
@@ -209,7 +166,7 @@ class ReportListView(UserPassesTestMixin, ListView):
         return self.request.user.is_staff
 
     def get_queryset(self):
-        return ReviewReport.objects.all().order_by('-reported_at')  # 최신 신고부터 표시
+        return ReviewReport.objects.select_related('review', 'reported_by').order_by('-reported_at')
     
     def handle_no_permission(self):
         # 권한이 없는 경우 리디렉션
@@ -217,3 +174,27 @@ class ReportListView(UserPassesTestMixin, ListView):
         from django.contrib import messages
         messages.error(self.request, "접근 권한이 없습니다.")
         return redirect('home')  # 리디렉션할 URL
+
+from django.http import JsonResponse
+def update_report_status(request, report_id):
+    if request.method == 'POST' and request.user.is_staff:
+        report = get_object_or_404(ReviewReport, id=report_id)
+        action = request.POST.get('action')
+
+        if action == 'process':
+            report.processed = True
+        elif action == 'unprocess':
+            report.processed = False
+        elif action == 'cancel':
+            # 신고 취소 시 리뷰 활성화
+            report.review.is_reported = False
+            report.review.save()
+
+            report.delete()  # 신고 데이터 삭제
+            return JsonResponse({'message': '신고가 취소되었습니다.', 'canceled': True})
+
+        report.save()
+        return JsonResponse({'message': '처리 여부가 업데이트되었습니다.', 'processed': report.processed})
+    return JsonResponse({'error': '잘못된 요청입니다.'}, status=400)
+
+

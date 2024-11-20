@@ -1,13 +1,10 @@
 {% extends 'moodiecinema/base.html' %}
 {% load static %}
 {% block content %}
-
-
 {% block head %}
     <link rel="stylesheet" href="{% static 'movies.css' %}">
     <meta name="csrf-token" content="{{ csrf_token }}">
 {% endblock %}
-
 <body data-movie-id="{{ movie.id }}">
     <section class="movie-detail-container">
         <div class="movie-header">
@@ -26,6 +23,11 @@
                     {% endfor %}
                 </p>
                 <p class="rating"><strong>평점:</strong> {{ movie.vote_average }} / 10</p>
+                <p class="rating">
+                    <strong> 감정 :</strong>
+                    <span>{{ total_sentiment_emoji }}</span>
+                </p>
+                
                 <p class="overview"><strong>개요:</strong> {{ movie.overview|default:"개요 없음" }}</p>
                 
                 <h2>감독</h2>
@@ -43,7 +45,7 @@
         </div>
     </section>
 
-        <!-- 출연진 슬라이더 -->
+    <!-- 출연진 슬라이더 -->
     <section class="cast-list-container">
         <h2>출연진</h2>
         <div class="cast-slider">
@@ -83,8 +85,6 @@
             <a href="#">예매하기</a>
         </div>
     </section>
-    
-    
 
     <!-- 유사한 영화 슬라이더 -->
     <section class="similar-movies-container">
@@ -188,7 +188,8 @@
 
     <!-- 리뷰 섹션 추가 -->
     <section class="reviews-section">
-        <h2 class="reviews-title">리뷰</h2>
+        <h2 class="reviews-title" style="display: inline-block;">리뷰</h2>
+        <a href="{% url 'review_stats' movie_id=movie.id %}" class="review-stats-button">리뷰 통계</a>
 
         <!-- 리뷰 작성 폼 -->
         <form method="post" action="{% url 'review_create' movie_id=movie.id %}" class="review-form">
@@ -210,7 +211,7 @@
 
         <ul class="reviews-list">
             {% for review in reviews %}
-                <li class="review-item">
+                <li class="review-item"data-review-id="{{ review.id }}">
                     <strong class="review-username">{{ review.user.user_name }}</strong> - 
                     <span class="review-date">{{ review.created_at|date:"Y-m-d" }}</span><br>
                     <span class="review-rating">평점: {{ review.rating }} / 5</span><br>
@@ -294,23 +295,40 @@
             }
 
             function openReportModal(reviewId) {
-                document.getElementById('report-modal').style.display = 'flex';
+                console.log("openReportModal 호출됨, reviewId:", reviewId); // 디버깅용 로그
+                const modal = document.getElementById('report-modal');
+                if (modal) {
+                    modal.style.display = 'flex'; // 모달 열기
+                    modal.style.visibility = 'visible'; // 모달 표시
+                    modal.style.opacity = '1'; // 완전하게 보이게 설정
+                } else {
+                    console.error("모달 요소를 찾을 수 없습니다.");
+                }
+
+                // 리뷰 ID를 숨겨진 필드에 설정
                 document.getElementById('review-id').value = reviewId;
 
-                // localStorage에 모달이 열렸다는 상태 저장
+                // localStorage에 모달 상태 저장 (필요할 경우)
                 localStorage.setItem('modalOpened', 'true');
             }
-            function closeReportModal() {
-                document.getElementById('report-modal').style.display = 'none';
 
-                // 모달이 닫히면 상태 삭제
+            function closeReportModal() {
+                const modal = document.getElementById('report-modal');
+                modal.style.display = 'none';
+
+                // 모달 상태 제거
                 localStorage.removeItem('modalOpened');
             }
 
-            // 페이지 로드 시 모달 자동 표시 방지
-            document.addEventListener('DOMContentLoaded', function() {
-                if (localStorage.getItem('modalOpened') !== 'true') {
-                    closeReportModal();
+            // 페이지 로드 시 모달 상태 확인 및 설정
+            document.addEventListener('DOMContentLoaded', function () {
+                const modal = document.getElementById('report-modal');
+                const modalOpened = localStorage.getItem('modalOpened');
+
+                if (modalOpened === 'true') {
+                    modal.style.display = 'flex';
+                } else {
+                    modal.style.display = 'none';
                 }
             });
 
@@ -321,18 +339,23 @@
                 fetch(`/reviews/review/${reviewId}/report/`, {
                     method: 'POST',
                     headers: {
-                        'X-CSRFToken': getCsrfToken(),  // getCsrfToken() 함수 사용
-                        'Content-Type': 'application/json'
+                        'X-CSRFToken': getCsrfToken(),
+                        'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ reason: reportReason })
+                    body: JSON.stringify({ reason: reportReason }),
                 })
-                .then(response => response.json())
-                .then(data => {
-                    alert("신고가 완료되었습니다.");
-                    closeReportModal();
-                    location.reload();  // 페이지 새로고침으로 변경 반영
-                })
-                .catch(error => console.error("Error:", error));
+                    .then((response) => response.json())
+                    .then((data) => {
+                        alert('신고가 완료되었습니다.');
+                        closeReportModal();
+
+                        // 리뷰 DOM 요소 숨기기
+                        const reviewItem = document.querySelector(`[data-review-id="${reviewId}"]`);
+                        if (reviewItem) {
+                            reviewItem.style.display = 'none'; // DOM에서 숨김
+                        }
+                    })
+                    .catch((error) => console.error('Error:', error));
             }
         </script>
     

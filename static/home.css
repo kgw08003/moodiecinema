@@ -112,13 +112,28 @@ body {
   display: flex;
   align-items: center;
 }
+
+.topbar .navbar form {
+  display: inline-block; /* form을 다른 항목처럼 가로로 정렬 */
+  margin: 0;
+  padding: 0;
+}
 .topbar .navbar ul {
+  background-color: rgba(0, 0, 255, 0.1); /* 파란색 (컨테이너 확인용) */
   list-style: none;
+  display: flex; /* 플렉스 컨테이너로 설정 */
+  align-items: center;
+  gap: 6px; /* 모든 항목 간 간격을 12px로 균등 설정 */
+  margin: 0;
+  padding: 0;
+  justify-content: space-between;
+
 }
 .topbar .navbar ul li {
+  background-color: rgba(255, 0, 0, 0.1); /* 빨간색 (개별 항목 확인용) */
   display: inline-block;
   margin: 0px 8px;
-  width: 70px;
+  min-width: 70px;
 }
 .topbar .navbar ul li a {
   color: #b3b3b3;
@@ -134,21 +149,33 @@ body {
   font-size: 15px;
 }
 .topbar .navbar ul li.divider {
+
+
   color: #ffffff;
-  font-size: 19px;
-  margin: 0px 20px;
-  width: auto;
+  font-size: 18px;
+  margin: 0 5px; /* 좌우 여백을 최소화 */
+  padding: 0 3px; /* 내부 여백 최소화 */
+  width: 15px; /* 고정 너비 */
+  text-align: center; /* 텍스트 정렬 */
+  display: inline-block; /* 가로 정렬 유지 */
+  
 }
 .topbar .navbar button {
+  display: inline-block;
+  width: auto; /* 또는 고정값: 예를 들어 100px */
+  height: auto; /* 필요시 높이도 고정 */
   background-color: #ffffff;
-  color: #000000;
-  font-size: 16px;
+  color: #000000;;
   font-weight: bold;
-  padding: 14px 30px;
+  padding: 10px 20px; /* 내부 여백 조정 */
+  vertical-align: middle; /* 다른 요소와 정렬 */
   border: 0px;
-  border-radius: 40px;
   cursor: pointer;
   margin-left: 20px;
+  font-size: 14px; /* 텍스트 크기 조정 */
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  border-radius: 20px; /* 버튼 스타일 유지 */
+
 }
 .topbar .navbar button:hover,
 .topbar .navbar button:active,
