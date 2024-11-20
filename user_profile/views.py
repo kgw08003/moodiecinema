@@ -316,3 +316,79 @@ class RemakeMoviesRevenueAPIView(View):
                         })
 
         return JsonResponse(remake_comparison, safe=False)
+
+
+# 국가별 영화 개봉 수량 (TMDB api기준)
+class MoviesByCountryAPIView(View):
+    def get(self, request):
+        api_key = settings.TMDB_API_KEY
+        base_url = "https://api.themoviedb.org/3/discover/movie"
+        country_codes = {
+            "US": "en", "KR": "ko", "FR": "fr", "JP": "ja", "IN": "hi",
+            "CN": "zh", "DE": "de", "GB": "en", "IT": "it", "ES": "es"
+        }  # 국가 코드와 언어 매핑
+
+        country_data = {}
+
+        for country, language in country_codes.items():
+            response = requests.get(
+                base_url,
+                params={
+                    "api_key": api_key,
+                    "region": country,  # 지역 필터
+                    "with_original_language": language,  # 언어 필터
+                    "sort_by": "release_date.desc",
+                    "primary_release_date.gte": "1900-01-01",
+                    "primary_release_date.lte": "2024-12-31",
+                },
+            )
+            if response.status_code == 200:
+                data = response.json()
+                # 국가별 개봉 수량 저장
+                country_data[country] = data.get("total_results", 0)
+            else:
+                print(f"Failed to fetch data for {country}: {response.status_code}")
+                country_data[country] = 0
+
+        # 디버깅 로그
+        print("Country data: ", country_data)
+
+        return JsonResponse(country_data)
+
+# 연령대별 선호 영화
+class MoviesByAgeRatingAPIView(View):
+    def get(self, request):
+        api_key = settings.TMDB_API_KEY
+        base_url = "https://api.themoviedb.org/3/discover/movie"
+        certification_levels = ["G", "PG", "PG-13", "R", "NC-17"]  # 연령 등급
+        country = "US"  # 미국 기준 연령 등급
+
+        age_rating_data = {}
+
+        for certification in certification_levels:
+            response = requests.get(
+                base_url,
+                params={
+                    "api_key": api_key,
+                    "certification_country": country,
+                    "certification": certification,
+                    "sort_by": "vote_average.desc",  # 높은 평점 기준 정렬
+                    "vote_count.gte": 10,  # 최소 10개 이상의 투표가 있는 영화만
+                    "primary_release_date.gte": "2000-01-01",  # 2000년 이후 개봉
+                    "primary_release_date.lte": "2024-12-31",
+                    "language": "ko-KR",  # 한국어로 번역된 제목 가져오기
+                },
+            )
+            if response.status_code == 200:
+                data = response.json()
+                age_rating_data[certification] = [
+                    {
+                        "title": movie.get("title", movie.get("original_title")),
+                        "vote_average": movie["vote_average"],
+                    }
+                    for movie in data["results"]
+                ]
+            else:
+                age_rating_data[certification] = []
+
+        return JsonResponse(age_rating_data)
