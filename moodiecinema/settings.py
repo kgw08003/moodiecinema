@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'genres',
     'jjim',
     'user_profile',
+    'chatbot',
 ]
 
 MIDDLEWARE = [

@@ -86,11 +86,116 @@
   <input type="hidden" id="diary-url" value="{% url 'diary' %}">
 </div>
 
+
+<div id="chatbot-widget">
+  <button id="chatbot-toggle">
+      <i class="fa fa-comments"></i>
+  </button>
+  <div id="chatbot-container" style="display: none;">
+      <div id="chatbot-header">
+          <h4>영화 추천 챗봇</h4>
+          <button id="chatbot-close">X</button>
+      </div>
+      <div id="chatbot-messages"></div>
+      <div id="chatbot-input">
+          <input type="text" id="chatbot-user-input" placeholder="질문을 입력하세요..." />
+          <button id="chatbot-send">보내기</button>
+      </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const chatbotToggle = document.getElementById('chatbot-toggle');
+  const chatbotContainer = document.getElementById('chatbot-container');
+  const chatbotClose = document.getElementById('chatbot-close');
+  const chatbotSend = document.getElementById('chatbot-send');
+  const chatbotMessages = document.getElementById('chatbot-messages');
+  const chatbotUserInput = document.getElementById('chatbot-user-input');
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  // 챗봇 열기/닫기
+  chatbotToggle.addEventListener('click', () => {
+      chatbotContainer.style.display = 'block';
+      showWelcomeMessage();
+  });
+
+  chatbotClose.addEventListener('click', () => {
+      chatbotContainer.style.display = 'none';
+  });
+
+  // 메시지 전송
+  chatbotSend.addEventListener('click', () => {
+      const userMessage = chatbotUserInput.value.trim();
+      if (userMessage) {
+          appendMessage('user', userMessage);
+          chatbotUserInput.value = '';
+          getChatbotResponse(userMessage);
+      }
+  });
+
+function showWelcomeMessage() {
+      if (!chatbotMessages.hasChildNodes()) {
+          appendMessage('bot', '안녕하세요! 영화 추천AI 입니다. 질문을 입력해보세요!');
+      }
+  }
+
+function appendMessage(sender, message) {
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message', sender);
+
+    // 메시지가 여러 줄일 경우, 줄바꿈 처리
+    const bubbleElement = document.createElement('div');
+    bubbleElement.classList.add('bubble');
+
+    // 메시지를 줄 단위로 분리
+    const lines = message.split('\n');
+    lines.forEach(line => {
+        const lineElement = document.createElement('div');
+        lineElement.textContent = line.trim(); // 각 줄의 텍스트를 추가
+        bubbleElement.appendChild(lineElement);
+    });
+
+    messageElement.appendChild(bubbleElement);
+    chatbotMessages.appendChild(messageElement);
+
+    // 스크롤을 맨 아래로 이동
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+}
+
+  function getChatbotResponse(userMessage) {
+    fetch('/chatbot/api/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken, // CSRF 토큰 추가
+        },
+        body: JSON.stringify({ message: userMessage }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        appendMessage('bot', data.response);
+    })
+    .catch(error => {
+        appendMessage('bot', '오류가 발생했습니다. 다시 시도해주세요.');
+        console.error(error);
+    });
+  }
+});
+</script>
+
+
 <script>
 function goToDiary() {
   const diaryUrl = document.getElementById('diary-url').value;
   window.location.href = diaryUrl;
 }
+
 </script>
 
 <script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
