@@ -73,8 +73,10 @@
 
       <div class="navbar">
           <ul>
+              {% if user.is_authenticated and user.is_staff %}
+                <li><a href="{% url 'report_list' %}" class="nav-link">신고관리</a></li>
+              {% endif %}
               <li><a href="{% url 'music:recommendation' %}" class="nav-link">OST음악</a></li>
-              <li><a href="#">원하는거</a></li>
               <li><a href="#">추가예정</a></li>
               <li class="divider">|</li>
               {% if user.is_authenticated %}
