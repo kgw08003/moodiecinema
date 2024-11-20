@@ -273,3 +273,100 @@ a:hover {
     color: #fff; /* 텍스트가 배경 위에서 잘 보이도록 설정 */
     background-attachment: fixed;
 }
+
+
+/* 알림 메시지 스타일 */
+.notification {
+    position: fixed;
+    top: 14px; /* 화면 상단에서 20px 떨어짐 */
+    right: 20px; /* 화면 우측에서 20px 떨어짐 */
+    background-color: #28a745; /* 초록색 배경 */
+    color: white; /* 텍스트 흰색 */
+    padding: 15px 20px; /* 내부 여백 */
+    border-radius: 8px; /* 둥근 모서리 */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+    font-size: 1rem; /* 텍스트 크기 */
+    font-weight: bold; /* 텍스트 굵게 */
+    z-index: 1000; /* 다른 요소보다 위에 표시 */
+    opacity: 0; /* 기본적으로 숨김 */
+    transform: translateY(-20px); /* 약간 위로 이동 */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* 애니메이션 효과 */
+}
+
+/* 알림 메시지가 표시될 때 */
+.notification.show {
+    opacity: 1; /* 보이기 */
+    transform: translateY(0); /* 제자리로 이동 */
+}
+
+/* 알림 메시지가 숨겨질 때 */
+.notification.hide {
+    opacity: 0; /* 숨기기 */
+    transform: translateY(-20px); /* 다시 위로 이동 */
+}
+
+/* 달력 페이지 업데이트 */
+.notification.success {
+    background-color: #28a745; /* 성공 메시지 초록색 */
+    color: white;
+}
+
+.notification.error {
+    background-color: #dc3545; /* 오류 메시지 빨간색 */
+    color: white;
+}
+
+/*달력 디자인*/
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    gap: 10px; /* 간격 줄이기 */
+}
+
+.calendar-header h2 {
+    font-size: 24px;
+    color: #fff;
+    margin: 0;
+    text-align: center;
+}
+
+.btn.arrow-btn {
+    background: none;
+    color: #fff;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 0; /* 불필요한 여백 제거 */
+}
+
+.btn.arrow-btn:hover {
+    color: #ccc;
+}
+
+.reset-skip-btn {
+    position: fixed;
+    bottom: 20px; /* 화면 하단에서 20px 떨어짐 */
+    right: 20px; /* 화면 오른쪽에서 20px 떨어짐 */
+    background-color: #2196F3;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 15px; /* 크기 조정 */
+    font-size: 14px; /* 텍스트 크기 줄임 */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.reset-skip-btn:hover {
+    background-color: #1976D2;
+    transform: scale(1.05);
+}
+
+.reset-skip-btn:active {
+    background-color: #1565C0;
+    transform: scale(0.95);
+}
+    

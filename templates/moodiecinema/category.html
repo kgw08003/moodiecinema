@@ -13,9 +13,9 @@
         <div class="list">
             {% if genres %}
                 {% for genre in genres %}
-                    <div class="item">
+                    <div class="item" style="background-image: url('{% static 'images/' %}{{ genre.name }}.jpg');">
                         <a href="{% url 'genres:genre_detail' genre_id=genre.genre_id %}">
-                            <img src="https://image.tmdb.org/t/p/w500{{ genre.image_path|default:'' }}" alt="{{ genre.name }}">
+                            <div class="overlay"></div>
                             <h4>{{ genre.name }}</h4>
                         </a>
                     </div>

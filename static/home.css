@@ -220,12 +220,15 @@ body {
     margin: 70px 0px 0px;
     border-color: #636363;
 }
+.preview .button {
+  margin-right: 50px; /* 챗봇 버튼과 겹치지 않도록 간격 조정 */
+}
 .preview {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(to right, #ae2896, #f7c948);
+  background: linear-gradient(to right, #f7c948, #ae2896);
   padding: 15px 40px;
   display: flex;
   justify-content: space-between;
@@ -453,4 +456,168 @@ body {
 /* OST 음악 링크 hover 상태 */
 .nav-link:hover {
   color: #FFFF00; /* 마우스를 올렸을 때 텍스트 색상 노란색 */
+}
+
+
+
+
+/* 향은님 추가 버전 */
+.topbar .navbar {
+  display: flex;
+  align-items: center;
+}
+
+.topbar .navbar form {
+  display: inline-block; /* form을 다른 항목처럼 가로로 정렬 */
+  margin: 0;
+  padding: 0;
+}
+.topbar .navbar ul {
+  background-color: rgba(0, 0, 255, 0.1); /* 파란색 (컨테이너 확인용) */
+  list-style: none;
+  display: flex; /* 플렉스 컨테이너로 설정 */
+  align-items: center;
+  gap: 6px; /* 모든 항목 간 간격을 12px로 균등 설정 */
+  margin: 0;
+  padding: 0;
+  justify-content: space-between;
+
+}
+.topbar .navbar ul li {
+  background-color: rgba(255, 0, 0, 0.1); /* 빨간색 (개별 항목 확인용) */
+  display: inline-block;
+  margin: 0px 8px;
+  min-width: 70px;
+}
+.topbar .navbar ul li.divider {
+
+
+  color: #ffffff;
+  font-size: 18px;
+  margin: 0 5px; /* 좌우 여백을 최소화 */
+  padding: 0 3px; /* 내부 여백 최소화 */
+  width: 15px; /* 고정 너비 */
+  text-align: center; /* 텍스트 정렬 */
+  display: inline-block; /* 가로 정렬 유지 */
+
+}
+
+/**/
+/* 챗봇 */
+#chatbot-widget {
+  position: fixed;
+  bottom: 10px;
+  right: 20px;
+  z-index: 1000;
+}
+
+#chatbot-toggle {
+  background-color: #f7c948;
+  color: #181818;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#chatbot-container {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 400px; /* 기존보다 넓게 설정 */
+  height: 500px; /* 높이도 약간 늘림 */
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#chatbot-header {
+  background: #f7c948;
+  color: 181818;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#chatbot-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  background-color: #f4f4f9;
+  height: 400px; /* 메시지 영역 높이 조정 */
+}
+
+.message {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.message.bot {
+  justify-content: flex-start;
+}
+
+.message .bubble div {
+  margin-bottom: 5px; /* 줄 간격 조정 */
+}
+
+/* 말풍선 공통 스타일 */
+.message .bubble {
+  max-width: 70%;
+  padding: 10px;
+  border-radius: 15px;
+  font-size: 14px;
+  position: relative;
+  line-height: 1.5; /* 줄 간격 조정 */
+}
+
+.message.user .bubble {
+  background-color: #2f4f4f;
+  color: white;
+  border-bottom-right-radius: 0;
+}
+
+.message.bot .bubble {
+  background-color: #e5e5ea;
+  color: black;
+  border-bottom-left-radius: 0;
+}
+
+/* 입력 영역 고정 */
+#chatbot-input {
+  display: flex;
+  padding: 10px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-top: 1px solid #ddd;
+}
+
+#chatbot-user-input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-right: 5px;
+}
+
+#chatbot-send {
+  background: #f7c948;
+  color: #181818;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  cursor: pointer;
 }
