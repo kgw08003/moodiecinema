@@ -1,7 +1,7 @@
 a {
-    text-decoration-line: none 
-  }
-
+    color: #fff; /* 모든 링크를 흰색으로 설정 */
+    text-decoration: none; /* 밑줄 제거 */
+}
 /* 기본 설정 */
 body {
     font-family: Arial, sans-serif;

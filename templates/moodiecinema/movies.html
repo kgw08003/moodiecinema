@@ -1,12 +1,10 @@
 {% extends 'moodiecinema/base.html' %}
 {% load static %}
 {% block content %}
-
-
 {% block head %}
     <link rel="stylesheet" href="{% static 'movies.css' %}">
+    <meta name="csrf-token" content="{{ csrf_token }}">
 {% endblock %}
-
 <body data-movie-id="{{ movie.id }}">
     <section class="movie-detail-container">
         <div class="movie-header">
@@ -25,6 +23,11 @@
                     {% endfor %}
                 </p>
                 <p class="rating"><strong>평점:</strong> {{ movie.vote_average }} / 10</p>
+                <p class="rating">
+                    <strong> 감정 :</strong>
+                    <span>{{ total_sentiment_emoji }}</span>
+                </p>
+                
                 <p class="overview"><strong>개요:</strong> {{ movie.overview|default:"개요 없음" }}</p>
                 
                 <h2>감독</h2>
@@ -54,60 +57,8 @@
             </div>
         </div>
     </section>
-    <script>
-    function showNotification(message, type = 'success') {
-        const notification = document.getElementById('notification');
-        notification.textContent = message; // 메시지 업데이트
-        
-        // 타입에 따라 클래스 추가
-        if (type === 'success') {
-            notification.classList.remove('error'); // 기존 에러 클래스 제거
-            notification.classList.add('success'); // 성공 클래스 추가
-        } else if (type === 'error') {
-            notification.classList.remove('success'); // 기존 성공 클래스 제거
-            notification.classList.add('error'); // 에러 클래스 추가
-        }
 
-        notification.classList.add('show'); // 알림 표시
-        
-        // 3초 후에 자동으로 숨기기
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 3000);
-    }
-
-    function addToWishlist(movieId) {
-        fetch(`/wishlist/add-to-wishlist/${movieId}/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            showNotification('영화가 찜 목록에 추가되었습니다.', 'success');
-        })
-        .catch(error => console.error('Error:', error));
-    }
-
-    function removeFromWishlist(movieId) {
-        fetch(`/wishlist/remove-from-wishlist/${movieId}/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            showNotification('영화가 찜 목록에서 삭제되었습니다.', 'error'); // 삭제 시 에러 스타일
-        })
-        .catch(error => console.error('Error:', error));
-    }
-    </script>
-
-        <!-- 출연진 슬라이더 -->
+    <!-- 출연진 슬라이더 -->
     <section class="cast-list-container">
         <h2>출연진</h2>
         <div class="cast-slider">
@@ -168,7 +119,58 @@
             <button class="scroll-button right" onclick="slideRight()">></button>
         </div>
     </section>
-
+    <script>
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message; // 메시지 업데이트
+            
+            // 타입에 따라 클래스 추가
+            if (type === 'success') {
+                notification.classList.remove('error'); // 기존 에러 클래스 제거
+                notification.classList.add('success'); // 성공 클래스 추가
+            } else if (type === 'error') {
+                notification.classList.remove('success'); // 기존 성공 클래스 제거
+                notification.classList.add('error'); // 에러 클래스 추가
+            }
+    
+            notification.classList.add('show'); // 알림 표시
+            
+            // 3초 후에 자동으로 숨기기
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    
+        function addToWishlist(movieId) {
+            fetch(`/wishlist/add-to-wishlist/${movieId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                showNotification('영화가 찜 목록에 추가되었습니다.', 'success');
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    
+        function removeFromWishlist(movieId) {
+            fetch(`/wishlist/remove-from-wishlist/${movieId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                showNotification('영화가 찜 목록에서 삭제되었습니다.', 'error'); // 삭제 시 에러 스타일
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
     <script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -247,25 +249,43 @@
         }
     </script>
 
-
     <!-- 리뷰 섹션 추가 -->
     <section class="reviews-section">
-        <h2 class="reviews-title">리뷰</h2>
-        <form method="post" action="{% url 'review_create' movie_id=movie_id %}" class="review-form">
+        <h2 class="reviews-title" style="display: inline-block;">리뷰</h2>
+        <a href="{% url 'review_stats' movie_id=movie.id %}" class="review-stats-button">리뷰 통계</a>
+
+        <!-- 리뷰 작성 폼 -->
+        <form method="post" action="{% url 'review_create' movie_id=movie.id %}" class="review-form">
             {% csrf_token %}
             {{ review_form.as_p }}
             <button type="submit" class="submit-button">리뷰 작성</button>
         </form>
-    
-        <h3 class="reviews-subtitle">작성된 리뷰</h3>
+        
+        <!-- 정렬 옵션과 리뷰 목록 -->
+        <form method="get" action="" class="sort-form">
+            <label for="sort" class="sort-label">정렬 기준:</label>
+            <select name="sort" id="sort" onchange="this.form.submit()">
+                <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>최신순</option>
+                <option value="highest_rating" {% if request.GET.sort == 'highest_rating' %}selected{% endif %}>평점 높은 순</option>
+                <option value="lowest_rating" {% if request.GET.sort == 'lowest_rating' %}selected{% endif %}>평점 낮은 순</option>
+                <option value="most_likes" {% if request.GET.sort == 'most_likes' %}selected{% endif %}>좋아요 많은 순</option>
+            </select>
+        </form>
+
         <ul class="reviews-list">
             {% for review in reviews %}
-                <li class="review-item">
-                    <strong class="review-username">{{ review.user.username }}</strong> - 
+                <li class="review-item"data-review-id="{{ review.id }}">
+                    <strong class="review-username">{{ review.user.user_name }}</strong> - 
                     <span class="review-date">{{ review.created_at|date:"Y-m-d" }}</span><br>
                     <span class="review-rating">평점: {{ review.rating }} / 5</span><br>
                     <p class="review-content">{{ review.content }}</p>
-                    
+                    <!-- 감정 분석 결과 표시 -->
+                    <div class="emotion-analysis">
+                        <h3>감정 분석 결과</h3>
+                        <div class="emotion-box">
+                            <p>{{ review.emotion|default:"분석 결과 없음" }}</p>
+                        </div>
+                    </div>
                     <div class="like-dislike-buttons">
                         <button onclick="likeReview({{ review.id }})" class="like-button">
                             👍 <span id="like-count-{{ review.id }}">{{ review.like_count }}</span>
@@ -274,15 +294,147 @@
                             👎 <span id="dislike-count-{{ review.id }}">{{ review.dislike_count }}</span>
                         </button>
                     </div>
-                
+
+                    <!-- 모달 버튼 및 모달 요소 -->
+                    <button onclick="openReportModal({{ review.id }})" class="report-button">🚨 신고</button>
                 </li>
             {% empty %}
                 <p class="no-reviews-message">아직 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</p>
             {% endfor %}
         </ul>
+
+        <!-- 신고 모달 창 -->
+        <div id="report-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeReportModal()">&times;</span>
+                <h2>신고 사유를 선택하세요</h2>
+                
+                <form id="report-form">
+                    {% csrf_token %}
+                    <input type="hidden" id="review-id" name="review_id">
+                    
+                    <label><input type="radio" name="report_reason" value="spam" required> 도배성 게시물</label><br>
+                    <label><input type="radio" name="report_reason" value="inappropriate"> 부적절한 내용</label><br>
+                    <label><input type="radio" name="report_reason" value="false_info"> 거짓 정보</label><br>
+                    
+                    <button type="button" onclick="submitReport()">신고 제출</button>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            function getCsrfToken() {
+                return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            }
+
+            function likeReview(reviewId) {
+                fetch(`/reviews/review/${reviewId}/like/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken(),  // getCsrfToken() 함수 사용
+                        'Content-Type': 'application/json'
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById(`like-count-${reviewId}`).innerText = data.like_count;
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        
+            function dislikeReview(reviewId) {
+                fetch(`/reviews/review/${reviewId}/dislike/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken(),  // getCsrfToken() 함수 사용
+                        'Content-Type': 'application/json'
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById(`dislike-count-${reviewId}`).innerText = data.dislike_count;
+                })
+                .catch(error => console.error('Error:', error));
+            }
+
+            function openReportModal(reviewId) {
+                console.log("openReportModal 호출됨, reviewId:", reviewId); // 디버깅용 로그
+                const modal = document.getElementById('report-modal');
+                if (modal) {
+                    modal.style.display = 'flex'; // 모달 열기
+                    modal.style.visibility = 'visible'; // 모달 표시
+                    modal.style.opacity = '1'; // 완전하게 보이게 설정
+                } else {
+                    console.error("모달 요소를 찾을 수 없습니다.");
+                }
+
+                // 리뷰 ID를 숨겨진 필드에 설정
+                document.getElementById('review-id').value = reviewId;
+
+                // localStorage에 모달 상태 저장 (필요할 경우)
+                localStorage.setItem('modalOpened', 'true');
+            }
+
+            function closeReportModal() {
+                const modal = document.getElementById('report-modal');
+                modal.style.display = 'none';
+
+                // 모달 상태 제거
+                localStorage.removeItem('modalOpened');
+            }
+
+            // 페이지 로드 시 모달 상태 확인 및 설정
+            document.addEventListener('DOMContentLoaded', function () {
+                const modal = document.getElementById('report-modal');
+                const modalOpened = localStorage.getItem('modalOpened');
+
+                if (modalOpened === 'true') {
+                    modal.style.display = 'flex';
+                } else {
+                    modal.style.display = 'none';
+                }
+            });
+
+            function submitReport() {
+                const reviewId = document.getElementById('review-id').value;
+                const reportReason = document.querySelector('input[name="report_reason"]:checked').value;
+
+                fetch(`/reviews/review/${reviewId}/report/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken(),
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ reason: reportReason }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        alert('신고가 완료되었습니다.');
+                        closeReportModal();
+
+                        // 리뷰 DOM 요소 숨기기
+                        const reviewItem = document.querySelector(`[data-review-id="${reviewId}"]`);
+                        if (reviewItem) {
+                            reviewItem.style.display = 'none'; // DOM에서 숨김
+                        }
+                    })
+                    .catch((error) => console.error('Error:', error));
+            }
+        </script>
     
         <!-- TMDb 리뷰 섹션을 작성된 리뷰와 유사한 형식으로 수정 -->
-        <h3 class="reviews-subtitle">TMDb 리뷰</h3>
+        <h3 class="reviews-subtitle">TMDB 리뷰</h3>
+
+        <!-- TMDb 리뷰 정렬 옵션 추가 -->
+        <form method="get" action="" class="sort-form">
+            <label for="sort_tmdb" class="sort-label">정렬 기준:</label>
+            <select name="sort_tmdb" id="sort_tmdb" onchange="this.form.submit()">
+                <option value="newest" {% if request.GET.sort_tmdb == 'newest' %}selected{% endif %}>최신순</option>
+                <option value="highest_rating" {% if request.GET.sort_tmdb == 'highest_rating' %}selected{% endif %}>평점 높은 순</option>
+                <option value="lowest_rating" {% if request.GET.sort_tmdb == 'lowest_rating' %}selected{% endif %}>평점 낮은 순</option>
+            </select>
+        </form>
+
         <ul class="reviews-list tmdb-review-list">
             {% if tmdb_reviews %}
                 {% for review in tmdb_reviews %}
@@ -295,11 +447,9 @@
                     </li>
                 {% endfor %}
             {% else %}
-                <p class="no-reviews-message">이 영화에 대한 TMDb 리뷰가 없습니다.</p>
+                <p class="no-reviews-message">이 영화에 대한 TMDB 리뷰가 없습니다.</p>
             {% endif %}
         </ul>
     </section>
-
 </body>
-
 {% endblock %}
