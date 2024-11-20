@@ -1,0 +1,161 @@
+/* 찜 목록 전체 컨테이너 스타일 */
+.wishlist-container {
+    padding: 20px 40px; /* 제목과 콘텐츠 간격 설정 */
+}
+
+/* 찜 목록 제목 스타일 */
+.wishlist-title {
+    color: #ffcc00; /* 흰색 텍스트 */
+    font-size: 24px; /* 제목 크기 */
+    margin-bottom: 30px; /* 제목 아래 여백 */
+    font-weight: bold; /* 굵은 텍스트 */
+    text-align: center;
+}
+
+/* 찜 목록 전체 레이아웃 */
+.wishlist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px; /* 카드 간격 */
+    justify-content: flex-start; /* 카드들을 왼쪽 정렬 */
+    max-width: 1200px; /* 최대 너비 */
+    margin: 0 auto; /* 중앙 정렬 */
+    list-style: none; /* 리스트 스타일 제거 */
+    padding: 0; /* 기본 패딩 제거 */
+}
+
+/* 영화 카드 스타일 */
+.movie-item {
+    width: 220px; /* 카드 너비 */
+    background-color: #181818; /* 어두운 배경 */
+    border-radius: 8px;
+    overflow: hidden; /* 넘치는 내용 숨김 */
+    transition: transform 0.3s ease, background-color 0.3s ease; /* 부드러운 효과 */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+}
+
+.movie-item:hover {
+    transform: scale(1.05); /* 호버 시 확대 */
+
+}
+
+/* 영화 이미지 스타일 */
+.movie-item img {
+    width: 100%;
+    height: 330px; /* 이미지 높이 */
+    object-fit: cover; /* 비율 유지하며 잘림 */
+    border-radius: 6px 6px 0 0; /* 위쪽만 둥글게 */
+}
+
+/* 영화 제목 스타일 */
+.movie-item h3 {
+    color: #ffffff; /* 흰색 텍스트 */
+    font-size: 16px; /* 텍스트 크기 */
+    margin: 10px 0; /* 상단 여백 추가 */
+    text-align: center; /* 중앙 정렬 */
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    overflow: hidden; /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis; /* 말줄임표 추가 */
+}
+
+/* 삭제 버튼 스타일 */
+.remove-button {
+    display: block;
+    width: 100%; /* 버튼 너비를 카드 너비에 맞춤 */
+    padding: 10px;
+    background-color: #dc3545; /* 빨간색 배경 */
+    color: #fff; /* 흰색 텍스트 */
+    font-size: 14px;
+    border: none;
+    border-radius: 0 0 8px 8px; /* 아래쪽 모서리 둥글게 */
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.remove-button:hover {
+    background-color: #c82333; /* 호버 시 더 어두운 빨간색 */
+}
+
+/* 찜 목록이 비어 있을 때 메시지 스타일 */
+.wishlist p {
+    color: #fff;
+    font-size: 18px;
+    text-align: center;
+    margin-top: 50px;
+}
+
+/* 페이지 네비게이션 스타일 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    gap: 10px;
+}
+
+.pagination a {
+    padding: 10px 15px;
+    background-color: #333; /* 어두운 배경 */
+    color: #fff; /* 흰색 텍스트 */
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.3s ease; /* 부드러운 전환 */
+}
+
+.pagination a:hover {
+    background-color: #f0a500; /* 호버 시 주황색 */
+    transform: scale(1.1); /* 살짝 확대 */
+}
+
+.pagination span {
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* 현재 페이지 강조 */
+.pagination a.active {
+    background-color: #f0a500;
+    color: #181818;
+    cursor: default;
+}
+
+/* 첫 번째 및 마지막 버튼 스타일 */
+.pagination a:first-child, .pagination a:last-child {
+    font-size: 14px;
+}
+
+/* 빈 찜 목록 메시지 강조 */
+.wishlist p {
+    color: #ffffff;
+    font-size: 18px;
+    font-style: italic;
+    margin-top: 30px;
+    text-align: center;
+}
+
+/* 알림 메시지 스타일 */
+.notification {
+    position: fixed;
+    top: 14px;
+    right: 20px;
+    background-color: #dc3545; /* 초록색 배경 */
+    color: white; /* 텍스트 흰색 */
+    padding: 15px 20px; /* 내부 여백 */
+    border-radius: 8px; /* 둥근 모서리 */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+    font-size: 1rem; /* 텍스트 크기 */
+    font-weight: bold; /* 텍스트 굵게 */
+    z-index: 1000; /* 다른 요소보다 위에 표시 */
+    opacity: 0; /* 기본적으로 숨김 */
+    transform: translateY(-20px); /* 약간 위로 이동 */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* 애니메이션 효과 */
+}
+
+/* 알림 메시지가 표시될 때 */
+.notification.show {
+    opacity: 1; /* 보이기 */
+    transform: translateY(0); /* 제자리로 이동 */
+}
