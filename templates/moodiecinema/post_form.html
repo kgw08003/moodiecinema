@@ -1,0 +1,20 @@
+{% extends 'moodiecinema/base.html' %}
+
+{% block title %}새 게시글 작성{% endblock %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'community.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="post-create-container">
+    <h1 class="post-create-title">새 게시글 작성</h1>
+    <form method="post" class="post-create-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-save">저장</button>
+        <a href="{% url 'community:post_list' %}" class="btn-cancel">취소</a>
+    </form>
+</div>
+{% endblock %}
