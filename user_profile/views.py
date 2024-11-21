@@ -324,9 +324,13 @@ class MoviesByCountryAPIView(View):
         api_key = settings.TMDB_API_KEY
         base_url = "https://api.themoviedb.org/3/discover/movie"
         country_codes = {
-            "US": "en", "KR": "ko", "FR": "fr", "JP": "ja", "IN": "hi",
-            "CN": "zh", "DE": "de", "GB": "en", "IT": "it", "ES": "es"
-        }  # 국가 코드와 언어 매핑
+        "US": "en", "KR": "ko", "FR": "fr", "JP": "ja", "IN": "hi",
+        "CN": "zh", "DE": "de", "GB": "en", "IT": "it", "ES": "es",
+        "RU": "ru", "BR": "pt", "MX": "es", "AU": "en", "CA": "en",
+        "AR": "es", "TR": "tr", "SA": "ar", "NG": "en", "ZA": "en",
+        "EG": "ar", "ID": "id", "TH": "th", "VN": "vi", "PH": "en"
+    }
+  # 국가 코드와 언어 매핑
 
         country_data = {}
 

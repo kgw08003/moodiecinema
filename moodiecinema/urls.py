@@ -35,6 +35,7 @@ urlpatterns = [
     path('music/', include('music.urls')), 
     path('wishlist/', include('jjim.urls')),  # jjim 앱의 URL 포함
     path('userprofile/', include('user_profile.urls')),
+    path('chatbot/', include('chatbot.urls')),  # chatbot 앱의 URL 포함
 ]
 
 if settings.DEBUG:
