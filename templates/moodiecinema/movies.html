@@ -274,18 +274,19 @@
 
         <ul class="reviews-list">
             {% for review in reviews %}
+                <!-- 감정 분석 결과 표시 -->
+                <div class="emotion-analysis">
+                        
+                    <div class="emotion-box">
+                        <p>감정 분석 결과: {{ review.emotion|default:"분석 결과 없음" }}</p>
+                    </div>
+                </div>
                 <li class="review-item"data-review-id="{{ review.id }}">
                     <strong class="review-username">{{ review.user.user_name }}</strong> - 
                     <span class="review-date">{{ review.created_at|date:"Y-m-d" }}</span><br>
                     <span class="review-rating">평점: {{ review.rating }} / 5</span><br>
                     <p class="review-content">{{ review.content }}</p>
-                    <!-- 감정 분석 결과 표시 -->
-                    <div class="emotion-analysis">
-                        <h3>감정 분석 결과</h3>
-                        <div class="emotion-box">
-                            <p>{{ review.emotion|default:"분석 결과 없음" }}</p>
-                        </div>
-                    </div>
+                    
                     <div class="like-dislike-buttons">
                         <button onclick="likeReview({{ review.id }})" class="like-button">
                             👍 <span id="like-count-{{ review.id }}">{{ review.like_count }}</span>

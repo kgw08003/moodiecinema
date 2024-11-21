@@ -454,3 +454,39 @@ body {
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.5); /* 호버 시 그림자 더 강하게 */
 }
 
+
+/* 감정 분석 박스 */
+.emotion-analysis {
+    margin-top: 7px; /* 상단 여백 */
+    padding: 7px; /* 내부 여백 */
+    background-color: #373434; /* 어두운 배경 */
+    border-radius: 8px; /* 둥근 모서리 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* 부드러운 그림자 */
+}
+
+/* 감정 분석 텍스트 */
+.emotion-box p {
+    margin: 0;
+    font-size: 16px; /* 적당한 크기 */
+    font-weight: 500; /* 중간 굵기 */
+    color: #FFFFFF; /* 흰색 텍스트 */
+    line-height: 1.6; /* 줄 간격 */
+    text-align: left; /* 가운데 정렬 */
+}
+
+/* 강조 텍스트 */
+.emotion-box p strong {
+    color: #FFD700; /* 황금색 */
+    font-weight: bold;
+}
+
+/* 반응형 디자인 */
+@media screen and (max-width: 600px) {
+    .emotion-analysis {
+        padding: 12px;
+    }
+    .emotion-box p {
+        font-size: 14px; /* 작은 화면에서는 글자 크기 줄임 */
+    }
+}
+
