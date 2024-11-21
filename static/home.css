@@ -112,28 +112,13 @@ body {
   display: flex;
   align-items: center;
 }
-
-.topbar .navbar form {
-  display: inline-block; /* form을 다른 항목처럼 가로로 정렬 */
-  margin: 0;
-  padding: 0;
-}
 .topbar .navbar ul {
-  background-color: rgba(0, 0, 255, 0.1); /* 파란색 (컨테이너 확인용) */
   list-style: none;
-  display: flex; /* 플렉스 컨테이너로 설정 */
-  align-items: center;
-  gap: 6px; /* 모든 항목 간 간격을 12px로 균등 설정 */
-  margin: 0;
-  padding: 0;
-  justify-content: space-between;
-
 }
 .topbar .navbar ul li {
-  background-color: rgba(255, 0, 0, 0.1); /* 빨간색 (개별 항목 확인용) */
   display: inline-block;
   margin: 0px 8px;
-  min-width: 70px;
+  width: 70px;
 }
 .topbar .navbar ul li a {
   color: #b3b3b3;
@@ -149,33 +134,21 @@ body {
   font-size: 15px;
 }
 .topbar .navbar ul li.divider {
-
-
   color: #ffffff;
-  font-size: 18px;
-  margin: 0 5px; /* 좌우 여백을 최소화 */
-  padding: 0 3px; /* 내부 여백 최소화 */
-  width: 15px; /* 고정 너비 */
-  text-align: center; /* 텍스트 정렬 */
-  display: inline-block; /* 가로 정렬 유지 */
-  
+  font-size: 19px;
+  margin: 0px 20px;
+  width: auto;
 }
 .topbar .navbar button {
-  display: inline-block;
-  width: auto; /* 또는 고정값: 예를 들어 100px */
-  height: auto; /* 필요시 높이도 고정 */
   background-color: #ffffff;
-  color: #000000;;
+  color: #000000;
+  font-size: 16px;
   font-weight: bold;
-  padding: 10px 20px; /* 내부 여백 조정 */
-  vertical-align: middle; /* 다른 요소와 정렬 */
+  padding: 14px 30px;
   border: 0px;
+  border-radius: 40px;
   cursor: pointer;
   margin-left: 20px;
-  font-size: 14px; /* 텍스트 크기 조정 */
-  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
-  border-radius: 20px; /* 버튼 스타일 유지 */
-
 }
 .topbar .navbar button:hover,
 .topbar .navbar button:active,
@@ -247,12 +220,15 @@ body {
     margin: 70px 0px 0px;
     border-color: #636363;
 }
+.preview .button {
+  margin-right: 50px; /* 챗봇 버튼과 겹치지 않도록 간격 조정 */
+}
 .preview {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(to right, #ae2896, #f7c948);
+  background: linear-gradient(to right, #f7c948, #ae2896);
   padding: 15px 40px;
   display: flex;
   justify-content: space-between;
@@ -480,4 +456,705 @@ body {
 /* OST 음악 링크 hover 상태 */
 .nav-link:hover {
   color: #FFFF00; /* 마우스를 올렸을 때 텍스트 색상 노란색 */
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+a {
+  text-decoration-line: none 
+}
+body {
+  background-color: #121212;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 196px;
+  background-color: #000000;
+  padding: 24px;
+}
+.sidebar .logo img {
+  width: 130px;
+}
+.sidebar .navigation ul {
+  list-style: none;
+  margin-top: 20px;
+}
+.sidebar .navigation ul li {
+  padding: 10px 0px;
+}
+.sidebar .navigation ul li a {
+  color: #b3b3b3;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 13px;
+}
+.sidebar .navigation ul li a:hover,
+.sidebar .navigation ul li a:active,
+.sidebar .navigation ul li a:focus {
+  color: #ffffff;
+}
+.sidebar .navigation ul li a:hover .fa,
+.sidebar .navigation ul li a:active .fa,
+.sidebar .navigation ul li a:focus .fa {
+  color: #b3b3b3;
+}
+.sidebar .navigation ul li .fa {
+  font-size: 20px;
+  margin-right: 10px;
+}
+.sidebar .navigation ul li a:hover .fa:hover,
+.sidebar .navigation ul li a:hover .fa:active,
+.sidebar .navigation ul li a:hover .fa:focus {
+  color: #ffffff;
+}
+.sidebar .policies {
+  position: absolute;
+  bottom: 100px;
+}
+.sidebar .policies ul {
+  list-style: none;
+}
+.sidebar .policies ul li {
+  padding-bottom: 5px;
+}
+.sidebar .policies ul li a {
+  color: #b3b3b3;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 10px;
+}
+.sidebar .policies ul li a:hover,
+.sidebar .policies ul li a:active,
+.sidebar .policies ul li a:focus {
+  text-decoration: underline;
+}
+
+.main-container {
+  margin-top: 60px;
+  margin-left: 245px;
+  margin-bottom: 100px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #101010;
+  padding: 14px 30px;
+  position: fixed; /* 상단바 고정 */
+  top: 0;
+  left: 243px; /* 사이드바 너비만큼 좌측 마진 */
+  right: 0;
+  z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 조정 */
+}
+.topbar .prev-next-buttons button {
+  color: #7a7a7a;
+  cursor: pointer; /* 클릭 가능 상태로 변경 */
+  width: 34px;
+  height: 34px;
+  border-radius: 100%;
+  font-size: 18px;
+  border: 0px;
+  background-color: #090909;
+  margin-right: 10px;
+}
+.topbar .prev-next-buttons button:hover {
+  background-color: #333333; /* 마우스를 올렸을 때 색상 변경 */
+}
+.topbar .navbar {
+  display: flex;
+  align-items: center;
+}
+.topbar .navbar ul {
+  list-style: none;
+}
+.topbar .navbar ul li {
+  display: inline-block;
+  margin: 0px 8px;
+  width: 70px;
+}
+.topbar .navbar ul li a {
+  color: #b3b3b3;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+.topbar .navbar ul li a:hover,
+.topbar .navbar ul li a:active,
+.topbar .navbar ul li a:focus {
+  color: #ffffff;
+  font-size: 15px;
+}
+.topbar .navbar ul li.divider {
+  color: #ffffff;
+  font-size: 19px;
+  margin: 0px 20px;
+  width: auto;
+}
+.topbar .navbar button {
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 14px 30px;
+  border: 0px;
+  border-radius: 40px;
+  cursor: pointer;
+  margin-left: 20px;
+}
+.topbar .navbar button:hover,
+.topbar .navbar button:active,
+.topbar .navbar button:focus {
+  background-color: #f2f2f2;
+}
+.movie-lists {
+    padding: 20px 40px;
+}
+.movie-lists h2 {
+    color: #ffffff;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+.movie-lists .list {
+    display: flex;
+    gap: 20px;
+    overflow: hidden;
+}
+.movie-lists .list .item {
+    min-width: 140px;
+    width: 160px;
+    padding: 15px;
+    background-color: #181818;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all ease 0.4s;
+}
+.movie-lists .list .item:hover {
+    background-color: #252525;
+}
+.movie-lists .list .item img {
+    width: 100%;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+.movie-lists .list .item .play {
+    position: relative;
+}
+.movie-lists .list .item .play .fa {
+    position: absolute;
+    right: 10px;
+    top: -60px;
+    padding: 18px;
+    background-color: #FFFF33;
+    border-radius: 100%;
+    opacity: 0;
+    transition: all ease 0.4s;
+}
+.movie-lists .list .item:hover .play .fa {
+    opacity: 1;
+    transform: translateY(-20px);
+}
+.movie-lists .list .item h4 {
+    color: #ffffff;
+    font-size: 14px;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.movie-lists .list .item p {
+    color: #989898;
+    font-size: 12px;
+    line-height: 20px;
+    font-weight: 600;
+}
+.movie-lists hr {
+    margin: 70px 0px 0px;
+    border-color: #636363;
+}
+.preview .button {
+  margin-right: 50px; /* 챗봇 버튼과 겹치지 않도록 간격 조정 */
+}
+.preview {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to right, #f7c948, #ae2896);
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+}
+.preview h6 {
+  color: #ffffff;
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.preview p {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+}
+.preview button {
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 14px 30px;
+  border: 0px;
+  border-radius: 40px;
+  cursor: pointer;
+}
+
+/*검색창*/
+.search-form {
+  flex-grow: 1;
+  max-width: 200px;
+  margin-left: 0px;
+  margin-right: 700px; /*검색어칸 위치 조정*/
+}
+
+.search_box {
+  position: relative;
+  width: 100%;
+}
+
+.search_box input {
+  width: 100%;
+  padding-right: 40px; /* 아이콘 공간을 위해 오른쪽 패딩 추가 */
+  padding-left: 30px; /* 아이콘을 위한 왼쪽 패딩 추가 */
+  height: 35px;
+  border: 2px solid #ccc; /* 테두리 색상 */
+  border-radius: 20px; /* 모서리 둥글게 */
+  outline: none; /* 포커스 시 테두리 제거 */
+}
+
+.search_box button {
+  position: absolute;
+  left: 10px; /* 왼쪽 위치 조정 */
+  top: 50%; /* 수직 중앙 정렬 */
+  transform: translateY(-50%); /* 수직 중앙 정렬 */
+  background: none; /* 버튼 배경 제거 */
+  border: none; /* 버튼 테두리 제거 */
+  cursor: pointer; /* 클릭 가능하도록 설정 */
+}
+
+.search_box img {
+  width: 20px; /* 아이콘 크기 설정 */
+  height: 20px; /* 아이콘 크기 설정 */
+}
+
+/* 카드 스타일 */
+.movie-lists .list .item {
+    width: calc(33.33% - 20px); /* 3개 열로 나열 */
+    margin-bottom: 20px; /* 아래 여백 추가 */
+}
+
+.movie-lists .list .card {
+    background-color: #181818;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center; /* 텍스트 가운데 정렬 */
+    transition: transform 0.3s;
+}
+
+.movie-lists .list .card:hover {
+    transform: scale(1.05); /* 호버 시 확대 효과 */
+}
+
+.movie-lists .list .card img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.movie-lists .list .card h4 {
+    color: #fff;
+    margin-top: 10px;
+}
+
+/* 로그인 및 로그아웃 버튼 스타일 */
+.auth-button {
+  background-color: #ffffff; /* 배경 색상 */
+  color: #000000; /* 글자 색상 */
+  font-size: 16px; /* 글자 크기 */
+  font-weight: bold; /* 두껍게 */
+  padding: 14px 30px; /* 패딩 */
+  border: 0px; /* 테두리 없음 */
+  border-radius: 40px; /* 모서리 둥글게 */
+  cursor: pointer; /* 클릭 가능 커서 */
+  min-width: 150px; /* 버튼 최소 너비 설정 */
+  height: 40px; /* 버튼 높이 설정 */
+}
+
+/* 버튼의 hover 및 active 상태 스타일 */
+.auth-button:hover,
+.auth-button:active,
+.auth-button:focus {
+  background-color: #f2f2f2; /* hover 시 배경 색상 변경 */
+}
+
+/* 로그인/로그아웃 버튼 스타일 */
+.navbar form button {
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 40px;
+  cursor: pointer;
+  min-width: 150px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar form button:hover {
+  background-color: #f2f2f2;
+}
+
+/* 기본 스타일이 데스크톱에 적용됨 */
+
+@media screen and (max-width: 1024px) {
+  /* 태블릿 뷰 */
+  .sidebar {
+    width: 150px;
+    padding: 16px;
+  }
+
+  .sidebar .logo img {
+    width: 100px;
+  }
+
+  .main-container {
+    margin-left: 170px; /* 태블릿에 맞춘 좌측 마진 조정 */
+  }
+
+  .topbar .navbar ul li {
+    /* width: auto; 네비게이션 링크를 자동 너비로 설정
+     */
+     display: flex;
+     align-items: center;
+     flex-wrap: nowrap; /* 줄바꿈 방지 */
+  }
+
+  .movie-lists .list .item {
+    width: calc(50% - 10px); /* 두 개 열로 나열 */
+  }
+}
+
+@media screen and (max-width: 768px) {
+  /* 모바일 뷰 */
+  .sidebar {
+    display: none; /* 모바일에서는 사이드바 숨김 */
+  }
+
+  .main-container {
+    margin-left: 0; /* 사이드바가 없으므로 좌측 마진 제거 */
+  }
+
+  .topbar {
+    flex-direction: column; /* 모바일에서는 세로로 정렬 */
+    align-items: flex-start;
+  }
+
+  .topbar .search-form {
+    margin: 0 auto;
+    max-width: 100%;
+  }
+
+  .topbar .navbar ul {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    flex-direction: row; /* 가로 정렬 유지 */
+    gap: 8px; /* 각 항목 간의 간격 */
+  }
+
+  .movie-lists .list .item {
+    width: calc(100% - 10px); /* 한 줄에 한 개씩 */
+    margin-bottom: 20px;
+  }
+
+  .navbar form button,
+  .auth-button {
+    width: 100%; /* 버튼을 전체 너비로 확장 */
+    padding: 10px; /* 버튼 패딩 조정 */
+    margin-top: 10px;
+  }
+
+  .preview {
+    padding: 10px 20px;
+    flex-direction: column; /* 프리뷰 섹션을 세로로 정렬 */
+    text-align: center;
+  }
+  .topbar .navbar {
+    display: flex;
+    flex-direction: row; /* 가로 정렬 유지 */
+    justify-content: flex-end; /* 오른쪽 정렬 */
+    width: 100%;
+  }
+  .topbar .navbar form button,
+  .auth-button {
+    padding: 8px 20px; /* 버튼 패딩 조정 */
+    font-size: 14px; /* 폰트 크기 조정 */
+  }
+}
+.nav-link {
+  color: white; /* 기본 텍스트 색상 흰색 */
+  text-decoration: none; /* 밑줄 제거 */
+}
+
+/* OST 음악 링크 hover 상태 */
+.nav-link:hover {
+  color: #FFFF00; /* 마우스를 올렸을 때 텍스트 색상 노란색 */
+}
+
+
+/**/
+/* 챗봇 */
+#chatbot-widget {
+  position: fixed;
+  bottom: 10px;
+  right: 20px;
+  z-index: 1000;
+}
+
+#chatbot-toggle {
+  background-color: #f7c948;
+  color: #181818;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#chatbot-container {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 400px; /* 기존보다 넓게 설정 */
+  height: 500px; /* 높이도 약간 늘림 */
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#chatbot-header {
+  background: #f7c948;
+  color: 181818;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#chatbot-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  background-color: #f4f4f9;
+  height: 400px; /* 메시지 영역 높이 조정 */
+}
+
+.message {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.message.bot {
+  justify-content: flex-start;
+}
+
+.message .bubble div {
+  margin-bottom: 5px; /* 줄 간격 조정 */
+}
+
+/* 말풍선 공통 스타일 */
+.message .bubble {
+  max-width: 70%;
+  padding: 10px;
+  border-radius: 15px;
+  font-size: 14px;
+  position: relative;
+  line-height: 1.5; /* 줄 간격 조정 */
+}
+
+.message.user .bubble {
+  background-color: #2f4f4f;
+  color: white;
+  border-bottom-right-radius: 0;
+}
+
+.message.bot .bubble {
+  background-color: #e5e5ea;
+  color: black;
+  border-bottom-left-radius: 0;
+}
+
+/* 입력 영역 고정 */
+#chatbot-input {
+  display: flex;
+  padding: 10px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-top: 1px solid #ddd;
+}
+
+#chatbot-user-input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-right: 5px;
+}
+
+#chatbot-send {
+  background: #f7c948;
+  color: #181818;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+/**/
+/* 챗봇 */
+#chatbot-widget {
+  position: fixed;
+  bottom: 10px;
+  right: 20px;
+  z-index: 1000;
+}
+
+#chatbot-toggle {
+  background-color: #f7c948;
+  color: #181818;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#chatbot-container {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 400px; /* 기존보다 넓게 설정 */
+  height: 500px; /* 높이도 약간 늘림 */
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#chatbot-header {
+  background: #f7c948;
+  color: 181818;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#chatbot-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  background-color: #f4f4f9;
+  height: 400px; /* 메시지 영역 높이 조정 */
+}
+
+.message {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.message.bot {
+  justify-content: flex-start;
+}
+
+.message .bubble div {
+  margin-bottom: 5px; /* 줄 간격 조정 */
+}
+
+/* 말풍선 공통 스타일 */
+.message .bubble {
+  max-width: 70%;
+  padding: 10px;
+  border-radius: 15px;
+  font-size: 14px;
+  position: relative;
+  line-height: 1.5; /* 줄 간격 조정 */
+}
+
+.message.user .bubble {
+  background-color: #2f4f4f;
+  color: white;
+  border-bottom-right-radius: 0;
+}
+
+.message.bot .bubble {
+  background-color: #e5e5ea;
+  color: black;
+  border-bottom-left-radius: 0;
+}
+
+/* 입력 영역 고정 */
+#chatbot-input {
+  display: flex;
+  padding: 10px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-top: 1px solid #ddd;
+}
+
+#chatbot-user-input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-right: 5px;
+}
+
+#chatbot-send {
+  background: #f7c948;
+  color: #181818;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  cursor: pointer;
 }
