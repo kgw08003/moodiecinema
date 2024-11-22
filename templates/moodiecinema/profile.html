@@ -46,54 +46,119 @@
     <!-- 탭 네비게이션 -->
     <div class="profile-tabs">
         <!-- 각 버튼 클릭 시 특정 섹션 표시 -->
-        <button class="tab" onclick="showSection('year')">연도</button>
-        <button class="tab" onclick="showSection('era')">시대</button>
-        <button class="tab" onclick="showSection('tech')">기술 발전</button>
-        <button class="tab" onclick="showSection('timeline')">영화 평점별 순위</button>
-        <button class="tab" onclick="showSection('genre')">장르</button>
-        <button class="tab" onclick="showSection('remakeComparison')">리메이크</button>
-        <button class="tab" onclick="showSection('revenueComparison_money')">수익비교</button>
-        <button class="tab" onclick="showSection('country')">국가별</button>
-        <button class="tab" onclick="showSection('age-rating')">연령대</button>
+        <button class="tab" onclick="showSection('authorStatisticsSection')">나의 기록</button>
         <button class="tab" onclick="showSection('deleteAccountSection')">회원 탈퇴</button>
     </div>
 
-    <!-- 각 섹션의 콘텐츠 -->
-    <!-- 연도별 영화 데이터 -->
-    <div id="year" class="profile-section">
-        <h3>연도별 영화 데이터</h3>
-        <canvas id="yearChart"></canvas>
+    <!-- 작성자 통계 섹션 -->
+    <div id="authorStatisticsSection" class="profile" style="display: none;">
+        <table>
+            <h1>{{ user.user_name }}님의 기록</h1>
+
+            <!-- 리뷰 작성 수 -->
+            <div class="card">
+                <h2>나의 리뷰 작성 수</h2>
+                <p class="stat">{{ review_count }}건</p>
+            </div>
+
+            <!-- 리뷰 평균 평점 -->
+            <div class="card">
+                <h2>나의 리뷰 평균 평점</h2>
+                <p class="stat">{{ average_rating|default:"평점 없음" }} / 5.0 ⭐⭐⭐⭐⭐</p>
+            </div>
+
+            <!-- 가장 높게 평가한 영화 -->
+            <div class="card">
+                <h2>가장 높게 평가한 영화</h2>
+                {% if highest_rating_review %}
+                    <p>{{ highest_rating_review.movie.title }} ({{ highest_rating_review.rating }}⭐)</p>
+                {% else %}
+                    <p>없음</p>
+                {% endif %}
+            </div>
+
+            <!-- 가장 낮게 평가한 영화 -->
+            <div class="card">
+                <h2>가장 낮게 평가한 영화</h2>
+                {% if lowest_rating_review %}
+                    <p>{{ lowest_rating_review.movie.title }} ({{ lowest_rating_review.rating }}⭐)</p>
+                {% else %}
+                    <p>없음</p>
+                {% endif %}
+            </div>
+
+            <!-- 감정 분석 결과 -->
+            <div class="card">
+                <h2>나의 리뷰 감정 분석</h2>
+                <canvas id="emotionDoughnutChart"></canvas>
+            </div>
+        </table>
+    </div>
+    <script>
+        const emotionPercentage = {{ emotion_percentage|safe }};
+        const labels = Object.keys(emotionPercentage);
+        const data = Object.values(emotionPercentage);
+    
+        const ctxDoughnut = document.getElementById('emotionDoughnutChart')?.getContext('2d');
+        if (ctxDoughnut) {
+            const doughnutData = {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: [
+                        '#f9d342', // 기쁨
+                        '#4a90e2', // 슬픔
+                        '#50c878', // 평온
+                        '#e74c3c', // 분노
+                        '#8e44ad', // 공포
+                    ],
+                    hoverOffset: 4
+                }]
+            };
+    
+            new Chart(ctxDoughnut, {
+                type: 'doughnut',
+                data: doughnutData,
+                options: {
+                    responsive: false, // 부모 요소에 맞추지 않음
+                    maintainAspectRatio: false, // 비율 유지 해제
+                    
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                    },
+                },
+            });
+        } else {
+            console.error("Canvas context를 찾을 수 없습니다.");
+        }
+    </script>
+    
+
+
+    <!-- 회원 탈퇴 섹션 -->
+    <div id="deleteAccountSection" class="profile-section" style="display: none;">
+        <h3>회원 탈퇴</h3>
+        <p class="warning-text">회원님께선 <strong>위험 구역</strong>에 진입하셨습니다! 정말로 계정 삭제를 원하신다면, 하단에 비밀번호를 입력해주세요.</p>
+        <input type="password" id="password" placeholder="계속하려면 현재 비밀번호를 입력하십시오...">
+        <button class="btn continue-btn" onclick="showConfirmModal()">계속</button>
     </div>
 
-    <!-- 시대별 영화 트렌드 -->
-    <div id="era" class="profile-section" style="display: none;">
-        <h3>시대별 영화 트렌드</h3>
-        <canvas id="eraChart"></canvas>
-    </div>
-
-    <!-- 기술 발전 -->
-    <div id="tech" class="profile-section" style="display: none;">
-        <h3>기술 발전</h3>
-        <ul id="techList"></ul>
-    </div>
-
-    <!-- 주요 영화 타임라인 -->
-    <div id="timeline" class="profile-section" style="display: none;">
-        <h3>영화 평점별 순위(TMDB기준)</h3>
-        <ul id="timelineList"></ul>
-        <div id="paginationButtons" class="pagination"></div>
-    </div>
-
-    <!-- 장르별 평점 타임라인 -->
-    <div id="genre" class="profile-section" style="display: none;">
-        <h3>장르별 평점 비교</h3>
-        <canvas id="genreChart"></canvas>
-    </div>
-
-    <!-- 리메이크 원작 비교 타임라인 -->
-    <div id="remakeComparison" class="profile-section" style="display: none;">
-        <h3>리메이크 영화 원작 영화 평점 비교</h3>
-        <canvas id="remakeChart"></canvas>
+    <!-- 회원 탈퇴 확인 모달 -->
+    <div id="confirmModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>회원 탈퇴 확인</h3>
+            <p>정말로 회원 탈퇴를 진행하시겠습니까?</p>
+            <div class="btn-container">
+                <form id="deleteAccountForm" action="{% url 'delete_account' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="password" id="confirmPasswordInput">
+                    <button type="submit" class="btn confirm-btn">예</button>
+                </form>
+                <button class="btn cancel-btn" onclick="closeModal()">아니오</button>
+            </div>
+        </div>
     </div>
 
     <!-- 회원 탈퇴 -->
@@ -102,23 +167,6 @@
         <p class="warning-text">회원님께선 <strong>위험 구역</strong>에 진입하셨습니다! 정말로 계정 삭제를 원하신다면, 하단에 비밀번호를 입력해주세요.</p>
         <input type="password" id="password" placeholder="계속하려면 현재 비밀번호를 입력하십시오...">
         <button class="btn continue-btn" onclick="showConfirmModal()">계속</button>
-    </div>
-
-    <div id="revenueComparison_money" class="profile-section" style="display: none;"> 
-        <h3>리메이크 영화와 원작 영화 수익 비교</h3>
-        <canvas id="revenueChart"></canvas>
-    </div>
-
-    <div id="country" class="profile-section country-section" style="display: none;">
-        <h3>국가별 영화 개봉 수량(영화 산업이 활발한 주요 국가)</h3>
-        <div id="worldMap" style="height: 500px;"></div>
-    </div>
-    
-        <!-- 연령대별 영화 평점 섹션 -->
-    <div id="age-rating" class="profile-section" style="display: none;">
-        <h3>연령대별 선호 영화</h3>
-        <div id="ageRatingContainer"></div> <!-- 연령대 데이터 표시 컨테이너 -->
-        <div id="agePaginationButtons" class="pagination"></div> <!-- 페이지네이션 버튼 -->
     </div>
     
 
@@ -150,22 +198,16 @@
 
 <script>
     function showSection(sectionId) {
-    const sections = document.querySelectorAll('.profile-section');
-    sections.forEach(section => {
-        section.style.display = 'none'; // 모든 섹션 숨기기
-    });
-    const activeSection = document.getElementById(sectionId);
-    activeSection.style.display = 'block'; // 선택된 섹션만 표시
+        const sections = document.querySelectorAll('.profile-section');
+        sections.forEach(section => {
+            section.style.display = 'none'; // 모든 섹션 숨김
+        });
 
-    // 국가별 섹션 활성화 시 맵 로드
-    if (sectionId === 'country' && !mapInitialized) {
-        loadMoviesByCountry(); // 맵 데이터 로드
-        mapInitialized = true; // 맵 초기화 상태 업데이트
+        const activeSection = document.getElementById(sectionId);
+        if (activeSection) {
+            activeSection.style.display = 'block'; // 선택된 섹션만 표시
+        }
     }
-}
-
-
-
     function showConfirmModal() {
         const password = document.getElementById("password").value;
         if (password) {
@@ -180,457 +222,5 @@
     function closeModal() {
         document.getElementById("confirmModal").style.display = "none";
     }
-
-    // API 데이터를 비동기로 가져오는 함수
-    async function fetchData(url) {
-        const response = await fetch(url);
-        return await response.json();
-    }
-
-    // 연도별 영화 데이터를 차트로 로드
-    async function loadYearChart() {
-        const data = await fetchData('/userprofile/api/movies-by-year/');
-        const ctx = document.getElementById('yearChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: data.years,
-                datasets: [{
-                    label: '영화 수',
-                    data: data.counts,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: { responsive: true }
-        });
-    }
-
-    // 리메이크 영화 비교 차트 로드
-    async function loadEraChart() {
-    const data = await fetchData('/userprofile/api/movies-by-era/');
-    const ctx = document.getElementById('eraChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: data.eras,
-            datasets: [{
-                label: '영화 수',
-                data: data.counts,
-                backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                borderColor: 'rgba(153, 102, 255, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const genre = data.popular_genres[context.dataIndex];
-                            return `영화 수: ${context.raw} (${genre} 장르)`;
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-    async function loadTechData() {
-        const data = await fetchData('/userprofile/api/tech-advancements/');
-        const techList = document.getElementById('techList');
-        techList.innerHTML = data.map(item => `<li>${item.year}: ${item.description}</li>`).join('');
-    }
-
-    async function loadTimelineData() {
-        const data = await fetchData('/userprofile/api/movie-timeline/');
-        const timelineList = document.getElementById('timelineList');
-        timelineList.innerHTML = data.map(item => `<li>${item.year}: ${item.movie}</li>`).join('');
-    }
-
-    async function loadReviewData() {
-        const data = await fetchData('/userprofile/api/reviews/');
-        const reviewList = document.getElementById('reviewList');
-        reviewList.innerHTML = data.map(review => `<li>${review.title}: ${review.comment}</li>`).join('');
-    }
-
-    async function loadMovieTimeline(page = 1) {
-        const data = await fetch(`/userprofile/api/movie-timeline/?page=${page}`).then(res => res.json());
-
-        const timelineList = document.getElementById("timelineList");
-        timelineList.innerHTML = "";
-
-        data.movies.forEach(movie => {
-            const listItem = document.createElement("li");
-            listItem.textContent = `${movie.year}: ${movie.movie} (평점: ${movie.rating})`;
-            timelineList.appendChild(listItem);
-        });
-
-        const paginationButtons = document.getElementById("paginationButtons");
-        paginationButtons.innerHTML = "";
-
-        const currentPage = data.current_page;
-        const totalPages = data.total_pages;
-        const maxButtons = 10;
-        const startPage = Math.floor((currentPage - 1) / maxButtons) * maxButtons + 1;
-        const endPage = Math.min(startPage + maxButtons - 1, totalPages);
-
-        if (startPage > 1) {
-            const prevButton = document.createElement("button");
-            prevButton.textContent = "이전";
-            prevButton.onclick = () => loadMovieTimeline(startPage - 1);
-            paginationButtons.appendChild(prevButton);
-        }
-
-        for (let i = startPage; i <= endPage; i++) {
-            const button = document.createElement("button");
-            button.textContent = i;
-            button.className = i === currentPage ? "active" : "";
-            button.onclick = () => loadMovieTimeline(i);
-            paginationButtons.appendChild(button);
-        }
-
-        if (endPage < totalPages) {
-            const nextButton = document.createElement("button");
-            nextButton.textContent = "다음";
-            nextButton.onclick = () => loadMovieTimeline(endPage + 1);
-            paginationButtons.appendChild(nextButton);
-        }
-    }
-
-    // 페이지가 로드될 때 각 차트와 데이터를 초기화
-    document.addEventListener('DOMContentLoaded', () => {
-        loadYearChart();// 연도별 차트 로드
-        loadEraChart(); // 시대별 차트 로드
-        loadTechData(); // 기술 발전 데이터 로드
-        loadTimelineData();// 영화 타임라인 데이터 로드
-        loadMovieTimeline();// 영화 타임라인 페이징 처리
-        loadReviewData();// 리뷰 데이터 로드
-        loadRemakeComparisonChart();// 리메이크 영화 차트 로드
-        loadRemakeRevenueChart();
-        
-    });
-
-/* 장르 */
-    async function loadGenreChart() {
-        const data = await fetchData('/userprofile/api/genre-ratings/');
-        const ctx = document.getElementById('genreChart').getContext('2d');
-
-        const labels = data.map(item => item.genre);
-        const avgRatings = data.map(item => item.average_rating);
-        const maxRatings = data.map(item => item.max_rating);
-        const minRatings = data.map(item => item.min_rating);
-
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: '평균 평점',
-                    data: avgRatings,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const index = context.dataIndex;
-                                return `평균: ${avgRatings[index].toFixed(1)}, 최고: ${maxRatings[index]}, 최저: ${minRatings[index]}`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        loadGenreChart();
-    });
-
-    /* 원작 영화와 리메이크 영화 비교 */
-
-    async function loadRemakeComparisonChart() {
-    const response = await fetch('/userprofile/api/remake-movies/');
-    const data = await response.json();
-
-    const labels = data.map(item => item.remake_title);
-    const originalVotes = data.map(item => item.original_vote_average);
-    const remakeVotes = data.map(item => item.remake_vote_average);
-
-    const ctx = document.getElementById('remakeChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: '원작 평점',
-                    data: originalVotes,
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',  // 파란색
-                    borderColor: 'rgba(54, 162, 235, 1)', 
-                    borderWidth: 1
-                },
-                {
-                    label: '리메이크 평점',
-                    data: remakeVotes,
-                    backgroundColor: 'rgba(255, 206, 86, 0.5)', // 노란색
-                    borderColor: 'rgba(255, 206, 86, 1)',  
-                    borderWidth: 1
-                },
-            ]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    loadRemakeComparisonChart();
-});
-
-/* 리메이크 영화와 원작 영화 수익 비교*/
-async function loadRemakeRevenueChart() {
-    const response = await fetch('/userprofile/api/remake-revenues/');
-    const data = await response.json();
-
-    // 환율을 1,300원으로 가정
-    const exchangeRate = 1300;
-
-    const labels = data.map(item => item.remake_title);
-    
-    // 수익을 원화로 변환
-    const originalRevenuesKRW = data.map(item => item.original_revenue * exchangeRate);
-    const remakeRevenuesKRW = data.map(item => item.remake_revenue * exchangeRate);
-
-    const ctx = document.getElementById('revenueChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: '원작 수익 (KRW)',
-                    data: originalRevenuesKRW,
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)', // 파란색
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: '리메이크 수익 (KRW)',
-                    data: remakeRevenuesKRW,
-                    backgroundColor: 'rgba(255, 206, 86, 0.5)', // 노란색
-                    borderColor: 'rgba(255, 206, 86, 1)',
-                    borderWidth: 1
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return `₩${value.toLocaleString()}`; // 원화로 표시
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-// 차트를 로드할 때 호출
-document.addEventListener('DOMContentLoaded', () => {
-    loadRemakeRevenueChart();
-});
-
-// 국가별 영화 개봉 수량
-function showSection(sectionId) {
-    // 모든 섹션 숨기기
-    const sections = document.querySelectorAll('.profile-section');
-    sections.forEach(section => {
-        section.style.display = 'none';
-    });
-
-    // 선택된 섹션 표시
-    const activeSection = document.getElementById(sectionId);
-    activeSection.style.display = 'block';
-
-    // 국가별 섹션 활성화 시 맵 로드
-    if (sectionId === 'country' && !mapInitialized) {
-        loadMoviesByCountry(); // 맵 데이터 로드
-        mapInitialized = true; // 맵 초기화 상태 업데이트
-    }
-}
-
-let mapInitialized = false; // 지도 초기화 여부 확인 변수
-
-// 나라별 영화
-
-async function loadMoviesByCountry() {
-    const response = await fetch('/userprofile/api/movies-by-country/');
-    const countryData = await response.json();
-
-    console.log("Country Data:", countryData); // 디버깅 로그 추가
-
-    const map = L.map('worldMap').setView([20, 0], 2); // 세계 지도 중심 및 줌 레벨 설정
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-    }).addTo(map);
-
-    for (const [country, count] of Object.entries(countryData)) {
-        console.log(`Country: ${country}, Count: ${count}`); // 디버깅 로그 추가
-        const latLng = getCountryLatLng(country);
-        if (latLng) {
-            const adjustedRadius = Math.sqrt(count) * 500; // 반지름 값을 조정
-            L.circle(latLng, {
-                color: 'blue',
-                fillColor: '#00f',
-                fillOpacity: 0.5,
-                radius: adjustedRadius, // 수정된 반지름 적용
-            })
-                .bindPopup(`<b>${country}</b><br>개봉 수량: ${count}`)
-                .addTo(map);
-        }
-    }
-}
-
-// 국가 코드에 따라 위도와 경도 반환
-function getCountryLatLng(code) {
-    const countryCoords = {
-        US: [37.0902, -95.7129],
-        KR: [35.9078, 127.7669],
-        FR: [46.6034, 1.8883],
-        JP: [36.2048, 138.2529],
-        IN: [20.5937, 78.9629],
-        CN: [35.8617, 104.1954],
-        DE: [51.1657, 10.4515],
-        GB: [55.3781, -3.4360],
-        IT: [41.8719, 12.5674],
-        ES: [40.4637, -3.7492],
-    };
-    return countryCoords[code] || null;
-}
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    // 초기화 작업
-    loadYearChart(); // 연도별 차트 로드
-});
-
-// TMDB 연령대 별 선호 영화
-async function loadAgeRatingData(selectedAge = "G") {
-    const response = await fetch(`/userprofile/api/movies-by-age-rating/`);
-    const data = await response.json();
-
-    const ageRatingContainer = document.getElementById("ageRatingContainer");
-    const paginationButtons = document.getElementById("agePaginationButtons");
-
-    // 컨테이너 초기화
-    ageRatingContainer.innerHTML = "";
-    paginationButtons.innerHTML = "";
-
-    // 연령대 설명 매핑
-    const ageDescriptions = {
-        "G": "모든 연령 관람 가능. 가족 친화적인 영화로 안전한 콘텐츠를 제공합니다.",
-        "PG": "부모 지도 권장. 가벼운 폭력 또는 언어가 포함될 수 있습니다.",
-        "PG-13": "13세 미만 부모 권장. 폭력, 언어 또는 성적 내용이 포함될 수 있습니다.",
-        "R": "17세 미만 보호자 동반 필수. 성인 대상의 강한 폭력 및 성적 내용 포함.",
-        "NC-17": "17세 이하 관람 금지. 성인 전용으로 노골적인 성적 내용 또는 강한 폭력 요소가 포함됩니다."
-    };
-
-    // 선택된 연령대 데이터 가져오기
-    const movies = data[selectedAge];
-
-    // 연령대 제목과 설명 추가
-    const title = document.createElement("h4");
-    title.textContent = `${selectedAge} 연령대`;
-    const description = document.createElement("p");
-    description.textContent = ageDescriptions[selectedAge] || "설명이 없습니다.";
-
-    ageRatingContainer.appendChild(title);
-    ageRatingContainer.appendChild(description);
-
-    // 영화 테이블 생성
-    const table = document.createElement("table");
-    const tableHead = `
-        <thead>
-            <tr>
-                <th>영화 제목</th>
-                <th>평점</th>
-            </tr>
-        </thead>
-    `;
-    const tableBody = movies
-        .map(
-            movie => `
-            <tr>
-                <td>${movie.title}</td>
-                <td>${movie.vote_average}</td>
-            </tr>
-        `
-        )
-        .join("");
-
-    table.innerHTML = tableHead + `<tbody>${tableBody}</tbody>`;
-    ageRatingContainer.appendChild(table);
-
-    // 페이지네이션 버튼 생성
-    const ageCategories = Object.keys(data);
-    ageCategories.forEach((ageCategory, index) => {
-        const pageButton = document.createElement("button");
-        pageButton.textContent = ageCategory;
-        pageButton.className = ageCategory === selectedAge ? "active" : "";
-        pageButton.onclick = () => loadAgeRatingData(ageCategory); // 연령대 변경
-        paginationButtons.appendChild(pageButton);
-    });
-}
-
-// Show the "연령대" section
-function showSection(sectionId) {
-    const sections = document.querySelectorAll('.profile-section');
-    sections.forEach(section => section.style.display = 'none');
-
-    const activeSection = document.getElementById(sectionId);
-    if (activeSection) {
-        activeSection.style.display = 'block';
-
-        // 특정 섹션에 따라 데이터 로드
-        if (sectionId === 'age-rating') {
-            loadAgeRatingData(); // 기본 연령대 데이터 로드
-        } else if (sectionId === 'country' && !mapInitialized) {
-            loadMoviesByCountry(); // 맵 데이터 로드
-            mapInitialized = true;
-        }
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    showSection('age-rating'); // 연령대 섹션 활성화
-});
-
-
 </script>
 {% endblock %}
