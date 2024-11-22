@@ -61,19 +61,21 @@
     <!-- 출연진 슬라이더 -->
     <section class="cast-list-container">
         <h2>출연진</h2>
-        <div class="cast-slider">
-            <button class="scroll-button left" onclick="scrollCast('left')">&lt;</button>
-            <div class="cast-list" id="cast-slider">
+        <div class="cast-slider-container">
+            <button class="scroll-button left" onclick="scrollCast('left')">&#8249;</button>
+            <div class="cast-slider" id="cast-slider">
                 {% for actor in cast %}
-                    <div class="cast-item">
-                        <a href="{% url 'actor_movies' actor.id %}">
-                            <img src="{% if actor.profile_image_url %}{{ actor.profile_image_url }}{% else %}{% static 'images/no-image.png' %}{% endif %}" alt="{{ actor.name }}" width="50" height="75">
-                            <span>{{ actor.name }}</span> <em>역할:</em> {{ actor.character }}
-                        </a>
-                    </div>
+                <div class="cast-item">
+                    <a href="{% url 'actor_movies' actor.id %}">
+                        <img src="{% if actor.profile_image_url %}{{ actor.profile_image_url }}{% else %}{% static 'images/no-image.png' %}{% endif %}"
+                            alt="{{ actor.name }}">
+                        <span>{{ actor.name }}</span><br>
+                        <em>역할:</em> {{ actor.character }}
+                    </a>
+                </div>
                 {% endfor %}
             </div>
-            <button class="scroll-button right" onclick="scrollCast('right')">&gt;</button>
+            <button class="scroll-button right" onclick="scrollCast('right')">&#8250;</button>
         </div>
     </section>
 
@@ -103,8 +105,7 @@
     <section class="similar-movies-container">
         <h2>유사한 영화</h2>
         <div class="slider-wrapper">
-            <button class="scroll-button left" onclick="slideLeft()"><</button>
-            <div class="horizontal-scroll">
+            <button class="scroll-button left" onclick="slideMovies('left')"><</button>
                 <div class="slider-container" id="similar-slider">
                     {% for similar_movie in similar_movies %}
                         <div class="slider-item">
@@ -115,8 +116,7 @@
                         </div>
                     {% endfor %}
                 </div>
-            </div>
-            <button class="scroll-button right" onclick="slideRight()">></button>
+            <button class="scroll-button right" onclick="slideMovies('right')">></button>
         </div>
     </section>
     <script>
@@ -175,25 +175,21 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         let currentIndex = 0;
-        const itemWidth = 300; // 아이템의 너비 (슬라이드 한 번에 이동할 거리)
+        const itemWidth = 320; // 아이템의 너비 (슬라이드 한 번에 이동할 거리)
+        const itemWidth2 = 160;
         const slider = document.getElementById('similar-slider');
         const castList = document.getElementById('cast-slider');
         const items = slider.children;
         const castItems = castList.children;
 
         // 유사 영화 슬라이더 왼쪽으로 이동
-        function slideLeft() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                slider.style.transform = `translateX(-${currentIndex * itemWidth}px)`; // backtick 사용
-            }
-        }
-        
-        // 유사 영화 슬라이더 오른쪽으로 이동
-        function slideRight() {
-            if (currentIndex < items.length - 3) {
-                currentIndex++;
-                slider.style.transform = `translateX(-${currentIndex * itemWidth}px)`; // backtick 사용
+        function slideMovies(direction) {
+            const list = document.getElementById('similar-slider');
+            const totalItems = items.length;
+            if (direction === 'left') {
+                list.scrollLeft -= itemWidth;
+            } else if (direction === 'right') {
+                list.scrollLeft += itemWidth;
             }
         }
 
@@ -202,9 +198,9 @@
             const list = document.getElementById('cast-slider');
             const totalItems = castItems.length;
             if (direction === 'left') {
-                list.scrollLeft -= itemWidth;
+                list.scrollLeft -= itemWidth2;
             } else if (direction === 'right') {
-                list.scrollLeft += itemWidth;
+                list.scrollLeft += itemWidth2;
             }
         }
 

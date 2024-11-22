@@ -1,0 +1,73 @@
+{% extends 'moodiecinema/base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'upcoming.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- 이번 달 개봉 예정 영화 -->
+<section class="upcoming-section">
+    <h2>이번 달 개봉 예정 영화</h2>
+    <div class="slider-wrapper">
+        <button class="scroll-button left" onclick="slideMove('left', 'this-month')">&lt;</button>
+        <div class="slider-container" id="this-month-slider">
+            {% for movie in upcoming_movies_this_month %}
+            <div class="movie-item">
+                <a href="{% url 'movie_detail' movie.id %}">
+                    <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path|default:'/static/images/default-movie-poster.png' }}"
+                        alt="{{ movie.title }}">
+                    <p>{{ movie.title }}</p>
+                    <p>{{ movie.release_date }}</p>
+                </a>
+            </div>
+            {% empty %}
+            <p class="empty">이번 달 개봉 예정 영화가 없습니다.</p>
+            {% endfor %}
+        </div>
+        <button class="scroll-button right" onclick="slideMove('right', 'this-month')">&gt;</button>
+    </div>
+</section>
+
+<!-- 다음 달 개봉 예정 영화 -->
+<section class="upcoming-section">
+    <h2>다음 달 개봉 예정 영화</h2>
+    <div class="slider-wrapper">
+        <button class="scroll-button left" onclick="slideMove('left', 'next-month')">&lt;</button>
+        <div class="slider-container" id="next-month-slider">
+            {% for movie in upcoming_movies_next_month %}
+            <div class="movie-item">
+                <a href="{% url 'movie_detail' movie.id %}">
+                    <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path|default:'/static/images/default-movie-poster.png' }}"
+                        alt="{{ movie.title }}">
+                    <p>{{ movie.title }}</p>
+                    <p>{{ movie.release_date }}</p>
+                </a>
+            </div>
+            {% empty %}
+            <p class="empty">다음 달 개봉 예정 영화가 없습니다.</p>
+            {% endfor %}
+        </div>
+        <button class="scroll-button right" onclick="slideMove('right', 'next-month')">&gt;</button>
+    </div>
+</section>
+
+<script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    const itemWidth = 310; // 각 아이템의 너비 (슬라이드 한 번에 이동할 거리)
+
+    // 슬라이더 이동 함수 (왼쪽 또는 오른쪽)
+    function slideMove(direction, sliderType) {
+        const slider = document.getElementById(`${sliderType}-slider`);
+        const totalItems = slider.children.length;
+        
+        if (direction === 'left') {
+            slider.scrollLeft -= itemWidth; // 왼쪽으로 이동
+        } else if (direction === 'right') {
+            slider.scrollLeft += itemWidth; // 오른쪽으로 이동
+        }
+    }
+</script>
+
+{% endblock %}
