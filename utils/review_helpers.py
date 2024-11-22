@@ -1,6 +1,7 @@
 from reviews.views import ReviewListView
 from collections import Counter
 from itertools import chain
+from django.db.models import Avg, Count
 
 def get_reviews_with_list_view(request, movie_id):
     """ReviewListView를 통해 특정 영화의 리뷰 가져오기"""
@@ -25,7 +26,9 @@ def analyze_reviews(reviews):
             'highest_rating_review': None,
             'lowest_rating_review': None,
             'emotion_percentage': {},
-            'word_count': {}
+            'word_count': {},
+            'rating_distribution': {},
+            'author_statistics': [],
         }
 
     # 감정 집계
@@ -42,6 +45,9 @@ def analyze_reviews(reviews):
     highest_rating_review = max(reviews, key=lambda x: x.rating, default=None)
     lowest_rating_review = min(reviews, key=lambda x: x.rating, default=None)
 
+    # 별점 분포 계산
+    rating_distribution = Counter(ratings)
+
     # 감정 비율 계산
     total_reviews = len(reviews)
     emotion_percentage = {
@@ -54,6 +60,16 @@ def analyze_reviews(reviews):
     )
     word_count = Counter(words)
 
+    # 작성자별 통계 계산
+    author_statistics = (
+        reviews.values('user__user_name')
+        .annotate(
+            review_count=Count('id'),
+            average_rating=Avg('rating')
+        )
+        .order_by('-review_count')
+    )
+
     # 분석 결과 반환
     return {
         'sentiment_count': dict(sentiment_count),
@@ -63,6 +79,7 @@ def analyze_reviews(reviews):
         'lowest_rating_review': lowest_rating_review,
         'emotion_percentage': emotion_percentage,
         'review_count': reviews.count(),  # 총 리뷰 수
-        'word_count': dict(word_count.most_common(5)),
+        'word_count': dict(word_count.most_common(5)),  # 상위 5개 단어
+        'rating_distribution': dict(rating_distribution),  # 별점 분포
+        'author_statistics': list(author_statistics),  # 작성자 통계
     }
-

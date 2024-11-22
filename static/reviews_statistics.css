@@ -41,7 +41,8 @@ body {
 .emotion-summary h2,
 .review-stats h2,
 .review-filters h2,
-.word-cloud-section h2 {
+.word-cloud-section h2,
+.author-statistics h2 {
     color: #FFD700; /* 골드 색상 */
     font-size: 20px;
     margin-bottom: 10px;
@@ -131,4 +132,45 @@ body {
     height: 300px;
     margin: 0 auto;
     display: block;
+}
+
+.author-statistics {
+    margin: 20px auto;
+    
+    color: #FFD700; /* 골드 텍스트 */
+}
+
+.author-statistics table {
+    width: 100%; /* 테이블이 전체 폭을 차지 */
+    border-collapse: collapse; /* 테두리 중첩 제거 */
+    margin-top: 10px;
+    background-color: #222222; /* 테이블 배경색 */
+    color: #FFFFFF; /* 텍스트 기본색 */
+}
+
+
+
+.author-statistics th, .author-statistics td {
+    text-align: center; /* 텍스트 중앙 정렬 */
+    padding: 12px; /* 여백 */
+    border: 1px solid #FFD700; /* 테두리 골드 */
+}
+
+.author-statistics th {
+    font-size: 18px; /* 헤더 글씨 크기 */
+    font-weight: bold; /* 굵게 */
+    background-color: #333333; /* 헤더 배경색 */
+    color: #FFD700; /* 헤더 텍스트 색상 */
+}
+
+.author-statistics td {
+    font-size: 16px; /* 본문 글씨 크기 */
+}
+
+.author-statistics tr:nth-child(even) {
+    background-color: #2A2A2A; /* 짝수 행 배경색 */
+}
+
+.author-statistics tr:hover {
+    background-color: #444444; /* 마우스 오버 행 색상 */
 }
