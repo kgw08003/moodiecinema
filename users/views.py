@@ -24,10 +24,35 @@ class SignUpView(FormView):  # 클래스 이름을 SignUpView로 수정
         user.save()
         return super().form_valid(form)
     
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
+from reviews.models import Review
+from utils.review_helpers import analyze_reviews
 
-class UserProfileView(TemplateView):
-    template_name = 'moodiecinema/profile.html'  # 프로필 페이지 템플릿 경로
+class UserProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'moodiecinema/profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # 현재 로그인한 사용자
+        user = self.request.user
+
+        # 헬퍼 함수를 이용해 리뷰 데이터 가져오기
+        user_reviews = Review.objects.filter(user=user)
+        review_analysis = analyze_reviews(user_reviews)
+
+        context.update({
+            'review_count': review_analysis['review_count'],
+            'average_rating': review_analysis['average_rating'],
+            'highest_rating_review': review_analysis['highest_rating_review'],
+            'lowest_rating_review': review_analysis['lowest_rating_review'],
+            'emotion_percentage': review_analysis['emotion_percentage'],
+            'user_reviews': user_reviews,  # 리뷰 목록 (필요 시)
+        })
+
+        return context
+
 
 from django.contrib.auth import logout
 from django.shortcuts import redirect

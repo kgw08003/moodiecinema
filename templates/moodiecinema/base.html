@@ -78,7 +78,7 @@
                 <li><a href="{% url 'report_list' %}" class="nav-link">신고관리</a></li>
               {% endif %}
               <li><a href="{% url 'music:recommendation' %}" class="nav-link">OST음악</a></li>
-              <li><a href="#">추가예정</a></li>
+              <li><a href="{% url 'statistics' %}" class="nav-link">영화통계</a></li> <!-- 통계 보기 버튼 추가 -->
               <li class="divider">|</li>
               {% if user.is_authenticated %}
                   <li><a href="{% url 'profile' %}">프로필</a></li>
