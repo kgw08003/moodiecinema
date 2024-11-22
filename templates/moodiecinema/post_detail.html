@@ -1,0 +1,98 @@
+{% extends 'moodiecinema/base.html' %}
+
+{% block title %}게시글 상세 보기{% endblock %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'community.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="post-detail-container">
+    <div class="post-header">
+        <h1>{{ post.title }}</h1>
+        <p class="post-meta">
+            작성자: <span>{{ post.user }}</span> | 작성일: <span>{{ post.created_at|date:"Y-m-d H:i" }}</span>
+        </p>
+        <div class="post-content">
+            <p>{{ post.content }}</p>
+        </div>
+        <div class="post-actions">
+            {% if post.user == request.user %}
+            <a href="{% url 'community:post_delete' post.id %}" class="btn-danger delete-btn">게시글 삭제</a>
+            {% endif %}
+            <button id="like-btn" data-id="{{ post.id }}" class="like-btn">
+                좋아요 {{ post.likes.count }}
+            </button>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById('like-btn').addEventListener('click', function() {
+        const postId = this.getAttribute('data-id');
+        fetch(`/community/${postId}/like/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            this.innerHTML = `좋아요 ${data.likes_count}`;
+        });
+    });
+    </script>
+
+    <div class="comments-section">
+        <h2>댓글</h2>
+        <ul class="comment-list">
+            {% for comment in parent_comments %}
+            <li class="comment-item">
+                <div class="comment-content">
+                    <p>{{ comment.content }}</p>
+                    <p class="comment-meta">작성자: {{ comment.user }}</p>
+                </div>
+                {% if comment.user == request.user %}
+                <a href="{% url 'community:comment_delete' post.id comment.id %}" class="btn-danger delete-btn">댓글 삭제</a>
+                {% endif %}
+
+                <!-- 대댓글 목록 -->
+                {% if comment.replies.all %}
+                <ul class="reply-list">
+                    {% for reply in comment.replies.all %}
+                    <li class="reply-item">
+                        <div class="reply-content">
+                            <p>{{ reply.content }}</p>
+                            <p class="reply-meta">작성자: {{ reply.user }}</p>
+                        </div>
+                        {% if reply.user == request.user %}
+                        <a href="{% url 'community:comment_delete' post.id reply.id %}" class="btn-danger delete-btn">삭제</a>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+                <!-- 대댓글 작성 -->
+                <div class="comment-input-container">
+                    <form method="post" action="{% url 'community:comment_reply' post.id comment.id %}">
+                        {% csrf_token %}
+                        <textarea name="content" rows="3" placeholder="답글을 입력하세요"></textarea>
+                        <button type="submit" class="btn-submit">답글 작성</button>
+                    </form>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <!-- 일반 댓글 작성 -->
+        <div class="comment-input-container">
+            <h2>댓글 작성</h2>
+            <form method="post" action="{% url 'community:comment_create' post.id %}">
+                {% csrf_token %}
+                <textarea name="content" rows="3" placeholder="댓글을 입력하세요"></textarea>
+                <button type="submit" class="btn-submit">댓글 작성</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -458,8 +458,6 @@ body {
   color: #FFFF00; /* 마우스를 올렸을 때 텍스트 색상 노란색 */
 }
 
-
-/**/
 /* 챗봇 */
 #chatbot-widget {
   position: fixed;

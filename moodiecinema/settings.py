@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'jjim',
     'user_profile',
     'chatbot',
+    'community',
 ]
 
 MIDDLEWARE = [
