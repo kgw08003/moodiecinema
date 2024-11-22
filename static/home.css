@@ -361,6 +361,45 @@ body {
   background-color: #f2f2f2;
 }
 
+/* 추가된 부분 ( 스크롤 버튼 위치 조정 및 디자인 변경)*/
+.movie-lists .list-container{
+  position:relative;
+}
+
+.scroll-button {
+  position: absolute; /* 버튼 위치를 고정 */
+  top: 50%; /* 세로 방향 중앙 */
+  transform: translateY(-50%); /* 세로 방향 정확히 중앙 정렬 */
+  width: 30px; /* 버튼의 너비 */
+  height: 90px; /* 버튼의 높이 */
+  border-radius: 40%; /* 원형 버튼 */
+  background-color: #333333; /* 버튼 배경색 */
+  color: #ffffff; /* 아이콘 색상 */
+  font-size: 18px; /* 아이콘 크기 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* 왼쪽 버튼 */
+.scroll-button.left {
+  left: 10px; /* 왼쪽에서 10px 떨어짐 */
+}
+
+/* 오른쪽 버튼 */
+.scroll-button.right {
+  right: 10px; /* 오른쪽에서 10px 떨어짐 */
+}
+
+/* Hover 효과 */
+.scroll-button:hover {
+  background-color: #555555; /* 호버 시 배경색 변경 */
+}
+
+
+
 /* 기본 스타일이 데스크톱에 적용됨 */
 
 @media screen and (max-width: 1024px) {
@@ -389,6 +428,23 @@ body {
   .movie-lists .list .item {
     width: calc(50% - 10px); /* 두 개 열로 나열 */
   }
+
+
+  /* 추가된 부분 */
+  .scroll-button {
+    width: 30px; /* 버튼 너비 축소 */
+    height: 30px; /* 버튼 높이 축소 */
+    font-size: 16px; /* 아이콘 크기 축소 */
+  }
+
+  .scroll-button.left {
+    left: 5px; /* 왼쪽 간격 축소 */
+  }
+
+  .scroll-button.right {
+    right: 5px; /* 오른쪽 간격 축소 */
+  }
+
 }
 
 @media screen and (max-width: 768px) {
@@ -447,6 +503,21 @@ body {
     padding: 8px 20px; /* 버튼 패딩 조정 */
     font-size: 14px; /* 폰트 크기 조정 */
   }
+/* 추가된 부분( 스크롤 버튼 ) */
+.scroll-button {
+  width: 30px; /* 모바일에 맞춰 버튼 크기 더 축소 */
+  height: 30px; /* 버튼 높이 축소 */
+  font-size: 14px; /* 아이콘 크기 축소 */
+}
+
+.scroll-button.left {
+  left: 10px; /* 왼쪽 간격 더 축소 */
+}
+
+.scroll-button.right {
+  right: 10px; /* 오른쪽 간격 더 축소 */
+}
+
 }
 .nav-link {
   color: white; /* 기본 텍스트 색상 흰색 */
@@ -576,3 +647,5 @@ body {
   padding: 8px 12px;
   cursor: pointer;
 }
+
+

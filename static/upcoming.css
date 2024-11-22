@@ -1,0 +1,169 @@
+/* 전체 컨테이너 스타일 */
+a {
+    color: #fff; /* 모든 링크를 흰색으로 설정 */
+    text-decoration: none; /* 밑줄 제거 */
+    margin-top : 10px;
+}
+.container {
+    margin-top: 50px;
+    text-align: center;
+    padding: 0 30px;
+    margin-bottom: 50px;
+}
+
+/* 섹션 제목 스타일 */
+.upcoming-section h2 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #f5c518;
+}
+
+/* 섹션 스타일 */
+.upcoming-section {
+    margin-top: 50px;
+    text-align: center;
+    padding-left: 30px;
+    padding-right: 30px;
+    margin-bottom: 50px;
+}
+
+/* 슬라이더 래퍼 */
+.upcoming-section .slider-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+}
+
+/* 슬라이더 컨테이너 */
+.slider-container {
+    display: flex;
+    gap: 10px;
+    overflow: hidden;
+    scroll-behavior: smooth;
+}
+
+/* 영화 아이템 스타일 */
+.movie-item {
+    flex: 0 0 auto;
+    width: 300px;
+    height: 500px;
+    text-align: center;
+    margin-top: 20px;
+    border-radius: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+/* 영화 포스터 이미지 스타일 */
+.movie-item img {
+    width: 300px;
+    height: 430px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+/* 영화 카드 hover 시 애니메이션 */
+.movie-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* 영화 제목 및 개봉 날짜 영역 */
+.movie-item .movie-info {
+    position: absolute;
+    bottom: 10px;  /* 카드 하단에 고정 */
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.6); /* 반투명 배경 */
+    border-radius: 0 0 8px 8px; /* 하단에만 둥근 모서리 */
+    color: #fff; /* 텍스트 색상 */
+    font-size: 14px;
+    text-align: center;
+}
+
+/* 영화 제목 스타일 */
+.movie-item .movie-info p.title {
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0;
+}
+
+/* 개봉 날짜 스타일 */
+.movie-item .movie-info p.release-date {
+    font-size: 12px;
+    margin: 5px 0 0;
+}
+
+/* 슬라이더 좌우 버튼 스타일 */
+.scroll-button {
+    width: 30px;
+    height: 90px;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    font-size: 2em;
+    border: none;
+    padding: 15px;
+    cursor: pointer;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    transition: background-color 0.2s ease;
+}
+
+/* 슬라이더 버튼 hover */
+.scroll-button:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* 좌측 버튼 위치 */
+.scroll-button.left {
+    left: 15px;
+}
+
+/* 우측 버튼 위치 */
+.scroll-button.right {
+    right: 15px;
+}
+
+/* 비어있는 영화 목록 메시지 */
+.empty {
+    text-align: center;
+    font-size: 18px;
+    color: #aaa;
+    margin-top: 20px;
+}
+
+/* 미디어 쿼리 (반응형 디자인) */
+@media (max-width: 768px) {
+    .movie-item {
+        width: 250px;
+        height: 400px;
+    }
+
+    .movie-item img {
+        height: 60%; /* 이미지 높이를 줄이기 */
+    }
+
+    .upcoming-section h2 {
+        font-size: 22px;
+    }
+
+    .movie-item .movie-info p {
+        font-size: 12px;
+    }
+
+    .scroll-button {
+        padding: 10px;
+        font-size: 24px;
+    }
+}
