@@ -45,6 +45,96 @@
         {% endif %}
     </div>
 
+    <div class="review-stats">
+        <h2>별점 분포</h2>
+        <canvas id="ratingChart" width="200" height="100"></canvas>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const ratingDistribution = JSON.parse('{{ rating_distribution_json|safe }}');
+            const labels = Object.keys(ratingDistribution).map(key => `${key}점`);
+            const values = Object.values(ratingDistribution);
+    
+            const ctx = document.getElementById('ratingChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '별점 분포',
+                        data: values,
+                        backgroundColor: '#4BC0C0', // 막대 색상
+                    }]
+                },
+                options: {
+                    
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#FFFFFF', // 범례 텍스트 색상 (흰색)
+                                font: {
+                                    size: 14,       // 범례 글씨 크기
+                                    family: 'Arial',
+                                }
+                            }
+                        },
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#FFFFFF', // X축 글씨 색상
+                                font: {
+                                    size: 12,      // 글씨 크기
+                                }
+                            },
+                            grid: {
+                                color: '#444444', // X축 그리드 색상
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#FFFFFF', // Y축 글씨 색상
+                                font: {
+                                    size: 12,      // 글씨 크기
+                                }
+                            },
+                            grid: {
+                                color: '#444444', // Y축 그리드 색상
+                            }
+                        }
+                    }
+                }
+            });
+
+
+        });
+    </script>
+    
+
+    <div class="author-statistics">
+        <h2>리뷰 작성자 분석</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>작성자</th>
+                    <th>작성 리뷰 수</th>
+                    <th>평균 평점</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for author in author_statistics %}
+                    <tr>
+                        <td>{{ author.user__user_name }}</td>
+                        <td>{{ author.review_count }}</td>
+                        <td>{{ author.average_rating|floatformat:1 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
 
     <!-- 워드 클라우드 -->
     <div class="word-cloud-section">

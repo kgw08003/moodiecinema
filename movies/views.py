@@ -130,14 +130,15 @@ class ReviewStatisticsView(TemplateView):
 
         # sentiment_count 데이터를 JSON 형식으로 변환
         sentiment_count_json = json.dumps(review_analysis_data['sentiment_count'])
-
+        rating_distribution_json = json.dumps(review_analysis_data['rating_distribution'])
         # 템플릿 컨텍스트에 데이터 추가
         context.update({
             'movie': movie_data,
             'credits': credits_data,
             'videos': videos_data,
             'sentiment_count_json': sentiment_count_json,  # JSON 데이터 추가
-            **review_analysis_data  # 기존 리뷰 분석 데이터 추가
+            'rating_distribution_json': rating_distribution_json,
+            **review_analysis_data,  # 기존 리뷰 분석 데이터 추가
         })
 
         return context

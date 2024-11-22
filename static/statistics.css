@@ -1,0 +1,167 @@
+/* statistics.css */
+
+/* 컨테이너 스타일 */
+.statistics-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #252525; /* 어두운 배경 */
+    color: #ffffff; /* 텍스트 색상 */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 페이지 제목 스타일 */
+.statistics-container h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #FFD700;
+}
+
+/* 섹션 기본 스타일 */
+.statistics-section {
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.statistics-section h3 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+/* 캔버스 크기 조정 */
+.statistics-section canvas {
+    width: 100%;
+    height: 400px;
+}
+
+/* 프로파일 섹션 스타일 */
+.profile-section {
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    color: #000;
+}
+
+.profile-section h3 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #444;
+}
+
+/* 리스트 스타일 */
+.profile-section ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.profile-section ul li {
+    padding: 8px 10px;
+    margin-bottom: 5px;
+    background-color: #f3f3f3;
+    color: #000; /* 텍스트 색상: 검정 */
+    border-radius: 4px;
+}
+
+/* 지도 섹션 스타일 */
+#worldMap {
+    width: 100%;
+    height: 500px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+/* 페이지네이션 버튼 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 10px 15px;
+    margin: 0 5px;
+    font-size: 1rem;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.pagination button:hover {
+    background-color: #0056b3;
+}
+
+.pagination button.active {
+    background-color: #0056b3;
+    cursor: default;
+}
+
+/* 연령대별 컨테이너 */
+#ageRatingContainer {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #fefefe;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+#ageRatingContainer h4 {
+    font-size: 1.6rem;
+    color: #555;
+}
+
+#ageRatingContainer table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#ageRatingContainer table th,
+#ageRatingContainer table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+#ageRatingContainer table th {
+    background-color: #007bff;
+    color: #fff;
+}
+
+#ageRatingContainer table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#ageRatingContainer table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .statistics-container {
+        padding: 15px;
+    }
+
+    .statistics-section h3,
+    .profile-section h3 {
+        font-size: 1.5rem;
+    }
+
+    .pagination button {
+        font-size: 0.9rem;
+        padding: 8px 10px;
+    }
+}
