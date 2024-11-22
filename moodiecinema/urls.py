@@ -37,6 +37,7 @@ urlpatterns = [
     path('userprofile/', include('user_profile.urls')),
     path('chatbot/', include('chatbot.urls')),  # chatbot 앱의 URL 포함
     path('community/', include('community.urls')),  # Community 앱 추가
+    path('upcoming/', views.upcoming_movies, name='upcoming_movies'),
 ]
 
 if settings.DEBUG:
