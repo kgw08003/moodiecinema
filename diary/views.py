@@ -124,3 +124,20 @@ class DiaryCreateView(LoginRequiredMixin, View):
 
         except json.JSONDecodeError:
             return JsonResponse({'error': '잘못된 데이터 형식입니다.'}, status=400)
+
+
+class DiaryMonthView(LoginRequiredMixin, View):
+    def get(self, request):
+        year = request.GET.get('year')
+        month = request.GET.get('month')
+        if not year or not month:
+            return JsonResponse({'error': '연도와 월이 필요합니다.'}, status=400)
+        
+        diaries = Diary.objects.filter(
+            user=request.user,
+            created_at__year=year,
+            created_at__month=month
+        ).values('created_at', 'emotion')
+        
+        diary_data = {diary['created_at'].strftime('%Y-%m-%d'): diary['emotion'] for diary in diaries}
+        return JsonResponse({'diaries': diary_data})
