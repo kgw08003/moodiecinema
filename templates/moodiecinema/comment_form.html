@@ -1,0 +1,17 @@
+{% extends 'moodiecinema/base.html' %}
+
+{% block title %}댓글 작성{% endblock %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'community.css' %}">
+{% endblock %}
+
+{% block content %}
+<h1>댓글 작성</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">댓글 저장</button>
+</form>
+{% endblock %}
