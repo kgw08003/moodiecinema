@@ -71,8 +71,8 @@ class UserProfileView(LoginRequiredMixin, TemplateView):
             # 리뷰 데이터
             'review_count': review_analysis['review_count'],
             'average_rating': review_analysis['average_rating'],
-            'highest_rating_reviews': review_analysis['highest_rating_review'],  # 리스트로 전달
-            'lowest_rating_reviews': review_analysis['lowest_rating_review'],  # 리스트로 전달
+            'highest_rating_reviews': review_analysis['highest_rating_reviews'],  # 리스트
+            'lowest_rating_reviews': review_analysis['lowest_rating_reviews'],    # 리스트
             'emotion_percentage': review_analysis['emotion_percentage'],
             'user_reviews': user_reviews,  # 리뷰 목록 (필요 시)
             'review_trend_labels': review_trend_labels,  # 리뷰 날짜 리스트

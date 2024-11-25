@@ -152,23 +152,24 @@
             console.error("Canvas context를 찾을 수 없습니다.");
         }
     </script>
-    <!-- 리뷰 감정 추세 -->
+
     <script>
         // Django에서 전달된 리뷰 데이터
         const reviewTrendLabels = {{ review_trend_labels|safe }};
         const reviewEmotionData = {{ review_emotion_data|safe }};
         const reviewEmotions = ['기쁨', '슬픔', '분노', '평온', '공포'];
-
-        // Chart.js 데이터셋 생성
+    
+        // Chart.js 데이터셋 생성 (초기에는 hidden: true 설정)
         const reviewDatasets = reviewEmotions.map((emotion, index) => ({
             label: emotion, // 감정 이름
             data: reviewEmotionData[emotion], // 날짜별 리뷰 수
             borderColor: ['#f9d342', '#4a90e2', '#e74c3c', '#50c878', '#8e44ad'][index], // 색상
             fill: false, // 배경 채우기 해제
             tension: 0.4, // 라인 부드럽게
+            hidden: true, // 초기에는 표시 안 함
         }));
-
-        // Chart.js 차트 생성
+    
+        // Chart.js 리뷰 감정 추세 차트 생성
         const reviewCtx = document.getElementById('emotionTrendChart').getContext('2d');
         new Chart(reviewCtx, {
             type: 'line',
@@ -180,30 +181,99 @@
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'top', // 범례 위치
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                        },
+                        onClick: function (e, legendItem) {
+                            const index = legendItem.datasetIndex;
+                            const chart = this.chart;
+                            const meta = chart.getDatasetMeta(index);
+                            meta.hidden = !meta.hidden;
+                            chart.update();
+                        },
                     },
                 },
                 scales: {
                     x: {
                         title: {
                             display: true,
-                            text: '날짜', // X축 제목
+                            text: '날짜',
                         },
                     },
                     y: {
                         title: {
                             display: true,
-                            text: '리뷰 수', // Y축 제목
+                            text: '리뷰 수',
                         },
-                        beginAtZero: true, // Y축 0부터 시작
+                        beginAtZero: true,
                         ticks: {
-                            stepSize: 1, // Y축 단위
+                            stepSize: 1,
                         },
                     },
                 },
             },
         });
+    
+        // Django에서 전달된 일기 데이터
+        const diaryTrendLabels = {{ diary_trend_labels|safe }};
+        const diaryEmotionData = {{ diary_emotion_data|safe }};
+        const diaryEmotions = ['기쁨', '슬픔', '분노', '평온', '공포'];
+    
+        // Chart.js 데이터셋 생성 (초기에는 hidden: true 설정)
+        const diaryDatasets = diaryEmotions.map((emotion, index) => ({
+            label: emotion, // 감정 이름
+            data: diaryEmotionData[emotion], // 날짜별 일기 수
+            borderColor: ['#f9d342', '#4a90e2', '#e74c3c', '#50c878', '#8e44ad'][index], // 색상
+            fill: false, // 배경 채우기 해제
+            tension: 0.4, // 라인 부드럽게
+            hidden: true, // 초기에는 표시 안 함
+        }));
+    
+        // Chart.js 일기 감정 추세 차트 생성
+        const diaryCtx = document.getElementById('diaryEmotionTrendChart').getContext('2d');
+        new Chart(diaryCtx, {
+            type: 'line',
+            data: {
+                labels: diaryTrendLabels, // X축: 날짜
+                datasets: diaryDatasets, // 감정별 데이터셋
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                        },
+                        onClick: function (e, legendItem) {
+                            const index = legendItem.datasetIndex;
+                            const chart = this.chart;
+                            const meta = chart.getDatasetMeta(index);
+                            meta.hidden = !meta.hidden;
+                            chart.update();
+                        },
+                    },
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: '날짜',
+                        },
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: '감정 수',
+                        },
+                        beginAtZero: true,
+                    },
+                },
+            },
+        });
     </script>
+    
 
     <!-- 일기 감정 추세 -->
     <script>
