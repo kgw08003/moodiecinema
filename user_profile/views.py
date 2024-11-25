@@ -388,3 +388,4 @@ class MoviesByAgeRatingAPIView(APIView):
                 age_rating_data[certification] = []
 
         return Response(age_rating_data)
+
