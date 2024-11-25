@@ -58,7 +58,7 @@ class DiaryView(LoginRequiredMixin, ListView):
         trend_labels = list(emotion_trend.keys())  # 날짜 리스트
         emotions = ['기쁨', '슬픔', '분노', '평온', '공포']
         emotion_data = {emotion: [emotion_trend[date].get(emotion, 0) for date in trend_labels] for emotion in emotions}
-
+        context['show_modal'] = True  # 조건에 따라 True/False 설정
         # 템플릿에 추가
         context.update({
             'trend_labels': trend_labels,  # 날짜

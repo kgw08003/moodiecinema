@@ -48,8 +48,10 @@ def analyze_reviews(reviews):
     lowest_rating = min(ratings, default=None)
 
     # 해당 평점의 리뷰 필터링
-    highest_rating_reviews = reviews.filter(rating=highest_rating) if highest_rating else []
-    lowest_rating_reviews = reviews.filter(rating=lowest_rating) if lowest_rating else []
+    highest_rating_review = reviews.filter(rating=highest_rating).first() if highest_rating else None
+    lowest_rating_review = reviews.filter(rating=lowest_rating).first() if lowest_rating else None
+    # highest_rating_reviews = reviews.filter(rating=highest_rating) if highest_rating else []
+    # lowest_rating_reviews = reviews.filter(rating=lowest_rating) if lowest_rating else []
 
     # 별점 분포 계산
     rating_distribution = Counter(ratings)
@@ -81,8 +83,8 @@ def analyze_reviews(reviews):
         'sentiment_count': dict(sentiment_count),
         'total_sentiment': total_sentiment,
         'average_rating': average_rating,
-        'highest_rating_review': highest_rating_reviews,
-        'lowest_rating_review': lowest_rating_reviews,
+        'highest_rating_review': highest_rating_review,
+        'lowest_rating_review': lowest_rating_review,
         'emotion_percentage': emotion_percentage,
         'review_count': reviews.count(),  # 총 리뷰 수
         'word_count': dict(word_count.most_common(5)),  # 상위 5개 단어
