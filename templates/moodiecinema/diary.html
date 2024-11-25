@@ -245,6 +245,20 @@ function showNotification(message, type = "success") {
     diaryEntry.style.backgroundAttachment = "fixed"; // 고정 배경
 }
 
+// 기존 방식 (배경 없는 버전)
+// <div id="diaryEntry" class="diary-entry" style="display: none;">
+//         <h2 id="entryDate">일기 날짜
+//             <button class="btn open-modal-btn" onclick="openDiaryModal()">일기 작성하기</button>
+//         </h2>
+        
+//         <div class="entry-content">
+//             <div class="entry-text">
+//                 <h3>일기 내용</h3>
+//                 <div class="diary-box">
+//                     <p id="diaryContent">여기에 일기 내용이 표시됩니다...</p>
+//                 </div>
+//             </div>
+//         </div>
 
     function renderCalendar(year, month) {
         const calendarTitle = document.getElementById("calendarTitle");
@@ -255,60 +269,31 @@ function showNotification(message, type = "success") {
 
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-    // API 호출: 해당 월의 일기 데이터 가져오기
-    fetch(`/diary/month/?year=${year}&month=${month + 1}`)
-        .then(response => response.json())
-        .then(data => {
-            const diaryData = data.diaries || {};
 
-            let row = document.createElement("tr");
-            for (let i = 0; i < firstDay; i++) {
-                row.appendChild(document.createElement("td"));
-            }
+        let row = document.createElement("tr");
+        for (let i = 0; i < firstDay; i++) {
+            row.appendChild(document.createElement("td"));
+        }
 
-            for (let day = 1; day <= daysInMonth; day++) {
-                if (row.children.length === 7) {
-                    calendarBody.appendChild(row);
-                    row = document.createElement("tr");
-                }
-
-                const cell = document.createElement("td");
-                const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                cell.innerText = day;
-                cell.onclick = () => openDiaryEntry(dateString);
-
-                // 일기 데이터에 날짜가 있는 경우 이모티콘 추가
-                if (diaryData[dateString]) {
-                    const emotion = diaryData[dateString];
-                    const emoji = getEmojiByEmotion(emotion); // 감정에 따른 이모티콘 결정
-                    const emojiSpan = document.createElement("span");
-                    emojiSpan.textContent = emoji;
-                    emojiSpan.className = "emoji";
-                    cell.appendChild(emojiSpan);
-                }
-
-                row.appendChild(cell);
-            }
-
-            if (row.children.length > 0) {
+        for (let day = 1; day <= daysInMonth; day++) {
+            if (row.children.length === 7) {
                 calendarBody.appendChild(row);
+                row = document.createElement("tr");
             }
-        })
-        .catch(error => {
-            console.error("Error fetching diary data:", error);
-        });
-}
 
-function getEmojiByEmotion(emotion) {
-    const emojiMap = {
-        "기쁨": "😊",
-        "슬픔": "😢",
-        "분노": "😡",
-        "공포": "😱",
-        "평온": "😌"
-    };
-    return emojiMap[emotion] || "📝"; // 기본 이모티콘
-}
+            const cell = document.createElement("td");
+            cell.innerText = day;
+
+            const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            cell.onclick = () => openDiaryEntry(dateString);
+
+            row.appendChild(cell);
+        }
+
+        if (row.children.length > 0) {
+            calendarBody.appendChild(row);
+        }
+    }
 
     function previousMonth() {
         currentMonth--;

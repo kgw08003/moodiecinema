@@ -47,6 +47,7 @@
     <div class="profile-tabs">
         <!-- 각 버튼 클릭 시 특정 섹션 표시 -->
         <button class="tab" onclick="showSection('authorStatisticsSection')">나의 기록</button>
+        <button class="tab" onclick="window.location.href='{% url "reviews_manage" %}'">리뷰 관리</button>
         <button class="tab" onclick="showSection('deleteAccountSection')">회원 탈퇴</button>
     </div>
 
@@ -70,8 +71,12 @@
             <!-- 가장 높게 평가한 영화 -->
             <div class="card">
                 <h2>가장 높게 평가한 영화</h2>
-                {% if highest_rating_review %}
-                    <p>{{ highest_rating_review.movie.title }} ({{ highest_rating_review.rating }}⭐)</p>
+                {% if highest_rating_reviews %}
+                    <ul>
+                        {% for review in highest_rating_reviews %}
+                            <li>{{ review.movie.title }} ({{ review.rating }}⭐)</li>
+                        {% endfor %}
+                    </ul>
                 {% else %}
                     <p>없음</p>
                 {% endif %}
@@ -80,20 +85,33 @@
             <!-- 가장 낮게 평가한 영화 -->
             <div class="card">
                 <h2>가장 낮게 평가한 영화</h2>
-                {% if lowest_rating_review %}
-                    <p>{{ lowest_rating_review.movie.title }} ({{ lowest_rating_review.rating }}⭐)</p>
+                {% if lowest_rating_reviews %}
+                    <ul>
+                        {% for review in lowest_rating_reviews %}
+                            <li>{{ review.movie.title }} ({{ review.rating }}⭐)</li>
+                        {% endfor %}
+                    </ul>
                 {% else %}
                     <p>없음</p>
                 {% endif %}
             </div>
-
             <!-- 감정 분석 결과 -->
             <div class="card">
-                <h2>나의 리뷰 감정 분석</h2>
+                <h2>나의 리뷰 감정 차트</h2>
                 <canvas id="emotionDoughnutChart"></canvas>
+            </div>
+            <div class="card">
+                <h2>나의 리뷰 감정 추세</h2>
+                <canvas id="emotionTrendChart"></canvas>
+            </div>
+
+            <div class="card">
+                <h2>나의 일기 감정 추세</h2>
+                <canvas id="diaryEmotionTrendChart"></canvas>
             </div>
         </table>
     </div>
+    <!-- 리뷰 감정 분석 도넛차트 -->
     <script>
         const emotionPercentage = {{ emotion_percentage|safe }};
         const labels = Object.keys(emotionPercentage);
@@ -134,6 +152,111 @@
             console.error("Canvas context를 찾을 수 없습니다.");
         }
     </script>
+    <!-- 리뷰 감정 추세 -->
+    <script>
+        // Django에서 전달된 리뷰 데이터
+        const reviewTrendLabels = {{ review_trend_labels|safe }};
+        const reviewEmotionData = {{ review_emotion_data|safe }};
+        const reviewEmotions = ['기쁨', '슬픔', '분노', '평온', '공포'];
+
+        // Chart.js 데이터셋 생성
+        const reviewDatasets = reviewEmotions.map((emotion, index) => ({
+            label: emotion, // 감정 이름
+            data: reviewEmotionData[emotion], // 날짜별 리뷰 수
+            borderColor: ['#f9d342', '#4a90e2', '#e74c3c', '#50c878', '#8e44ad'][index], // 색상
+            fill: false, // 배경 채우기 해제
+            tension: 0.4, // 라인 부드럽게
+        }));
+
+        // Chart.js 차트 생성
+        const reviewCtx = document.getElementById('emotionTrendChart').getContext('2d');
+        new Chart(reviewCtx, {
+            type: 'line',
+            data: {
+                labels: reviewTrendLabels, // X축: 날짜
+                datasets: reviewDatasets, // 감정별 데이터셋
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top', // 범례 위치
+                    },
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: '날짜', // X축 제목
+                        },
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: '리뷰 수', // Y축 제목
+                        },
+                        beginAtZero: true, // Y축 0부터 시작
+                        ticks: {
+                            stepSize: 1, // Y축 단위
+                        },
+                    },
+                },
+            },
+        });
+    </script>
+
+    <!-- 일기 감정 추세 -->
+    <script>
+        // Django에서 전달된 일기 데이터
+        const diaryTrendLabels = {{ diary_trend_labels|safe }};
+        const diaryEmotionData = {{ diary_emotion_data|safe }};
+        const diaryEmotions = ['기쁨', '슬픔', '분노', '평온', '공포'];
+
+        // Chart.js 데이터셋 생성
+        const diaryDatasets = diaryEmotions.map((emotion, index) => ({
+            label: emotion, // 감정 이름
+            data: diaryEmotionData[emotion], // 날짜별 일기 수
+            borderColor: ['#f9d342', '#4a90e2', '#e74c3c', '#50c878', '#8e44ad'][index], // 색상
+            borderWidth: 2, // 라인 두께
+            pointRadius: 3, // 데이터 포인트 크기
+            fill: false, // 배경 채우기 해제
+            tension: 0.4, // 라인 부드럽게
+        }));
+
+        // Chart.js 차트 생성
+        const diaryCtx = document.getElementById('diaryEmotionTrendChart').getContext('2d');
+        new Chart(diaryCtx, {
+            type: 'line',
+            data: {
+                labels: diaryTrendLabels, // X축: 날짜
+                datasets: diaryDatasets, // 감정별 데이터셋
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top', // 범례 위치
+                    },
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: '날짜', // X축 제목
+                        },
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: '감정 수', // Y축 제목
+                        },
+                        beginAtZero: true, // Y축 0부터 시작
+                    },
+                },
+            },
+        });
+    </script>
+
     
 
 
@@ -192,7 +315,6 @@
         <a href="{% url 'update_profile' %}" class="btn edit-profile-btn">회원정보 수정</a>
         <a href="{% url 'logout' %}" class="btn logout-btn">로그아웃</a>
         <a href="{% url 'home' %}" class="btn home-btn">홈으로 이동</a>
-        <a href="{% url 'reviews_manage' %}" class="btn home-btn">리뷰 관리</a>
     </div>
 </div>
 

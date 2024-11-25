@@ -28,7 +28,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from reviews.models import Review
 from utils.review_helpers import analyze_reviews
-
+from utils.diary_helpers import analyze_diary_emotions  # 헬퍼 함수 임포트
+from collections import defaultdict
+from diary.models import Diary
 class UserProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'moodiecinema/profile.html'
 
@@ -38,20 +40,53 @@ class UserProfileView(LoginRequiredMixin, TemplateView):
         # 현재 로그인한 사용자
         user = self.request.user
 
-        # 헬퍼 함수를 이용해 리뷰 데이터 가져오기
+        # 1. 리뷰 데이터 분석
         user_reviews = Review.objects.filter(user=user)
         review_analysis = analyze_reviews(user_reviews)
 
+        # 리뷰 날짜별 감정 데이터 분석
+        review_emotion_trend = defaultdict(lambda: defaultdict(int))  # {날짜: {감정: 개수}}
+        for review in user_reviews:
+            date = review.created_at.strftime('%Y-%m-%d')  # 날짜만 추출
+            review_emotion_trend[date][review.emotion] += 1
+
+        review_trend_labels = list(review_emotion_trend.keys())  # 리뷰 날짜 리스트
+        review_emotion_data = {emotion: [review_emotion_trend[date].get(emotion, 0) for date in review_trend_labels] for emotion in ['기쁨', '슬픔', '분노', '평온', '공포']}
+
+        # 2. 일기 데이터 분석
+        user_diaries = Diary.objects.filter(user=user)
+
+        # 일기 날짜별 감정 데이터 분석
+        diary_emotion_trend = defaultdict(lambda: defaultdict(int))  # {날짜: {감정: 개수}}
+        for diary in user_diaries:
+            date = diary.created_at.strftime('%Y-%m-%d')  # 날짜만 추출
+            diary_emotion_trend[date][diary.emotion] += 1
+
+        diary_trend_labels = list(diary_emotion_trend.keys())  # 일기 날짜 리스트
+        diary_emotion_data = {emotion: [diary_emotion_trend[date].get(emotion, 0) for date in diary_trend_labels] for emotion in ['기쁨', '슬픔', '분노', '평온', '공포']}
+    
+
+        # 3. Context에 데이터 추가
         context.update({
+            # 리뷰 데이터
             'review_count': review_analysis['review_count'],
             'average_rating': review_analysis['average_rating'],
-            'highest_rating_review': review_analysis['highest_rating_review'],
-            'lowest_rating_review': review_analysis['lowest_rating_review'],
+            'highest_rating_reviews': review_analysis['highest_rating_review'],  # 리스트로 전달
+            'lowest_rating_reviews': review_analysis['lowest_rating_review'],  # 리스트로 전달
             'emotion_percentage': review_analysis['emotion_percentage'],
             'user_reviews': user_reviews,  # 리뷰 목록 (필요 시)
+            'review_trend_labels': review_trend_labels,  # 리뷰 날짜 리스트
+            'review_emotion_data': review_emotion_data,  # 리뷰 감정 데이터
+
+            # 일기 데이터
+            'diary_trend_labels': diary_trend_labels,  # 일기 날짜 리스트
+            'diary_emotion_data': diary_emotion_data,  # 일기 감정 데이터
+            'diary_emotions': ['기쁨', '슬픔', '분노', '평온', '공포'],  # 감정 이름 리스트
         })
 
         return context
+
+
 
 
 from django.contrib.auth import logout
