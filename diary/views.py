@@ -14,7 +14,7 @@ import json
 import logging
 import random
 import requests
-
+from collections import defaultdict
 # 감정별 카테고리 매핑
 EMOTION_CATEGORY_MAP = {
     '기쁨': [35, 878, 12, 16, 10749, 10402, 14],  # 코미디, SF, 모험, 애니메이션, 로맨스, 음악, 판타지
@@ -36,7 +36,36 @@ class DiaryView(LoginRequiredMixin, ListView):
             selected_date = timezone.datetime.strptime(date_str, '%Y-%m-%d').date()
         else:
             selected_date = timezone.now().date()
-        return Diary.objects.filter(user=self.request.user, created_at=selected_date)
+        #return Diary.objects.filter(user=self.request.user, created_at=selected_date)
+        
+        queryset = Diary.objects.filter(created_at=selected_date, user=self.request.user)
+        print(f"Selected Date: {selected_date}, QuerySet: {queryset}")  # 디버깅 출력
+        return queryset
+
+    
+    #### 프로필 -> 일기 감정 추세 ####
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # 모든 일기를 분석하여 감정 추세 데이터 추가
+        diaries = Diary.objects.filter(user=self.request.user).order_by('created_at')
+        emotion_trend = defaultdict(lambda: defaultdict(int))
+
+        for diary in diaries:
+            date = diary.created_at  # 날짜만 추출
+            emotion_trend[date][diary.emotion] += 1
+
+        trend_labels = list(emotion_trend.keys())  # 날짜 리스트
+        emotions = ['기쁨', '슬픔', '분노', '평온', '공포']
+        emotion_data = {emotion: [emotion_trend[date].get(emotion, 0) for date in trend_labels] for emotion in emotions}
+
+        # 템플릿에 추가
+        context.update({
+            'trend_labels': trend_labels,  # 날짜
+            'emotion_data': emotion_data,  # 감정 데이터
+            'emotions': emotions,  # 감정 이름
+        })
+        return context
 
 class DiaryDetailView(LoginRequiredMixin, View):
     def get(self, request):
