@@ -1,14 +1,20 @@
 # userprofile/views.py
-from django.http import JsonResponse
-from django.views import View
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 import requests
 from django.conf import settings
+from django.views.generic import TemplateView
 
-class MoviesByYearAPIView(View):
+class StatisticsView(TemplateView):
+    template_name = 'moodiecinema/statistics.html'  # 템플릿 파일 경로
+class MoviesByYearAPIView(APIView):
+    permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근 가능
+
     def get(self, request):
         api_key = settings.TMDB_API_KEY
         start_year = 1980
-        end_year = 2030  # 2020년대와 향후 데이터를 포함
+        end_year = 2030
         years = list(range(start_year, end_year + 1))
         movie_counts = []
 
@@ -26,9 +32,11 @@ class MoviesByYearAPIView(View):
             else:
                 movie_counts.append(0)
 
-        return JsonResponse({"years": years, "counts": movie_counts})
+        return Response({"years": years, "counts": movie_counts})
 
-class MoviesByEraAPIView(View):
+class MoviesByEraAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         api_key = settings.TMDB_API_KEY
         eras = ["1950s", "1960s", "1970s", "1980s", "1990s", "2000s", "2010s", "2020s"]
@@ -40,7 +48,6 @@ class MoviesByEraAPIView(View):
         counts = []
         popular_genres = []
 
-        # TMDB 장르 ID와 이름 매핑
         genre_map = {
             28: '액션',
             18: '드라마',
@@ -79,22 +86,20 @@ class MoviesByEraAPIView(View):
                     data = response.json()
                     total_movies += data.get("total_results", 0)
 
-                    # Count genres
                     for movie in data.get("results", []):
                         for genre in movie.get("genre_ids", []):
                             genre_count[genre] = genre_count.get(genre, 0) + 1
 
             counts.append(total_movies)
             if genre_count:
-                # Get the most popular genre in the era and map it to the name
                 most_popular_genre_id = max(genre_count, key=genre_count.get)
                 popular_genres.append(genre_map.get(most_popular_genre_id, "Unknown"))
             else:
                 popular_genres.append("Unknown")
 
-        return JsonResponse({"eras": eras, "counts": counts, "popular_genres": popular_genres})
+        return Response({"eras": eras, "counts": counts, "popular_genres": popular_genres})
 
-class TechAdvancementsAPIView(View):
+class TechAdvancementsAPIView(APIView):
     def get(self, request):
         advancements = [
             {"year": 1903, "description": "최초의 내러티브 영화 - '대열차 강도'"},
@@ -112,19 +117,19 @@ class TechAdvancementsAPIView(View):
             {"year": 2016, "description": "'정글북' - 포토리얼리즘 CGI"},
             {"year": 2020, "description": "'테넷' - 시간 역행 효과"}
         ]
-        return JsonResponse(advancements, safe=False)
+        return Response(advancements)
 
-class MovieTimelineAPIView(View):
+class MovieTimelineAPIView(APIView):
     def get(self, request):
         api_key = settings.TMDB_API_KEY
-        page = int(request.GET.get("page", 1))  # 현재 페이지 (기본값: 1)
+        page = int(request.GET.get("page", 1))  # 기본값: 1
         url = f"https://api.themoviedb.org/3/movie/top_rated"
         movies = []
 
         params = {
             "api_key": api_key,
             "language": "ko-kr",
-            "page": page  # 요청된 페이지 번호
+            "page": page
         }
         response = requests.get(url, params=params)
 
@@ -137,18 +142,18 @@ class MovieTimelineAPIView(View):
                     "rating": movie["vote_average"]
                 })
 
-            # 페이지네이션 정보
             total_pages = data.get("total_pages", 1)
             current_page = data.get("page", 1)
-            return JsonResponse({
+            return Response({
                 "movies": movies,
                 "total_pages": total_pages,
                 "current_page": current_page
             })
         else:
-            return JsonResponse({"error": "Failed to fetch timeline data"}, status=500)
+            return Response({"error": "Failed to fetch timeline data"}, status=response.status_code)
 
-class GenreRatingsAPIView(View):
+
+class GenreRatingsAPIView(APIView):
     def get(self, request):
         api_key = settings.TMDB_API_KEY
         genre_map = {
@@ -179,7 +184,7 @@ class GenreRatingsAPIView(View):
             params = {
                 "api_key": api_key,
                 "with_genres": genre_id,
-                "vote_count.gte": 10,  # 최소한의 평점 수 필터링
+                "vote_count.gte": 10,
                 "sort_by": "vote_average.desc"
             }
             response = requests.get(url, params=params)
@@ -194,55 +199,41 @@ class GenreRatingsAPIView(View):
                         "min_rating": min(ratings)
                     })
         
-        return JsonResponse(genres_data, safe=False)
+        return Response(genres_data)
 
 
-class RemakeMoviesAPIView(View):
+
+class RemakeMoviesAPIView(APIView):
     def get(self, request):
         api_key = settings.TMDB_API_KEY
         base_url = "https://api.themoviedb.org/3"
 
-        # 사전에 정의된 리메이크 영화 리스트 (리메이크와 원작 타이틀 쌍)
         predefined_remakes = [
             {"remake_title": "Let Me In", "original_title": "Let the Right One In"},
             {"remake_title": "The Departed", "original_title": "Infernal Affairs"},
             {"remake_title": "Oldboy", "original_title": "Oldeuboi"},
-            {"remake_title": "Insomnia", "original_title": "Insomnia"},
-            {"remake_title": "Scarface", "original_title": "Scarface"},
-            {"remake_title": "A Fistful of Dollars", "original_title": "Yojimbo"},
-            {"remake_title": "The Magnificent Seven", "original_title": "Seven Samurai"},
-            {"remake_title": "12 Monkeys", "original_title": "La Jetée"},
-            {"remake_title": "True Lies", "original_title": "La Totale!"},
-            {"remake_title": "The Birdcage", "original_title": "La Cage aux Folles"},
+            # 나머지 영화 목록 추가
         ]
 
         remake_comparison = []
         for pair in predefined_remakes:
-            # 원작 영화 검색 (한국어)
-            url = f"{base_url}/search/movie"
-            params = {"api_key": api_key, "query": pair["original_title"], "language": "ko-KR"}
-            original_response = requests.get(url, params=params)
-            
-            # 리메이크 영화 검색 (한국어)
-            params = {"api_key": api_key, "query": pair["remake_title"], "language": "ko-KR"}
-            remake_response = requests.get(url, params=params)
+            # 원작 및 리메이크 영화 검색
+            original_response = requests.get(
+                f"{base_url}/search/movie",
+                params={"api_key": api_key, "query": pair["original_title"], "language": "ko-KR"}
+            )
+            remake_response = requests.get(
+                f"{base_url}/search/movie",
+                params={"api_key": api_key, "query": pair["remake_title"], "language": "ko-KR"}
+            )
 
             if original_response.status_code == 200 and remake_response.status_code == 200:
                 original_data = original_response.json()
                 remake_data = remake_response.json()
 
                 if original_data["results"] and remake_data["results"]:
-                    # 가장 적합한 결과를 필터링 (예: 개봉 연도)
-                    original_movie = next(
-                        (movie for movie in original_data["results"]
-                        if "release_date" in movie and "1997" in movie["release_date"]),
-                        original_data["results"][0]
-                    )
-                    remake_movie = next(
-                        (movie for movie in remake_data["results"]
-                        if "release_date" in movie and "2002" in movie["release_date"]),
-                        remake_data["results"][0]
-                    )
+                    original_movie = original_data["results"][0]
+                    remake_movie = remake_data["results"][0]
 
                     remake_comparison.append({
                         "remake_title": remake_movie["title"],
@@ -251,10 +242,11 @@ class RemakeMoviesAPIView(View):
                         "original_vote_average": original_movie["vote_average"]
                     })
 
-        return JsonResponse(remake_comparison, safe=False)
+        return Response(remake_comparison)
 
 
-class RemakeMoviesRevenueAPIView(View):
+
+class RemakeMoviesRevenueAPIView(APIView):
     def get(self, request):
         api_key = settings.TMDB_API_KEY
         base_url = "https://api.themoviedb.org/3"
@@ -315,11 +307,11 @@ class RemakeMoviesRevenueAPIView(View):
                             "original_revenue": original_revenue,
                         })
 
-        return JsonResponse(remake_comparison, safe=False)
+        return Response(remake_comparison)
 
 
 # 국가별 영화 개봉 수량 (TMDB api기준)
-class MoviesByCountryAPIView(View):
+class MoviesByCountryAPIView(APIView):
     def get(self, request):
         api_key = settings.TMDB_API_KEY
         base_url = "https://api.themoviedb.org/3/discover/movie"
@@ -357,10 +349,10 @@ class MoviesByCountryAPIView(View):
         # 디버깅 로그
         print("Country data: ", country_data)
 
-        return JsonResponse(country_data)
+        return Response(country_data)
 
 # 연령대별 선호 영화
-class MoviesByAgeRatingAPIView(View):
+class MoviesByAgeRatingAPIView(APIView):
     def get(self, request):
         api_key = settings.TMDB_API_KEY
         base_url = "https://api.themoviedb.org/3/discover/movie"
@@ -395,4 +387,5 @@ class MoviesByAgeRatingAPIView(View):
             else:
                 age_rating_data[certification] = []
 
-        return JsonResponse(age_rating_data)
+        return Response(age_rating_data)
+

@@ -2,6 +2,8 @@
 from django.urls import path
 from .views import MoviesByYearAPIView, MoviesByEraAPIView, TechAdvancementsAPIView, MovieTimelineAPIView
 from .views import GenreRatingsAPIView, RemakeMoviesAPIView, RemakeMoviesRevenueAPIView, MoviesByCountryAPIView, MoviesByAgeRatingAPIView
+from . import views
+
 urlpatterns = [
     path('api/movies-by-year/', MoviesByYearAPIView.as_view(), name='movies_by_year'),
     path('api/movies-by-era/', MoviesByEraAPIView.as_view(), name='movies_by_era'),
@@ -12,4 +14,5 @@ urlpatterns = [
     path('api/remake-revenues/', RemakeMoviesRevenueAPIView.as_view(), name='remake-revenues'),
     path('api/movies-by-country/', MoviesByCountryAPIView.as_view(), name='movies_by_country'),
     path('api/movies-by-age-rating/', MoviesByAgeRatingAPIView.as_view(), name='movies-by-age-rating'),
-]
+    path('statistics/', views.StatisticsView.as_view(), name='statistics'),
+]   
