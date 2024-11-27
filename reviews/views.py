@@ -13,6 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from .forms import ReviewForm
 from rest_framework.renderers import JSONRenderer
+from django.http import JsonResponse
 
 class ReviewListView(ListView):
     model = Review
@@ -62,16 +63,30 @@ class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         review = self.get_object()
         return review.user == self.request.user  # 작성자만 수정 가능
 
+# class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+#     model = Review
+#     template_name = 'moodiecinema/confirm_delete.html'
+    
+#     def get_success_url(self):
+#         return reverse_lazy('reviews_manage')  # 삭제 후 리뷰 관리 페이지로 리디렉션
+
+#     def test_func(self):
+#         review = self.get_object()
+#         return review.user == self.request.user  # 작성자만 삭제 가능
+
 class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Review
-    template_name = 'moodiecinema/confirm_delete.html'
-    
-    def get_success_url(self):
-        return reverse_lazy('reviews_manage')  # 삭제 후 리뷰 관리 페이지로 리디렉션
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.test_func():
+            self.object.delete()
+            return JsonResponse({"message": "리뷰가 삭제되었습니다."}, status=200)
+        return JsonResponse({"error": "삭제 권한이 없습니다."}, status=403)
 
     def test_func(self):
-        review = self.get_object()
-        return review.user == self.request.user  # 작성자만 삭제 가능
+        return self.get_object().user == self.request.user
+
 
 class ReviewsManageView(LoginRequiredMixin, TemplateView):
     template_name = 'moodiecinema/reviews_manage.html'

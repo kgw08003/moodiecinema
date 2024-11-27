@@ -184,3 +184,16 @@ load_dotenv()
 
 SPOTIFY_CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
 SPOTIFY_CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
+
+
+from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv()
+
+HUGGINGFACE_API_KEY = os.getenv('HUGGINGFACE_API_KEY')
+
+
+print(f"Hugging Face API Key: {os.getenv('HUGGINGFACE_API_KEY')}")

@@ -58,7 +58,7 @@ class DiaryView(LoginRequiredMixin, ListView):
         trend_labels = list(emotion_trend.keys())  # 날짜 리스트
         emotions = ['기쁨', '슬픔', '분노', '평온', '공포']
         emotion_data = {emotion: [emotion_trend[date].get(emotion, 0) for date in trend_labels] for emotion in emotions}
-
+        context['show_modal'] = True  # 조건에 따라 True/False 설정
         # 템플릿에 추가
         context.update({
             'trend_labels': trend_labels,  # 날짜
@@ -153,3 +153,20 @@ class DiaryCreateView(LoginRequiredMixin, View):
 
         except json.JSONDecodeError:
             return JsonResponse({'error': '잘못된 데이터 형식입니다.'}, status=400)
+
+
+class DiaryMonthView(LoginRequiredMixin, View):
+    def get(self, request):
+        year = request.GET.get('year')
+        month = request.GET.get('month')
+        if not year or not month:
+            return JsonResponse({'error': '연도와 월이 필요합니다.'}, status=400)
+        
+        diaries = Diary.objects.filter(
+            user=request.user,
+            created_at__year=year,
+            created_at__month=month
+        ).values('created_at', 'emotion')
+        
+        diary_data = {diary['created_at'].strftime('%Y-%m-%d'): diary['emotion'] for diary in diaries}
+        return JsonResponse({'diaries': diary_data})
