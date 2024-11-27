@@ -190,7 +190,7 @@ class ChatbotAPIView(View):
             base_url = "http://127.0.0.1:11434"  # Ollama 서버 주소
             request_data = {
                 "model": "llama2:13b",
-                "prompt": f"다음 질문에 한국어로 간단하고 정중하게 답변해주세요:\n{user_message}\n\n답변:",
+                "prompt": f"다음 질문에 한국어로 간단하고 정중하게 답변해주세요:\n{user_message}\n답변:",
             }
 
             async with aiohttp.ClientSession() as session:
