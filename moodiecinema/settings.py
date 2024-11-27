@@ -194,6 +194,3 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
 
 HUGGINGFACE_API_KEY = os.getenv('HUGGINGFACE_API_KEY')
-
-
-print(f"Hugging Face API Key: {os.getenv('HUGGINGFACE_API_KEY')}")
