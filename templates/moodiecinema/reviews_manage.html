@@ -5,6 +5,7 @@
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'reviews_manage.css' %}">
+<meta name="csrf-token" content="{{ csrf_token }}">
 {% endblock %}
 
 {% block content %}
@@ -17,14 +18,15 @@
             {% endif %}
             <div class="review-details">
                 <h3>{{ review.movie.title }}</h3>
-                <p>{{ review.content }}</p>
-                <p>평점: {{ review.rating }}</p>
-                <p class="review-date">작성일: {{ review.created_at|date:"Y-m-d H:i" }}</p>
+                <p1>{{ review.content }}</p1>
+                <p></p>
+                <p2>평점: {{ review.rating }}</p2>
+                <p class="review-date">작성일: {{ review.created_at|date:"Y-m-d H:i" }}</p> <!-- 작성 날짜 표시 -->
                 <button class="edit-button" data-review-id="{{ review.id }}" 
                         data-review-content="{{ review.content|escapejs }}" 
                         data-review-rating="{{ review.rating }}" 
-                        onclick="openModal(this)">수정</button>
-                <a href="{% url 'delete_review' review.id %}" class="delete-button">삭제</a>
+                        onclick="openEditModal(this)">수정</button>
+                <button class="delete-button" data-review-id="{{ review.id }}" onclick="openDeleteModal(this)">삭제</button>
             </div>
         </div>
     {% empty %}
@@ -32,7 +34,7 @@
     {% endfor %}
 </div>
 
-<!-- 모달 창 HTML -->
+<!-- 수정 모달 -->
 <div id="editModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
@@ -144,6 +146,7 @@
         document.getElementById("editForm").action = `/reviews/review/${reviewId}/update/`;
     }
 
+    // 수정 모달 닫기
     function closeModal() {
         document.getElementById("editModal").style.display = "none";
         showNotification("리뷰가 성공적으로 수정되었습니다!", 'success'); // 초록색 알림

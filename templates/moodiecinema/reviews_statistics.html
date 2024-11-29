@@ -37,11 +37,16 @@
             <div class="card">
                 <p><strong>최고 평점 리뷰:</strong> "{{ highest_rating_review.content }}" ({{ highest_rating_review.rating }}점)</p>
             </div>
+        {% else %}
+            <p>최고 평점 리뷰가 아직 없습니다.</p>
         {% endif %}
+
         {% if lowest_rating_review %}
             <div class="card">
                 <p><strong>최저 평점 리뷰:</strong> "{{ lowest_rating_review.content }}" ({{ lowest_rating_review.rating }}점)</p>
             </div>
+        {% else %}
+            <p>최저 평점 리뷰가 아직 없습니다.</p>
         {% endif %}
     </div>
 
