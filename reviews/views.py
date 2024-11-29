@@ -64,14 +64,20 @@ class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Review
-    template_name = 'moodiecinema/confirm_delete.html'
-    
-    def get_success_url(self):
-        return reverse_lazy('reviews_manage')  # 삭제 후 리뷰 관리 페이지로 리디렉션
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.test_func():
+            self.object.delete()
+            # 성공적으로 삭제된 경우
+            return JsonResponse({"success": True, "message": "리뷰가 삭제되었습니다."}, status=200)
+        # 권한이 없는 경우
+        return JsonResponse({"success": False, "message": "삭제 권한이 없습니다."}, status=403)
 
     def test_func(self):
-        review = self.get_object()
-        return review.user == self.request.user  # 작성자만 삭제 가능
+        # 작성자만 삭제 가능
+        return self.get_object().user == self.request.user
+
 
 class ReviewsManageView(LoginRequiredMixin, TemplateView):
     template_name = 'moodiecinema/reviews_manage.html'

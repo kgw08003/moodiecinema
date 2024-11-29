@@ -7,6 +7,7 @@ a {
 }
 body {
   background-color: #121212;
+  /* background-color: #272626; */
   font-family: 'Montserrat', sans-serif;
 }
 
@@ -298,6 +299,8 @@ body {
 .movie-lists .list .item {
     width: calc(33.33% - 20px); /* 3개 열로 나열 */
     margin-bottom: 20px; /* 아래 여백 추가 */
+    background-color: #121212;
+    /* background-color: #272626; */
 }
 
 .movie-lists .list .card {
@@ -360,6 +363,48 @@ body {
 .navbar form button:hover {
   background-color: #f2f2f2;
 }
+
+/* 추가된 부분 ( 스크롤 버튼 위치 조정 및 디자인 변경)*/
+.movie-lists .list-container{
+  position:relative;
+  background-color: #121212;
+  /* background-color: #272626; */
+}
+
+.scroll-button {
+  position: absolute; /* 버튼 위치를 고정 */
+  top: 50%; /* 세로 방향 중앙 */
+  transform: translateY(-50%); /* 세로 방향 정확히 중앙 정렬 */
+  width: 30px; /* 버튼의 너비 */
+  height: 90px; /* 버튼의 높이 */
+  border-radius: 40%; /* 원형 버튼 */
+  background-color: #3b3b3b; /* 버튼 배경색 */
+  /* background-color: #272626; */
+  color: #ffffff; /* 아이콘 색상 */
+  font-size: 18px; /* 아이콘 크기 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* 왼쪽 버튼 */
+.scroll-button.left {
+  left: 10px; /* 왼쪽에서 10px 떨어짐 */
+}
+
+/* 오른쪽 버튼 */
+.scroll-button.right {
+  right: 10px; /* 오른쪽에서 10px 떨어짐 */
+}
+
+/* Hover 효과 */
+.scroll-button:hover {
+  background-color: #555555; /* 호버 시 배경색 변경 */
+}
+
+
 
 /* 기본 스타일이 데스크톱에 적용됨 */
 

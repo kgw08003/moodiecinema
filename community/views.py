@@ -38,20 +38,30 @@ class PostDetailView(DetailView):
         return context
 
 # 게시글 삭제
-class PostDeleteView(LoginRequiredMixin, DeleteView):
-    model = Post
-    template_name = 'moodiecinema/post_confirm_delete.html'
+from django.views.generic import View
+class PostDeleteView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        try:
+            post = self.get_object()
 
-    def get_success_url(self):
-        # 게시글 삭제 후 커뮤니티 메인 페이지로 이동
-        return reverse_lazy('community:post_list')
+            # 권한 확인: 작성자만 삭제 가능
+            if post.user != request.user:
+                return JsonResponse({'success': False, 'error': '삭제 권한이 없습니다.'}, status=403)
 
-    def delete(self, request, *args, **kwargs):
-        post = self.get_object()
-        if post.user != request.user:
-            # 작성자가 아닌 경우 에러 템플릿 렌더링
-            return JsonResponse({'error': '삭제 권한이 없습니다.'}, status=403)
-        return super().delete(request, *args, **kwargs)
+            # 삭제 처리
+            post.delete()
+
+            # JSON 응답 반환
+            return JsonResponse({'success': True, 'message': '게시글이 삭제되었습니다.'}, status=200)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+    def get_object(self):
+        from .models import Post  # 필요한 경우 적절히 모델을 import
+        from django.shortcuts import get_object_or_404
+
+        # URL에서 pk를 통해 Post 객체 가져오기
+        return get_object_or_404(Post, pk=self.kwargs.get('pk'))
 
 # 댓글 작성
 class CommentCreateView(LoginRequiredMixin, CreateView):

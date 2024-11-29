@@ -64,7 +64,8 @@
                     datasets: [{
                         label: '별점 분포',
                         data: values,
-                        backgroundColor: '#4BC0C0', // 막대 색상
+                        backgroundColor: ['#FFD700', '#FFA500', '#FF4500'], // 각 막대에 다른 색상
+
                     }]
                 },
                 options: {
@@ -91,7 +92,9 @@
                             },
                             grid: {
                                 color: '#444444', // X축 그리드 색상
-                            }
+                            },
+                            barPercentage: 0.5, // 막대의 상대 너비
+                            categoryPercentage: 0.8, // 카테고리 내 막대 간격
                         },
                         y: {
                             ticks: {

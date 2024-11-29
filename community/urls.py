@@ -22,7 +22,7 @@ urlpatterns = [
     path('<int:pk>/', PostDetailView.as_view(), name='post_detail'),
     
     # 게시글 삭제
-    path('<int:pk>/delete/', PostDeleteView.as_view(), name='post_delete'),
+    path('delete/<int:pk>/', PostDeleteView.as_view(), name='post_delete'),
     
     # 댓글 작성 (최상위 댓글)
     path('<int:post_id>/comment/', CommentCreateView.as_view(), name='comment_create'),
