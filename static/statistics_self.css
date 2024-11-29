@@ -102,3 +102,35 @@ canvas {
         padding: 6px 10px;
     }
 }
+
+.chart-container {
+    margin-bottom: 0; /* 그래프와 설명 카드 사이 간격 제거 */
+}
+
+.description-card {
+    margin: 0; /* 상하좌우 여백 제거 */
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.description-card h3 {
+    margin-top: 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.description-card p {
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+}
+
+.description-card strong {
+    color: #000;
+    font-weight: bold;
+}

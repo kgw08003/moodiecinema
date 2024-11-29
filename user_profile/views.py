@@ -389,8 +389,7 @@ class MoviesByAgeRatingAPIView(APIView):
 
         return Response(age_rating_data)
 
-
-
+import logging
 import pandas as pd
 from django.conf import settings
 from django.views.generic import TemplateView
@@ -399,6 +398,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 
+logger = logging.getLogger(__name__)
 
 class SelfStatisticsView(TemplateView):
     """
@@ -432,22 +432,17 @@ class SelfStatisticsAPIView(APIView):
                 'year': 'year',
                 'genre': 'genre',
                 'director': 'director',
-                'duration (minutes)': 'duration'
+                'duration (minutes)': 'duration',
+                'metascore': 'metascore'  # metascore 열 추가
             })
 
-            # 장르 한글화
-            GENRE_MAP = {
-                'Action': '액션', 'Drama': '드라마', 'Comedy': '코미디',
-                'Adventure': '모험', 'Animation': '애니메이션', 'Crime': '범죄',
-                'Documentary': '다큐멘터리', 'Family': '가족', 'Fantasy': '판타지',
-                'History': '역사', 'Horror': '공포', 'Music': '음악',
-                'Mystery': '미스터리', 'Romance': '로맨스', 'Science Fiction': 'SF',
-                'TV Movie': 'TV 영화', 'Thriller': '스릴러', 'War': '전쟁', 'Western': '서부'
-            }
-            data['genre'] = data['genre'].map(GENRE_MAP).fillna(data['genre'])
+            # MetaScore 숫자 변환
+            if 'metascore' in data.columns:
+                data['metascore'] = pd.to_numeric(data['metascore'], errors='coerce')
+                data = data.dropna(subset=['rating', 'metascore'])
 
             # 필요한 열 선택 및 결측치 제거
-            required_columns = ['title', 'rating', 'year', 'genre', 'director', 'duration']
+            required_columns = ['title', 'rating', 'year', 'genre', 'director', 'duration', 'metascore']
             data = data[required_columns].dropna()
 
             # 추가 분석 데이터 생성
@@ -458,6 +453,15 @@ class SelfStatisticsAPIView(APIView):
             director_avg_ratings = data.groupby('director')['rating'].mean().sort_values(ascending=False).head(10).to_dict()
             duration_distribution = data['duration'].describe().to_dict()
 
+            # MetaScore 분포 분석
+            metascore_distribution = data['metascore'].describe().to_dict()
+
+            # 산점도 데이터를 생성
+            scatter_data = data[['rating', 'metascore']].to_dict('records')
+
+            # IMDb 평점과 MetaScore 상관관계 계산
+            metascore_rating_correlation = data[['rating', 'metascore']].corr().iloc[0, 1]
+
             # 결과 데이터 생성
             response_data = {
                 "movies_by_year": movies_by_year,
@@ -465,11 +469,14 @@ class SelfStatisticsAPIView(APIView):
                 "avg_rating_by_year": avg_rating_by_year,
                 "genre_counts": genre_counts,
                 "director_avg_ratings": director_avg_ratings,
-                "duration_distribution": duration_distribution
+                "duration_distribution": duration_distribution,
+                "metascore_distribution": metascore_distribution,
+                "scatter_data": scatter_data,
+                "metascore_rating_correlation": metascore_rating_correlation
             }
 
             return Response(response_data)
 
         except Exception as e:
+            logger.error(f"Error in SelfStatisticsAPIView: {str(e)}")
             return Response({"error": str(e)}, status=400)
-

@@ -1,4 +1,3 @@
-# userprofile/urls.py
 from django.urls import path
 from .views import MoviesByYearAPIView, MoviesByEraAPIView, TechAdvancementsAPIView, MovieTimelineAPIView, SelfStatisticsAPIView, SelfStatisticsView
 from .views import GenreRatingsAPIView, RemakeMoviesAPIView, RemakeMoviesRevenueAPIView, MoviesByCountryAPIView, MoviesByAgeRatingAPIView

@@ -22,6 +22,43 @@
         <canvas id="genreAverageRatingsChart"></canvas>
     </div>
 
+    <!-- 감독별 평균 평점 차트 -->
+    <div class="chart-container">
+        <h2>감독별 평균 평점(TOP 100)</h2>
+        <canvas id="directorAverageRatingsChart"></canvas>
+    </div>
+
+    <!-- 영화 길이 분포 차트 -->
+    <div class="chart-container">
+        <h2>영화 길이 분포</h2>
+        <canvas id="durationDistributionChart"></canvas>
+    </div>
+    <!-- MetaScore 분포 차트 -->
+    <div class="chart-container">
+        <h2>MetaScore 분포</h2>
+        <canvas id="metaScoreDistributionChart"></canvas>
+    </div>
+
+    <!-- MetaScore와 IMDb 평점 상관관계 -->
+    <div class="chart-container">
+        <h2>MetaScore와 IMDb 평점의 상관관계</h2>
+        <canvas id="scatterChart"></canvas>
+    </div>
+    
+    <div class="description-card">
+        <h3>상관 계수 0.58의 의미</h3>
+        <p>
+            상관 계수 <strong>0.58</strong> 은 MetaScore와 IMDb 평점 사이에 양의 상관관계가 있음을 의미합니다. <br>
+            이는 비평가 점수(MetaScore)와 관객 점수(IMDb 평점)가 일정 수준의 관계를 가지고 있음을 보여주는 것입니다. <br>
+            비평가 점수와 관객 점수가 어느 정도 일치하는 경향을 보여줍니다. 예를 들어, 비평가들이 인정한 작품일수록 관객들도 좋은 평가를 줄 가능성이 높다는 것을 시사<br>
+            하지만 1에 가까운 강한 상관관계가 아니기 때문에, 관객과 비평가의 평가가 완벽히 일치하지 않는 경우도 자주 발생 합니다.<br>
+        </p>
+        <br>
+        <p>
+            상관 계수는 두 변수 간의 선형적 관계만 나타나므로, 인과관계를 보여주지는 않는다.<br>
+            예를 들어, MetaScore가 높아서 IMDb 평점이 높아지는 것인지, 혹은 반대로 IMDb 평점이 MetaScore에 영향을 주는지는 상관 계수로 판단할 수 없습니다.<br>
+        </p>
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -32,8 +69,7 @@
             method: "GET",
             success: function (data) {
                 // 연도별 영화 수 차트
-                const moviesByYearCtx = document.getElementById('moviesByYearChart').getContext('2d');
-                new Chart(moviesByYearCtx, {
+                new Chart(document.getElementById('moviesByYearChart').getContext('2d'), {
                     type: 'bar',
                     data: {
                         labels: Object.keys(data.movies_by_year),
@@ -45,20 +81,11 @@
                             borderWidth: 1
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { display: false }
-                        },
-                        scales: {
-                            y: { beginAtZero: true }
-                        }
-                    }
+                    options: { responsive: true, scales: { y: { beginAtZero: true } } }
                 });
 
                 // 장르별 평균 평점 차트
-                const genreAverageRatingsCtx = document.getElementById('genreAverageRatingsChart').getContext('2d');
-                new Chart(genreAverageRatingsCtx, {
+                new Chart(document.getElementById('genreAverageRatingsChart').getContext('2d'), {
                     type: 'bar',
                     data: {
                         labels: Object.keys(data.genre_average_ratings),
@@ -70,15 +97,46 @@
                             borderWidth: 1
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { display: false }
-                        },
-                        scales: {
-                            y: { beginAtZero: true }
-                        }
-                    }
+                    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+                });
+
+                // 감독별 평균 평점 차트
+                new Chart(document.getElementById('directorAverageRatingsChart').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(data.director_avg_ratings),
+                        datasets: [{
+                            label: '평균 평점',
+                            data: Object.values(data.director_avg_ratings),
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+                });
+
+                // 영화 길이 분포 차트
+                new Chart(document.getElementById('durationDistributionChart').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['최소', '1사분위', '중앙값', '평균', '3사분위', '최대'],
+                        datasets: [{
+                            label: '영화 길이 (분)',
+                            data: [
+                                data.duration_distribution.min,
+                                data.duration_distribution['25%'],
+                                data.duration_distribution['50%'],
+                                data.duration_distribution.mean,
+                                data.duration_distribution['75%'],
+                                data.duration_distribution.max
+                            ],
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: { responsive: true, scales: { y: { beginAtZero: true } } }
                 });
             },
             error: function (err) {
@@ -86,5 +144,82 @@
             }
         });
     });
+
+    $(document).ready(function () {
+    $.ajax({
+        url: "{% url 'self_statistics_api' %}",
+        method: "GET",
+        success: function (data) {
+            // MetaScore 분포 차트
+            new Chart(document.getElementById('metaScoreDistributionChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['최소', '1사분위', '중앙값', '평균', '3사분위', '최대'],
+                    datasets: [{
+                        label: 'MetaScore',
+                        data: [
+                            data.metascore_distribution.min,
+                            data.metascore_distribution['25%'],
+                            data.metascore_distribution['50%'],
+                            data.metascore_distribution.mean,
+                            data.metascore_distribution['75%'],
+                            data.metascore_distribution.max
+                        ],
+                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            });
+
+            // Scatter Plot (산점도)
+            const scatterData = data.scatter_data.map(d => ({ x: d.metascore, y: d.rating }));
+            const correlation = data.metascore_rating_correlation.toFixed(2);
+
+            new Chart(document.getElementById('scatterChart').getContext('2d'), {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: `MetaScore와 IMDb 평점 (상관계수: ${correlation})`,
+                        data: scatterData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        pointRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'MetaScore'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'IMDb 평점'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `MetaScore: ${context.raw.x}, IMDb 평점: ${context.raw.y}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function (err) {
+            console.error("Error loading statistics:", err);
+        }
+    });
+});
 </script>
 {% endblock %}

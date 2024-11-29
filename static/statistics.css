@@ -165,3 +165,28 @@
         padding: 8px 10px;
     }
 }
+
+.button-container {
+    display: flex;
+    justify-content: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 (필요 시 사용) */
+    margin: 20px 0; /* 상하 여백 */
+}
+
+/* 버튼 스타일 (이미 있는 경우 중복 방지) */
+.button-container .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #000;
+    background-color: #f3f3f3;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button-container .btn:hover {
+    background-color: #f3f3f3;
+}
