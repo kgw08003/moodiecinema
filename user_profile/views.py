@@ -389,3 +389,87 @@ class MoviesByAgeRatingAPIView(APIView):
 
         return Response(age_rating_data)
 
+
+
+import pandas as pd
+from django.conf import settings
+from django.views.generic import TemplateView
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import JSONRenderer
+
+
+class SelfStatisticsView(TemplateView):
+    """
+    템플릿 렌더링 뷰
+    """
+    template_name = 'moodiecinema/statistics_self.html'  # 템플릿 경로
+
+
+class SelfStatisticsAPIView(APIView):
+    """
+    CSV 파일을 사용하여 영화 데이터 분석 API
+    """
+    permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근 가능
+    renderer_classes = [JSONRenderer]  # JSON 응답만 허용
+
+    def get(self, request):
+        # CSV 파일 경로
+        csv_path = settings.BASE_DIR / 'data/IMDb_Combined_Dataset.csv'
+
+        try:
+            # CSV 파일 읽기
+            data = pd.read_csv(csv_path)
+
+            # 열 이름 표준화
+            data.columns = data.columns.str.strip().str.lower()
+
+            # 열 이름 매핑
+            data = data.rename(columns={
+                'title': 'title',
+                'imdb rating': 'rating',
+                'year': 'year',
+                'genre': 'genre',
+                'director': 'director',
+                'duration (minutes)': 'duration'
+            })
+
+            # 장르 한글화
+            GENRE_MAP = {
+                'Action': '액션', 'Drama': '드라마', 'Comedy': '코미디',
+                'Adventure': '모험', 'Animation': '애니메이션', 'Crime': '범죄',
+                'Documentary': '다큐멘터리', 'Family': '가족', 'Fantasy': '판타지',
+                'History': '역사', 'Horror': '공포', 'Music': '음악',
+                'Mystery': '미스터리', 'Romance': '로맨스', 'Science Fiction': 'SF',
+                'TV Movie': 'TV 영화', 'Thriller': '스릴러', 'War': '전쟁', 'Western': '서부'
+            }
+            data['genre'] = data['genre'].map(GENRE_MAP).fillna(data['genre'])
+
+            # 필요한 열 선택 및 결측치 제거
+            required_columns = ['title', 'rating', 'year', 'genre', 'director', 'duration']
+            data = data[required_columns].dropna()
+
+            # 추가 분석 데이터 생성
+            movies_by_year = data['year'].value_counts().sort_index().to_dict()
+            genre_rating = data.groupby('genre')['rating'].mean().sort_values(ascending=False).to_dict()
+            avg_rating_by_year = data.groupby('year')['rating'].mean().sort_index().to_dict()
+            genre_counts = data['genre'].value_counts().to_dict()
+            director_avg_ratings = data.groupby('director')['rating'].mean().sort_values(ascending=False).head(10).to_dict()
+            duration_distribution = data['duration'].describe().to_dict()
+
+            # 결과 데이터 생성
+            response_data = {
+                "movies_by_year": movies_by_year,
+                "genre_average_ratings": genre_rating,
+                "avg_rating_by_year": avg_rating_by_year,
+                "genre_counts": genre_counts,
+                "director_avg_ratings": director_avg_ratings,
+                "duration_distribution": duration_distribution
+            }
+
+            return Response(response_data)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=400)
+
