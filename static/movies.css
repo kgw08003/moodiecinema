@@ -26,6 +26,11 @@ body {
 .movie-poster img {
     border-radius: 8px;
     max-width: 300px;
+    max-height : 450px;
+}
+
+.movie-info .overview{
+    width : 1000px;
 }
 
 .movie-info h1 {

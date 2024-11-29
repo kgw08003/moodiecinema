@@ -22,7 +22,13 @@
             <span class="fa fa-play"></span>
           </div>
           <h4>{{ movie.title }}</h4>
-          <p>{{ movie.overview|truncatechars:100 }}</p>
+          <p>
+            {% if movie.overview %}
+              {{ movie.overview|truncatechars:100 }}
+            {% else %}
+              개요 없음
+            {% endif %}
+          </p>
         </a>
       </div>
       {% endfor %}
@@ -44,7 +50,13 @@
             <span class="fa fa-play"></span>
           </div>
           <h4>{{ movie.title }}</h4>
-          <p>{{ movie.overview|truncatechars:100 }}</p>
+          <p>
+            {% if movie.overview %}
+              {{ movie.overview|truncatechars:100 }}
+            {% else %}
+              개요 없음
+            {% endif %}
+          </p>
         </a>
       </div>
       {% endfor %}
@@ -66,7 +78,13 @@
             <span class="fa fa-play"></span>
           </div>
           <h4>{{ movie.title }}</h4>
-          <p>{{ movie.overview|truncatechars:100 }}</p>
+          <p>
+            {% if movie.overview %}
+              {{ movie.overview|truncatechars:100 }}
+            {% else %}
+              개요 없음
+            {% endif %}
+          </p>
         </a>
       </div>
       {% endfor %}

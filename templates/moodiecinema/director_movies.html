@@ -19,7 +19,8 @@
             {% for movie in director_movies %}
                 <div class="movie-item">
                     <a href="{% url 'movie_detail' movie.id %}">
-                        <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}" alt="{{ movie.title }}">
+                        <img src="{% if movie.poster_path %}https://image.tmdb.org/t/p/w300{{ movie.poster_path }}{% else %}/static/images/No_Poster.png{% endif %}" alt="{{ movie.title }}">
+
                         <p>{{ movie.title }}</p>
                         <p>{{ movie.release_date }}</p>
                     </a>
