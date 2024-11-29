@@ -24,33 +24,48 @@ def home(request):
     # HttpResponse 객체로 반환
     return render(request, 'moodiecinema/home.html', context)
 
-def fetch_movies(url, params):
+def fetch_movies(url,params,max_results=20):
     """
-    TMDB API로부터 모든 페이지의 데이터를 가져오는 함수.
-    파라미터를 기준으로 한 API 요청에서 모든 결과를 수집.
+    특정 날짜 범위 내에서 개봉 예정 영화를 TMDB API를 통해 가져오는 함수.
     """
     movies = []
     page = 1
-    while True:
+    while len(movies) < max_results:
+        # API 요청
         params['page'] = page
         response = requests.get(url, params=params)
+        
         if response.status_code != 200:
+            print(f"API 요청 실패: {response.status_code}")
             break  # 요청 실패 시 루프 종료
+        
         data = response.json()
-        movies.extend(data.get('results', []))  # 결과를 movies 리스트에 추가
+        results = data.get('results', [])
+        
+        # 포스터가 있는 영화만 추가
+        for movie in results:
+            if movie.get('poster_path'):  # 포스터가 있는 영화만
+                movies.append(movie)
+                if len(movies) >= max_results:
+                    break
+        
         if page >= data.get('total_pages', 1):  # 마지막 페이지에 도달하면 종료
             break
         page += 1
-    return movies
 
+    return movies[:max_results]
 
 def upcoming_movies(request):
+    """
+    TMDB API를 사용하여 이번 달과 다음 달의 개봉 예정 영화 데이터를 가져오는 함수.
+    """
+    # TMDB API 키와 기본 URL 설정
     api_key = settings.TMDB_API_KEY
     base_url = 'https://api.themoviedb.org/3'
-    url = f'{base_url}/movie/upcoming'
+    url = f"{base_url}/discover/movie"
 
-    # 오늘 날짜
-    today = datetime.today()
+    # 오늘 날짜 및 이번 달/다음 달 날짜 계산
+    today = datetime.now()
 
     # 이번 달 마지막 날 (다음 달 첫날 - 1일)
     next_month = today.replace(day=28) + timedelta(days=4)  # 이번 달의 마지막 날을 얻기 위한 방법
@@ -67,6 +82,7 @@ def upcoming_movies(request):
         'api_key': api_key,
         'language': 'ko-KR',
         'region':'KR',
+        'with_original_language': 'ko',
         'primary_release_date.gte': today.strftime('%Y-%m-%d'),  # 오늘 이후
         'primary_release_date.lte': last_day_of_this_month.strftime('%Y-%m-%d'),# 이번 달 말일까지
     }
@@ -86,6 +102,7 @@ def upcoming_movies(request):
         'api_key': api_key,
         'language': 'ko-KR',
         'region':'KR',
+        'with_original_language': 'ko',
         'primary_release_date.gte': first_day_of_next_month.strftime('%Y-%m-%d'),  # 다음 달 첫날
         'primary_release_date.lte': next_month_last_day.strftime('%Y-%m-%d'),  # 다음 달 마지막 날
     }
@@ -113,6 +130,7 @@ def upcoming_movies(request):
     print(len(upcoming_movies_next_month))  # 다음 달 영화 개수 출력
 
     return render(request, 'moodiecinema/upcoming_movies.html', context)
+
 @csrf_exempt
 def analyze_sentiment(request):
     if request.method == 'POST':
@@ -159,4 +177,3 @@ class MovieDetailView(DetailView):
     template_name = 'moodiecinema/movie_detail.html'
     context_object_name = 'movie'
     
-
