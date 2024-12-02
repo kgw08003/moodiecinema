@@ -59,18 +59,6 @@ INSTALLED_APPS = [
     'user_profile',
     'chatbot',
     'community',
-    'users',
-    'django.contrib.sites',  
-    'social_django',  # social_django 추가
-    'diary',
-    'movies',
-    'reviews',
-    'rest_framework',
-    'genres',
-    'jjim',
-    'user_profile',
-    'chatbot',
-    'community',
 ]
 
 MIDDLEWARE = [
