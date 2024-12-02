@@ -389,6 +389,7 @@ class MoviesByAgeRatingAPIView(APIView):
 
         return Response(age_rating_data)
 
+
 import logging
 import pandas as pd
 from django.conf import settings
@@ -397,6 +398,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
+from statsmodels.tsa.arima.model import ARIMA
+import numpy as np
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -462,17 +467,34 @@ class SelfStatisticsAPIView(APIView):
             # IMDb 평점과 MetaScore 상관관계 계산
             metascore_rating_correlation = data[['rating', 'metascore']].corr().iloc[0, 1]
 
-            # 결과 데이터 생성
+            # ARIMA 모델을 사용하여 향후 5년 예측
+            # 연도별 평균 평점 데이터
+            avg_rating_by_year = data.groupby('year')['rating'].mean().sort_index()
+
+            # ARIMA 모델 훈련
+            model = ARIMA(avg_rating_by_year, order=(2, 0, 0))  # ARIMA(p,d,q)에서 p, d, q는 튜닝 필요
+            model_fit = model.fit()
+
+            # 예측 (향후 5년 예측)
+            forecast_steps = 10
+            forecast = model_fit.forecast(steps=forecast_steps)
+
+            # 예측된 결과를 데이터에 추가
+            forecast_years = list(range(2025, 2025 + forecast_steps))
+
+            # 예측 결과를 response_data에 추가
             response_data = {
                 "movies_by_year": movies_by_year,
                 "genre_average_ratings": genre_rating,
-                "avg_rating_by_year": avg_rating_by_year,
+                "avg_rating_by_year": avg_rating_by_year.to_dict(),
                 "genre_counts": genre_counts,
                 "director_avg_ratings": director_avg_ratings,
                 "duration_distribution": duration_distribution,
                 "metascore_distribution": metascore_distribution,
                 "scatter_data": scatter_data,
-                "metascore_rating_correlation": metascore_rating_correlation
+                "metascore_rating_correlation": metascore_rating_correlation,
+                "forecast_years": forecast_years,
+                "forecast_values": forecast.tolist()
             }
 
             return Response(response_data)

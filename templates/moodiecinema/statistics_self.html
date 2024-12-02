@@ -1,3 +1,4 @@
+
 {% extends 'moodiecinema/base.html' %}
 {% load static %}
 
@@ -59,6 +60,24 @@
             예를 들어, MetaScore가 높아서 IMDb 평점이 높아지는 것인지, 혹은 반대로 IMDb 평점이 MetaScore에 영향을 주는지는 상관 계수로 판단할 수 없습니다.<br>
         </p>
     </div>
+    <!-- 예측된 평균 평점 차트 -->
+    <div class="chart-container">
+        <h2>예측된 평균 IMDb 평점 (향후 10년)</h2>
+    <canvas id="forecastAverageRatingsChart"></canvas>
+    <div class="description-card">
+        <p>
+            ARIMA(AutoRegressive Integrated Moving Average, 자기회귀 누적 이동평균) 기법을 사용하여 향후 10년간의 IMDb 평점을 예측<br>
+            이번 예측에서 ARIMA 모델을 사용한 이유는 IMDb 평점 데이터가 연도별 평균으로 명확한 시계열 데이터이며, 이를 기반으로 시계열 예측 기법을 활용하기 적합하다고 판단했기 때문임.<br>
+            avg_rating_by_year: 연도별 IMDb 평균 평점 데이터를 활용해 시계열 데이터를 생성<br>
+            그리드 서치를 활용하여 AIC 기준으로 최적의 (p, d, q) 값을 선정하고, 이를 이용해 시계열 데이터 기반으로 예측을 진행<br>
+        </p>
+        <br>
+        <p>
+            과거 데이터를 기반으로 IMDb 평점을 예측해본 결과, IMDb 평점이 현재까지 큰 변동 없이 안정적으로 유지될 것으로 예측됨.<br>
+            데이터가 많지 않고 외부 요인(예: 영화 산업의 급격한 변화, 새로운 플랫폼 등장 등)은 반영하지 못하기 때문에 예측 결과가 다소 단조로울 가능성이 있음<br>
+            또한, 예측 데이터의 폭이 좁고, 평점 변화 폭이 소수점 단위에 머무르는 점에서 데이터 패턴을 과소평가했을 가능성도 존재함.<br>
+        </p>
+</div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -221,5 +240,68 @@
         }
     });
 });
+
+$(document).ready(function () {
+    $.ajax({
+        url: "{% url 'self_statistics_api' %}",
+        method: "GET",
+        success: function (data) {
+            // 예측된 평균 평점 차트
+            new Chart(document.getElementById('forecastAverageRatingsChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: data.forecast_years, // x축: 연도
+                    datasets: [{
+                        label: '예측된 평균 평점',
+                        data: data.forecast_values, // y축: 예측된 평점 값
+                        backgroundColor: 'rgba(85, 239, 196, 0.2)', // 부드러운 민트색
+                        borderColor: 'rgba(0, 184, 148, 1)', // 짙은 민트색
+                        borderWidth: 1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '연도' // x축 제목
+                            }
+                        },
+                        y: {
+                            suggestedMin: 6.8,  // 최소값을 데이터 근처로 설정
+                            suggestedMax: 7.0,  // 최대값을 데이터 근처로 설정
+                            ticks: {
+                                stepSize: 0.01  // 소수점 단위로 간격 설정
+                            },
+                            title: {
+                                display: true,
+                                text: '평점' // y축 제목
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.dataset.label + ': ' + context.raw.toFixed(3); // 소수점 3자리 표시
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function (err) {
+            console.error("Error loading statistics:", err);
+        }
+    });
+});
 </script>
 {% endblock %}
+
