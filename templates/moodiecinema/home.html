@@ -133,13 +133,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
   // 챗봇 열기/닫기
-  chatbotToggle.addEventListener('click', () => {
-      chatbotContainer.style.display = 'block';
-      showWelcomeMessage();
-  });
-
   chatbotClose.addEventListener('click', () => {
       chatbotContainer.style.display = 'none';
+  });
+
+  chatbotToggle.addEventListener('click', () => {
+      if (chatbotContainer.style.display === 'none') {
+          chatbotContainer.style.display = 'block';
+          showWelcomeMessage();
+      } else {
+          chatbotContainer.style.display = 'none';
+      }
   });
 
   // 메시지 전송
