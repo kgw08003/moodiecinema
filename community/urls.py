@@ -7,6 +7,8 @@ from .views import (
     CommentCreateView,
     CommentDeleteView,
     toggle_like_post,
+    PostEditView,
+    HashtagRedirectView,
 )
 
 app_name = 'community'
@@ -23,7 +25,8 @@ urlpatterns = [
     
     # 게시글 삭제
     path('delete/<int:pk>/', PostDeleteView.as_view(), name='post_delete'),
-    
+    path('<int:pk>/delete/', PostDeleteView.as_view(), name='post_delete'),
+    path('<int:pk>/edit/', PostEditView.as_view(), name='post_edit'),
     # 댓글 작성 (최상위 댓글)
     path('<int:post_id>/comment/', CommentCreateView.as_view(), name='comment_create'),
     
@@ -31,9 +34,12 @@ urlpatterns = [
     path('<int:post_id>/comment/<int:parent_id>/', CommentCreateView.as_view(), name='comment_reply'),
     
     # 댓글 삭제
-    path('<int:post_id>/comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment_delete'),
+    # path('<int:post_id>/comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment_delete'),
+    path('<int:post_id>/comment/<int:comment_id>/delete/', CommentDeleteView.as_view(), name='comment_delete'),
     
     # 좋아요 토글
     path('<int:post_id>/like/', toggle_like_post, name='toggle_like'),
 
+
+    path('hashtag/<str:hashtag_name>/', HashtagRedirectView.as_view(), name='hashtag_redirect'),
 ]

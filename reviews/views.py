@@ -50,14 +50,14 @@ class ReviewCreateView(CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('movie_detail', kwargs={'movie_id': self.kwargs['movie_id']})
+        return reverse('movies:movie_detail', kwargs={'movie_id': self.kwargs['movie_id']})
     
 class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Review
     form_class = ReviewForm
     
     def get_success_url(self):
-        return reverse_lazy('reviews_manage')  # 수정 후 리뷰 관리 페이지로 리디렉션
+        return reverse_lazy('reviews:reviews_manage')  # 수정 후 리뷰 관리 페이지로 리디렉션
 
     def test_func(self):
         review = self.get_object()

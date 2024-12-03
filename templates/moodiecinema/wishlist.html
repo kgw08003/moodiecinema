@@ -13,7 +13,7 @@
         {% for movie in movies %}
         <li>
             <div class="movie-item">
-                <a href="{% url 'movie_detail' movie.movie_id %}">
+                <a href="{% url 'movies:movie_detail' movie.movie_id %}">
                     <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_path }}" alt="{{ movie.title }}">
                     <h3>{{ movie.title }}</h3>
                 </a>

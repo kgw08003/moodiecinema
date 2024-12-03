@@ -47,7 +47,7 @@
     <div class="profile-tabs">
         <!-- 각 버튼 클릭 시 특정 섹션 표시 -->
         <button class="tab" onclick="showSection('authorStatisticsSection')">나의 기록</button>
-        <button class="tab" onclick="window.location.href='{% url "reviews_manage" %}'">리뷰 관리</button>
+        <button class="tab" onclick="window.location.href='{% url "reviews:reviews_manage" %}'">리뷰 관리</button>
         <button class="tab" onclick="showSection('deleteAccountSection')">회원 탈퇴</button>
     </div>
 

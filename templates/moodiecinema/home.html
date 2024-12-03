@@ -16,7 +16,7 @@
     <div class="list" id="popular" data-page="1">
       {% for movie in popular_movies %}
       <div class="item">
-        <a href="{% url 'movie_detail' movie.id %}">
+        <a href="{% url 'movies:movie_detail' movie.id %}">
           <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} 포스터">
           <div class="play">
             <span class="fa fa-play"></span>
@@ -38,7 +38,7 @@
     <div class="list" id="trending" data-page="1">
       {% for movie in trending_movies %}
       <div class="item">
-        <a href="{% url 'movie_detail' movie.id %}">
+        <a href="{% url 'movies:movie_detail' movie.id %}">
           <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} 포스터">
           <div class="play">
             <span class="fa fa-play"></span>
@@ -60,7 +60,7 @@
     <div class="list" id="recommended" data-page="1">
       {% for movie in recommended_movies %}
       <div class="item">
-        <a href="{% url 'movie_detail' movie.id %}">
+        <a href="{% url 'movies:movie_detail' movie.id %}">
           <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }} 포스터">
           <div class="play">
             <span class="fa fa-play"></span>

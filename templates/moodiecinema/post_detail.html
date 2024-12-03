@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static 'community.css' %}">
+<link rel="stylesheet" href="{% static 'post_detail.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -16,6 +16,17 @@
         </p>
         <div class="post-content">
             <p>{{ post.content }}</p>
+            <ul class="hashtags-list">
+                {% for hashtag in post.hashtags.all %}
+                    <li class="hashtag-item">
+                        <a href="{% url 'community:hashtag_redirect' hashtag.name %}" class="hashtag-link">
+                            #{{ hashtag.name }}
+                        </a>
+                    </li>
+                {% empty %}
+                    <li class="no-hashtags">해시태그가 없습니다.</li>
+                {% endfor %}
+            </ul>
         </div>
         <div class="post-actions">
             <button id="like-btn" data-id="{{ post.id }}" class="like-btn">
@@ -66,10 +77,22 @@
                 </div>
                 {% if comment.user == request.user %}
                 <div class="comment-actions">
-                    <a href="{% url 'community:comment_delete' post.id comment.id %}" class="btn-delete">삭제</a>
+                    <button class="btn-delete" onclick="commentModal('{{ post.id }}', '{{ comment.id }}')">삭제</button>
                 </div>
                 {% endif %}
-        
+                <!-- 댓글 삭제 모달 -->
+                <div id="comment-delete-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal('comment-delete-modal')">&times;</span>
+                        <h2>댓글 삭제</h2>
+                        <p>정말 댓글을 삭제하시겠습니까?.</p>
+                        <form id="comment-delete-form" method="post" action="">
+                            {% csrf_token %}
+                            <button type="button" class="btn-delete" onclick="submitCommentDelete()">삭제 완료</button>
+                        </form>
+                    </div>
+                </div>
+
                 <!-- 대댓글 목록 -->
                 {% if comment.replies.all %}
                 <ul class="reply-list">
@@ -82,11 +105,6 @@
                             </div>
                             <p class="reply-text">{{ reply.content }}</p>
                         </div>
-                        {% if reply.user == request.user %}
-                        <div class="reply-actions">
-                            <a href="{% url 'community:comment_delete' post.id reply.id %}" class="btn-delete">삭제</a>
-                        </div>
-                        {% endif %}
                     </li>
                     {% endfor %}
                 </ul>
@@ -122,22 +140,218 @@
 
     <div class="post-actions-bottom">
         {% if post.user == request.user %}
-        <a href="#" class="btn-edit">게시글 수정</a>
-        <a href="#" class="btn-danger delete-btn">게시글 삭제</a>
+        <button class="btn-edit" onclick="openEditModal()">게시글 수정</button>
+        <button class="btn-delete" onclick="openDeleteModal()">게시글 삭제</button>
         {% endif %}
     </div>
-    
-
+</div>
+<!-- 수정 모달 -->
+<div id="edit-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('edit-modal')">&times;</span>
+        <h2>게시글 수정</h2>
+        <form id="edit-form" method="post" action="{% url 'community:post_edit' post.id %}">
+            {% csrf_token %}
+            <input type="text" name="title" value="{{ post.title }}" placeholder="제목을 입력하세요" />
+            <textarea name="content" rows="5" placeholder="게시글 내용을 수정하세요">{{ post.content }}</textarea>
+            <button type="button" class="btn-submit" onclick="submitEdit()">수정 완료</button>
+        </form>           
+    </div>
 </div>
 
+<!-- 삭제 모달 -->
+<div id="delete-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('delete-modal')">&times;</span>
+        <h2>게시글 삭제</h2>
+        <p>정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.</p>
+        <form id="delete-form" method="post" action="{% url 'community:post_delete' post.id %}">
+            {% csrf_token %}
+            <button type="button" class="btn-danger" onclick="submitDelete()">삭제 완료</button>
+        </form>
+    </div>
+</div>
+
+<!-- 알림 메시지 -->
+<div id="notification"></div>
 <script>
-    function toggleReplyForm(button) {
-    const replyForm = button.nextElementSibling;
-    if (replyForm.style.display === "none") {
-        replyForm.style.display = "block";
-    } else {
-        replyForm.style.display = "none";
+    function submitEdit() {
+        const editForm = document.getElementById('edit-form');
+        const formData = new FormData(editForm);
+
+        fetch(editForm.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeModal(); // 모달 창 닫기
+                showNotification(data.message, "success");
+            } else {
+                const errorMessage = '수정 실패: ' + JSON.stringify(data.errors);
+                showNotification(errorMessage, 'error'); // 에러 메시지 표시
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('서버와 통신 중 문제가 발생했습니다.', 'error'); // 네트워크 오류 메시지
+        });
     }
-}
+
+    // 4. 삭제 기능
+    function submitDelete() {
+        const deleteForm = document.getElementById('delete-form');
+        const formData = new FormData(deleteForm);
+
+        fetch(deleteForm.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success'); // 성공 메시지
+                window.location.href = '{% url "community:post_list" %}';
+            } else {
+                const errorMessage = '삭제 실패: ' + JSON.stringify(data.errors);
+                showNotification(errorMessage, 'error'); // 실패 메시지
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('서버와 통신 중 문제가 발생했습니다.', 'error');
+        });
+    }
+    function showNotification(message, type = 'success') {
+        const container = document.getElementById('notification');
+
+        // 알림 요소 생성
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerText = message;
+
+        // 컨테이너에 추가
+        container.appendChild(notification);
+
+        // 애니메이션 시작
+        requestAnimationFrame(() => {
+            notification.classList.add('show');
+        });
+
+        // 일정 시간 후 제거
+        setTimeout(() => {
+            notification.classList.remove('show');
+            notification.addEventListener('transitionend', () => notification.remove());
+        }, 3000); // 3초 후 제거
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+
+
+        document.getElementById('edit-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // 기본 동작 방지
+            submitEdit(); // 수정 기능 호출
+        });
+
+        document.getElementById('delete-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // 기본 동작 방지
+            submitDelete(); // 삭제 기능 호출
+        });
+    });
+
+    // 모달 열기
+    function openEditModal() {
+        document.getElementById("edit-modal").style.display = "flex";
+    }
+
+    function openDeleteModal() {
+        document.getElementById("delete-modal").style.display = "flex";
+    }
+
+    // 모달 닫기
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
+
+    
+    function toggleReplyForm(button) {
+        const replyForm = button.nextElementSibling;
+        if (replyForm.style.display === "none") {
+            replyForm.style.display = "block";
+        } else {
+            replyForm.style.display = "none";
+        }
+    }
+    
+</script>
+<script>
+    // 댓글 삭제 모달 열기
+    function commentModal(postId, commentId) {
+        const modal = document.getElementById('comment-delete-modal');
+        const form = document.getElementById('comment-delete-form');
+
+        // 댓글 삭제 URL 동적으로 설정
+        form.action = `/community/${postId}/comment/${commentId}/delete/`;
+
+        // 모달 열기
+        modal.style.display = 'flex';
+    }
+
+    // 모달 닫기
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // 알림창 표시 함수
+    function showNotification(message, type = 'success') {
+        const container = document.getElementById('notification');
+
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerText = message;
+
+        container.appendChild(notification);
+
+        requestAnimationFrame(() => {
+            notification.classList.add('show');
+        });
+
+        setTimeout(() => {
+            notification.classList.remove('show');
+            notification.addEventListener('transitionend', () => notification.remove());
+        }, 3000); // 3초 후 제거
+    }
+
+    // 댓글 삭제 요청 처리
+    function submitCommentDelete() {
+        const deleteForm = document.getElementById('comment-delete-form');
+        const formData = new FormData(deleteForm);
+
+        fetch(deleteForm.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}', // CSRF 토큰
+            },
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message, 'success'); // 성공 알림 표시
+                } else {
+                    showNotification('삭제 실패: ' + data.message, 'error'); // 오류 알림 표시
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('서버와 통신 중 문제가 발생했습니다.', 'error'); // 네트워크 오류 알림 표시
+            });
+    }
 </script>
 {% endblock %}
