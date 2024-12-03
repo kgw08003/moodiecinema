@@ -11,8 +11,15 @@
 
 {% block content %}
 <div class="statistics-container">
-    <h1>영화 통계</h1>
-
+    <div class="statistics-container">
+        <h1>영화 통계(api 통한 분석)</h1>
+        <div class="button-container">
+            <button onclick="window.location.href='http://127.0.0.1:8000/userprofile/self-statistics/';" class="btn">
+                영화 통계 보기(api안쓰고 직접 분석)
+            </button>
+        </div>
+    
+    </div>
     <!-- 연도별 영화 데이터 -->
     <div id="year" class="statistics-section">
         <h3>연도별 영화 데이터</h3>

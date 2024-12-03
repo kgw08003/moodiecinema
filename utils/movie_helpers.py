@@ -65,14 +65,17 @@ def get_movie_videos(movie_id):
     return fetch_data_from_api(f'{BASE_URL}{movie_id}/videos', {'language': 'ko-KR'})
 
 
-def get_similar_movies(genre_ids):
-    """
-    비슷한 영화를 가져오는 함수
-    """
-    return fetch_data_from_api(
+def get_similar_movies(genre_ids, exclude_movie_id=None):
+    all_movies = fetch_data_from_api(
         "https://api.themoviedb.org/3/discover/movie",
         {'with_genres': ','.join(map(str, genre_ids)), 'language': 'ko-KR'}
-    ).get("results", [])[:8]
+    ).get("results", [])
+    
+    if exclude_movie_id is not None:
+        all_movies = [movie for movie in all_movies if movie.get("id") != exclude_movie_id]
+    
+    return all_movies[:8]
+
 
 
 def get_tmdb_reviews(movie_id, sort_option='newest'):

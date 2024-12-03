@@ -175,96 +175,6 @@
 <!-- 알림 메시지 -->
 <div id="notification"></div>
 <script>
-    function submitEdit() {
-        const editForm = document.getElementById('edit-form');
-        const formData = new FormData(editForm);
-
-        fetch(editForm.action, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
-            body: formData,
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                closeModal(); // 모달 창 닫기
-                showNotification(data.message, "success");
-            } else {
-                const errorMessage = '수정 실패: ' + JSON.stringify(data.errors);
-                showNotification(errorMessage, 'error'); // 에러 메시지 표시
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showNotification('서버와 통신 중 문제가 발생했습니다.', 'error'); // 네트워크 오류 메시지
-        });
-    }
-
-    // 4. 삭제 기능
-    function submitDelete() {
-        const deleteForm = document.getElementById('delete-form');
-        const formData = new FormData(deleteForm);
-
-        fetch(deleteForm.action, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
-            body: formData,
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showNotification(data.message, 'success'); // 성공 메시지
-                window.location.href = '{% url "community:post_list" %}';
-            } else {
-                const errorMessage = '삭제 실패: ' + JSON.stringify(data.errors);
-                showNotification(errorMessage, 'error'); // 실패 메시지
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showNotification('서버와 통신 중 문제가 발생했습니다.', 'error');
-        });
-    }
-    function showNotification(message, type = 'success') {
-        const container = document.getElementById('notification');
-
-        // 알림 요소 생성
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.innerText = message;
-
-        // 컨테이너에 추가
-        container.appendChild(notification);
-
-        // 애니메이션 시작
-        requestAnimationFrame(() => {
-            notification.classList.add('show');
-        });
-
-        // 일정 시간 후 제거
-        setTimeout(() => {
-            notification.classList.remove('show');
-            notification.addEventListener('transitionend', () => notification.remove());
-        }, 3000); // 3초 후 제거
-    }
-    document.addEventListener("DOMContentLoaded", function() {
-
-
-        document.getElementById('edit-form').addEventListener('submit', function(e) {
-            e.preventDefault(); // 기본 동작 방지
-            submitEdit(); // 수정 기능 호출
-        });
-
-        document.getElementById('delete-form').addEventListener('submit', function(e) {
-            e.preventDefault(); // 기본 동작 방지
-            submitDelete(); // 삭제 기능 호출
-        });
-    });
-
     // 모달 열기
     function openEditModal() {
         document.getElementById("edit-modal").style.display = "flex";
@@ -276,18 +186,109 @@
 
     // 모달 닫기
     function closeModal(modalId) {
-        document.getElementById(modalId).style.display = "none";
-    }
-
-    
-    function toggleReplyForm(button) {
-        const replyForm = button.nextElementSibling;
-        if (replyForm.style.display === "none") {
-            replyForm.style.display = "block";
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
         } else {
-            replyForm.style.display = "none";
+            console.error(`Modal element with ID "${modalId}" not found!`);
         }
     }
+
+    function submitEdit() {
+        const editForm = document.getElementById('edit-form');
+        const formData = new FormData(editForm);
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch(editForm.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+            },
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeModal('edit-modal'); // 수정 모달 닫기
+                showNotification(data.message, "success");
+            } else {
+                const errorMessage = '수정 실패: ' + JSON.stringify(data.errors);
+                showNotification(errorMessage, 'error'); // 에러 메시지 표시
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('서버와 통신 중 문제가 발생했습니다.', 'error');
+        });
+    }
+
+    // 삭제 기능
+    function submitDelete() {
+        const deleteForm = document.getElementById('delete-form');
+        const formData = new FormData(deleteForm);
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch(deleteForm.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+            },
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                window.location.href = "{% url 'community:post_list' %}";
+            } else {
+                const errorMessage = '삭제 실패: ' + JSON.stringify(data.errors);
+                showNotification(errorMessage, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('서버와 통신 중 문제가 발생했습니다.', 'error');
+        });
+    }
+
+    // 알림 표시
+    function showNotification(message, type = 'success') {
+        const container = document.getElementById('notification');
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerText = message;
+
+        container.appendChild(notification);
+
+        requestAnimationFrame(() => {
+            notification.classList.add('show');
+        });
+
+        setTimeout(() => {
+            notification.classList.remove('show');
+            notification.addEventListener('transitionend', () => notification.remove());
+        }, 3000);
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const editForm = document.getElementById('edit-form');
+        const deleteForm = document.getElementById('delete-form');
+
+        if (editForm) {
+            editForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitEdit();
+            });
+        }
+
+        if (deleteForm) {
+            deleteForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitDelete();
+            });
+        }
+    });
+
     
 </script>
 <script>

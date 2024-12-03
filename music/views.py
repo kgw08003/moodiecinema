@@ -46,9 +46,9 @@ class MusicRecommendationView(View):
         emotion_keyword_map = {
             '기쁨': 'uplifting movie soundtrack',  # 기쁨을 더 신나게 또는 부드럽게 유지
             '슬픔': 'comforting movie soundtrack',  # 슬픔에 공감하거나 위로를 주는 곡
-            '분노': 'calming or empowering soundtrack',  # 차분함을 유도하거나 에너지 전환
-            '공포': 'soothing or hopeful soundtrack',  # 안정감을 주는 곡
-            '평온': 'relaxing or inspirational soundtrack',  # 평온함을 유지하거나 가볍게 고양
+            '분노': 'calming or empowering movie soundtrack',  # 차분함을 유도하거나 에너지 전환
+            '공포': 'soothing or hopeful movie soundtrack',  # 안정감을 주는 곡
+            '평온': 'relaxing or inspirational movie soundtrack',  # 평온함을 유지하거나 가볍게 고양
         }
 
         # 감정에 맞는 검색 키워드 선택

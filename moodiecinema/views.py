@@ -177,4 +177,3 @@ class MovieDetailView(DetailView):
     template_name = 'moodiecinema/movie_detail.html'
     context_object_name = 'movie'
     
-

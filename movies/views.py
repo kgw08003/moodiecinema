@@ -44,7 +44,7 @@ class MovieDetailView(TemplateView):
 
         # 비슷한 영화 가져오기
         genre_ids = [genre['id'] for genre in movie_data.get('genres', [])]
-        context['similar_movies'] = get_similar_movies(genre_ids)
+        context['similar_movies'] = get_similar_movies(genre_ids, exclude_movie_id = movie_id) 
 
         # 유튜브 트레일러 추가
         youtube_videos = [

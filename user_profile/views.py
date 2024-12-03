@@ -389,3 +389,116 @@ class MoviesByAgeRatingAPIView(APIView):
 
         return Response(age_rating_data)
 
+
+import logging
+import pandas as pd
+from django.conf import settings
+from django.views.generic import TemplateView
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import JSONRenderer
+from statsmodels.tsa.arima.model import ARIMA
+import numpy as np
+
+
+
+logger = logging.getLogger(__name__)
+
+class SelfStatisticsView(TemplateView):
+    """
+    템플릿 렌더링 뷰
+    """
+    template_name = 'moodiecinema/statistics_self.html'  # 템플릿 경로
+
+
+class SelfStatisticsAPIView(APIView):
+    """
+    CSV 파일을 사용하여 영화 데이터 분석 API
+    """
+    permission_classes = [IsAuthenticated]  # 인증된 사용자만 접근 가능
+    renderer_classes = [JSONRenderer]  # JSON 응답만 허용
+
+    def get(self, request):
+        # CSV 파일 경로
+        csv_path = settings.BASE_DIR / 'data/IMDb_Combined_Dataset.csv'
+
+        try:
+            # CSV 파일 읽기
+            data = pd.read_csv(csv_path)
+
+            # 열 이름 표준화
+            data.columns = data.columns.str.strip().str.lower()
+
+            # 열 이름 매핑
+            data = data.rename(columns={
+                'title': 'title',
+                'imdb rating': 'rating',
+                'year': 'year',
+                'genre': 'genre',
+                'director': 'director',
+                'duration (minutes)': 'duration',
+                'metascore': 'metascore'  # metascore 열 추가
+            })
+
+            # MetaScore 숫자 변환
+            if 'metascore' in data.columns:
+                data['metascore'] = pd.to_numeric(data['metascore'], errors='coerce')
+                data = data.dropna(subset=['rating', 'metascore'])
+
+            # 필요한 열 선택 및 결측치 제거
+            required_columns = ['title', 'rating', 'year', 'genre', 'director', 'duration', 'metascore']
+            data = data[required_columns].dropna()
+
+            # 추가 분석 데이터 생성
+            movies_by_year = data['year'].value_counts().sort_index().to_dict()
+            genre_rating = data.groupby('genre')['rating'].mean().sort_values(ascending=False).to_dict()
+            avg_rating_by_year = data.groupby('year')['rating'].mean().sort_index().to_dict()
+            genre_counts = data['genre'].value_counts().to_dict()
+            director_avg_ratings = data.groupby('director')['rating'].mean().sort_values(ascending=False).head(10).to_dict()
+            duration_distribution = data['duration'].describe().to_dict()
+
+            # MetaScore 분포 분석
+            metascore_distribution = data['metascore'].describe().to_dict()
+
+            # 산점도 데이터를 생성
+            scatter_data = data[['rating', 'metascore']].to_dict('records')
+
+            # IMDb 평점과 MetaScore 상관관계 계산
+            metascore_rating_correlation = data[['rating', 'metascore']].corr().iloc[0, 1]
+
+            # ARIMA 모델을 사용하여 향후 5년 예측
+            # 연도별 평균 평점 데이터
+            avg_rating_by_year = data.groupby('year')['rating'].mean().sort_index()
+
+            # ARIMA 모델 훈련
+            model = ARIMA(avg_rating_by_year, order=(2, 0, 0))  # ARIMA(p,d,q)에서 p, d, q는 튜닝 필요
+            model_fit = model.fit()
+
+            # 예측 (향후 5년 예측)
+            forecast_steps = 10
+            forecast = model_fit.forecast(steps=forecast_steps)
+
+            # 예측된 결과를 데이터에 추가
+            forecast_years = list(range(2025, 2025 + forecast_steps))
+
+            # 예측 결과를 response_data에 추가
+            response_data = {
+                "movies_by_year": movies_by_year,
+                "genre_average_ratings": genre_rating,
+                "avg_rating_by_year": avg_rating_by_year.to_dict(),
+                "genre_counts": genre_counts,
+                "director_avg_ratings": director_avg_ratings,
+                "duration_distribution": duration_distribution,
+                "metascore_distribution": metascore_distribution,
+                "scatter_data": scatter_data,
+                "metascore_rating_correlation": metascore_rating_correlation,
+                "forecast_years": forecast_years,
+                "forecast_values": forecast.tolist()
+            }
+
+            return Response(response_data)
+
+        except Exception as e:
+            logger.error(f"Error in SelfStatisticsAPIView: {str(e)}")
+            return Response({"error": str(e)}, status=400)
