@@ -10,8 +10,8 @@ body {
 a {
     color: gold; /* 금색 포인트 */
     text-decoration: none;
+    margin-top : 10px;
 }
-
 a:hover {
     text-decoration: underline;
 }

@@ -104,7 +104,6 @@
   <input type="hidden" id="diary-url" value="{% url 'diary' %}">
 </div>
 
-
 <div id="chatbot-widget">
   <button id="chatbot-toggle">
       <i class="fa fa-comments"></i>
@@ -112,7 +111,6 @@
   <div id="chatbot-container" style="display: none;">
       <div id="chatbot-header">
           <h4>영화 추천 챗봇</h4>
-          <button id="chatbot-close">X</button>
       </div>
       <div id="chatbot-messages"></div>
       <div id="chatbot-input">
@@ -122,27 +120,23 @@
   </div>
 </div>
 
+
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
   const chatbotToggle = document.getElementById('chatbot-toggle');
   const chatbotContainer = document.getElementById('chatbot-container');
-  const chatbotClose = document.getElementById('chatbot-close');
   const chatbotSend = document.getElementById('chatbot-send');
   const chatbotMessages = document.getElementById('chatbot-messages');
   const chatbotUserInput = document.getElementById('chatbot-user-input');
   const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
   // 챗봇 열기/닫기
-  chatbotClose.addEventListener('click', () => {
-      chatbotContainer.style.display = 'none';
-  });
-
   chatbotToggle.addEventListener('click', () => {
-      if (chatbotContainer.style.display === 'none') {
-          chatbotContainer.style.display = 'block';
+      if (chatbotContainer.style.display === 'none' || chatbotContainer.style.display === '') {
+          chatbotContainer.style.display = 'block'; // 열기
           showWelcomeMessage();
       } else {
-          chatbotContainer.style.display = 'none';
+          chatbotContainer.style.display = 'none'; // 닫기
       }
   });
 
@@ -156,59 +150,60 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   });
 
-function showWelcomeMessage() {
+  function showWelcomeMessage() {
       if (!chatbotMessages.hasChildNodes()) {
           appendMessage('bot', '안녕하세요! 영화 추천AI 입니다. 질문을 입력해보세요!');
       }
   }
 
-function appendMessage(sender, message) {
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('message', sender);
+  function appendMessage(sender, message) {
+      const messageElement = document.createElement('div');
+      messageElement.classList.add('message', sender);
 
-    // 메시지가 여러 줄일 경우, 줄바꿈 처리
-    const bubbleElement = document.createElement('div');
-    bubbleElement.classList.add('bubble');
+      // 메시지가 여러 줄일 경우, 줄바꿈 처리
+      const bubbleElement = document.createElement('div');
+      bubbleElement.classList.add('bubble');
 
-    // 메시지를 줄 단위로 분리
-    const lines = message.split('\n');
-    lines.forEach(line => {
-        const lineElement = document.createElement('div');
-        lineElement.textContent = line.trim(); // 각 줄의 텍스트를 추가
-        bubbleElement.appendChild(lineElement);
-    });
+      // 메시지를 줄 단위로 분리
+      const lines = message.split('\n');
+      lines.forEach(line => {
+          const lineElement = document.createElement('div');
+          lineElement.textContent = line.trim(); // 각 줄의 텍스트를 추가
+          bubbleElement.appendChild(lineElement);
+      });
 
-    messageElement.appendChild(bubbleElement);
-    chatbotMessages.appendChild(messageElement);
+      messageElement.appendChild(bubbleElement);
+      chatbotMessages.appendChild(messageElement);
 
-    // 스크롤을 맨 아래로 이동
-    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-}
+      // 스크롤을 맨 아래로 이동
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+  }
 
   function getChatbotResponse(userMessage) {
-    fetch('/chatbot/api/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken, // CSRF 토큰 추가
-        },
-        body: JSON.stringify({ message: userMessage }),
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        appendMessage('bot', data.response);
-    })
-    .catch(error => {
-        appendMessage('bot', '오류가 발생했습니다. 다시 시도해주세요.');
-        console.error(error);
-    });
+      fetch('/chatbot/api/', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': csrftoken, // CSRF 토큰 추가
+          },
+          body: JSON.stringify({ message: userMessage }),
+      })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+      })
+      .then(data => {
+          appendMessage('bot', data.response);
+      })
+      .catch(error => {
+          appendMessage('bot', '오류가 발생했습니다. 다시 시도해주세요.');
+          console.error(error);
+      });
   }
 });
+
 </script>
 
 
