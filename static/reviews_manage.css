@@ -244,25 +244,28 @@ form textarea, form input[type="number"], .submit-button {
     background-color: #e6c200;
 }
 
+/* 알림 메시지 스타일 */
 .notification {
     position: fixed;
     top: 14px;
     right: 20px;
-    padding: 15px 20px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    font-size: 1rem;
-    font-weight: bold;
-    z-index: 1000;
-    opacity: 0;
-    transform: translateY(-20px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    background-color: #dc3545; /* 초록색 배경 */
+    color: white; /* 텍스트 흰색 */
+    padding: 15px 20px; /* 내부 여백 */
+    border-radius: 8px; /* 둥근 모서리 */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+    font-size: 1rem; /* 텍스트 크기 */
+    font-weight: bold; /* 텍스트 굵게 */
+    z-index: 1000; /* 다른 요소보다 위에 표시 */
+    opacity: 0; /* 기본적으로 숨김 */
+    transform: translateY(-20px); /* 약간 위로 이동 */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* 애니메이션 효과 */
 }
 
 /* 알림 메시지가 표시될 때 */
 .notification.show {
-    opacity: 1;
-    transform: translateY(0);
+    opacity: 1; /* 보이기 */
+    transform: translateY(0); /* 제자리로 이동 */
 }
 
 /* 성공 알림 */

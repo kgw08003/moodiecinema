@@ -276,34 +276,36 @@ body {
   cursor: pointer;
 }
 
-/*검색창*/
 .search-form {
-  flex-grow: 1;
-  max-width: 200px;
-  margin-left: 0px;
-  margin-right: 700px; /*검색어칸 위치 조정*/
+  position: absolute; /* 부모 요소를 기준으로 위치를 고정 */
+  top: 20px; /* 상단에서 20px 떨어짐 */
+  left: 300px; /* 좌측에서 250px 떨어짐 (원하는 위치에 맞게 조정) */
+  transform: translateX(-50%); /* 화면 비율에 따라 조금 더 균형 잡힌 위치로 이동 */
+  max-width: 300px; /* 검색창 최대 너비 설정 */
+  margin: 0; /* 마진 제거 */
 }
 
 .search_box {
-  position: relative;
-  width: 100%;
+  position: relative; /* 내부 아이콘의 위치를 조정할 수 있도록 설정 */
+  width: 100%; /* 부모 요소 너비에 맞춤 */
 }
 
 .search_box input {
-  width: 100%;
+  width: 100%; /* 입력 필드 너비를 100%로 유지 */
   padding-right: 40px; /* 아이콘 공간을 위해 오른쪽 패딩 추가 */
-  padding-left: 30px; /* 아이콘을 위한 왼쪽 패딩 추가 */
+  padding-left: 30px; /* 왼쪽에 아이콘 공간 추가 */
   height: 35px;
   border: 2px solid #ccc; /* 테두리 색상 */
-  border-radius: 20px; /* 모서리 둥글게 */
+  border-radius: 20px; /* 둥근 모서리 */
   outline: none; /* 포커스 시 테두리 제거 */
+  box-sizing: border-box; /* 패딩 포함한 크기 계산 */
 }
 
 .search_box button {
-  position: absolute;
-  left: 10px; /* 왼쪽 위치 조정 */
+  position: absolute; /* 버튼 위치를 입력 필드 내에서 조정 */
+  left: 10px; /* 입력 필드 왼쪽에 배치 */
   top: 50%; /* 수직 중앙 정렬 */
-  transform: translateY(-50%); /* 수직 중앙 정렬 */
+  transform: translateY(-50%); /* 수직 중앙으로 이동 */
   background: none; /* 버튼 배경 제거 */
   border: none; /* 버튼 테두리 제거 */
   cursor: pointer; /* 클릭 가능하도록 설정 */
@@ -313,6 +315,8 @@ body {
   width: 20px; /* 아이콘 크기 설정 */
   height: 20px; /* 아이콘 크기 설정 */
 }
+
+
 
 /* 카드 스타일 */
 .movie-lists .list .item {

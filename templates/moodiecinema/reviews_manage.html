@@ -73,17 +73,36 @@
 
 <script>
     function showNotification(message, type) {
+        console.log('알림 메시지:', message, '타입:', type); // 디버깅용
         const notification = document.getElementById('notification');
-        notification.textContent = message; // 메시지 업데이트
-        notification.className = 'notification'; // 기존 클래스 초기화
-        notification.classList.add(type); // 알림 타입 클래스 추가 (success 또는 error)
-        notification.classList.add('show'); // 보이기 클래스 추가
+        if (!notification) {
+            console.error('notification 요소를 찾을 수 없습니다.');
+            return;
+        }
 
-        // 3초 후에 자동으로 숨기기
+        notification.textContent = message;
+        notification.className = 'notification'; // 기존 클래스 초기화
+        notification.classList.add(type);
+        notification.classList.add('show');
+        console.log('클래스 추가 완료:', notification.className);
+
         setTimeout(() => {
             notification.classList.remove('show');
+            console.log('클래스 제거 완료:', notification.className);
+            sessionStorage.removeItem('notificationMessage'); // 자동 삭제
+            sessionStorage.removeItem('notificationType');
         }, 3000);
     }
+
+
+    // 새로고침 후 알림 메시지를 복원
+    document.addEventListener('DOMContentLoaded', () => {
+        const message = sessionStorage.getItem('notificationMessage');
+        const type = sessionStorage.getItem('notificationType');
+        if (message && type) {
+            showNotification(message, type);
+        }
+    });
 
     // 삭제 모달 열기
     function openDeleteModal(button) {
@@ -131,7 +150,27 @@
         closeDeleteModal();
     });
 
+    document.getElementById("editForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // 기본 동작 막기
+        const form = this;
 
+        // 데이터를 fetch API로 제출
+        fetch(form.action, {
+            method: "POST",
+            body: new FormData(form),
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log("수정 성공");
+                closeModal(); // 모달 닫기
+            } else {
+                console.error("수정 실패");
+            }
+        })
+        .catch(error => {
+            console.error("수정 중 오류 발생:", error);
+        });
+    });
 
 
     // 수정 모달 열기

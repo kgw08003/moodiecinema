@@ -22,9 +22,9 @@
     
     <div class="navigation">
       <ul>
-        <li><a href="{% url 'home' %}"><span class="fa fa-home"></span> <span>Home</span></a></li>
+        <li><a href="{% url 'home' %}"><span class="fa fa-home"></span> <span>홈</span></a></li>
         <li><a href="{% url 'genres:category' %}"><span class="fa fa-search"></span> <span>카테고리</span></a></li>
-        <li><a href="{% url 'community:post_list' %}"><span class="fa fas fa-book"></span> <span>Community</span></a></li>
+        <li><a href="{% url 'community:post_list' %}"><span class="fa fas fa-book"></span> <span>게시판</span></a></li>
       </ul>
     </div>
 
@@ -76,7 +76,7 @@
       <div class="navbar">
           <ul>
               {% if user.is_authenticated and user.is_staff %}
-                <li><a href="{% url 'report_list' %}" class="nav-link">신고관리</a></li>
+                <li><a href="{% url 'reviews:report_list' %}" class="nav-link">신고관리</a></li>
               {% endif %}
               <li><a href="{% url 'statistics' %}" class="nav-link">영화통계</a></li> <!-- 통계 보기 버튼 추가 -->
               <li><a href="{% url 'upcoming_movies' %}">개봉예정</a></li>
