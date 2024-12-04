@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodieCinema</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/static/images/cover.png') no-repeat center center fixed;
+            background-size: cover;
+            filter: blur(10px); /* 흐릿한 배경 */
+            transition: filter 0.3s ease; /* 흐림 효과 부드럽게 전환 */
+        }
+
+        .mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* 클릭 차단 */
+            background: rgba(0, 0, 0, 0.7); /* 배경을 어둡게 */
+            mix-blend-mode: overlay;
+            transition: background 0.1s ease-out; /* 마스크 효과 부드럽게 전환 */
+        }
+
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 2;
+            color: #f7c948;
+            opacity: 0;
+            animation: fadeIn 1.5s forwards; /* 텍스트 애니메이션 */
+            filter: blur(10px); /* 초기 흐림 상태 */
+            transition: filter 0.3s ease; /* 흐림 효과 부드럽게 전환 */
+        }
+
+        .content h1 {
+            font-size: 3rem;
+            color: #f7c948;
+            animation: slideIn 1s forwards;
+        }
+
+        .content button {
+            margin-top: 10px;
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            background-color: rgb(59, 59, 59);
+            color: #f7c948;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s ease; /* 버튼 애니메이션 */
+        }
+
+        .content button:hover {
+            background-color: black;
+            transform: scale(1.1); /* 버튼 크기 변화 */
+        }
+
+        .content button:focus {
+            outline: none;
+        }
+
+        /* 버튼에 마우스를 올렸을 때만 선명하게 보이게 */
+        .content button:hover ~ .content {
+            filter: blur(0px); /* 버튼 hover 시에만 선명하게 */
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            0% { transform: translateY(-50px); }
+            100% { transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="mask" id="mask"></div>
+
+    <div class="content" id="content">
+        <h1>Welcome to MOODIECINEMA</h1>
+        <button onclick="window.location.href='/home/'">MOODIECINEMA로 이동</button>
+    </div>
+
+    <script>
+        const mask = document.getElementById('mask');
+        const content = document.getElementById('content');
+        const background = document.querySelector('.background');
+        const button = document.querySelector('button');
+
+        // 마우스 움직임을 감지하여 마스크 및 흐림 효과 업데이트
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+
+            // 선명한 부분의 범위를 설정
+            const maxRadius = 150; // 선명하게 보이는 부분의 최대 반경
+            const minRadius = 50;  // 최소 반경
+            const distance = Math.sqrt(Math.pow(window.innerWidth / 2 - x, 2) + Math.pow(window.innerHeight / 2 - y, 2)); // 마우스와 화면 중심의 거리
+            const radius = Math.min(maxRadius, minRadius + (distance / 10)); // 반경을 계산
+
+            // Radial gradient의 중심을 마우스 위치로 설정
+            mask.style.background = `radial-gradient(circle at ${x}px ${y}px, 
+                                          transparent ${radius}px, rgba(0, 0, 0, 0.7) 200px)`;
+
+            // 마우스 위치에 따라 배경 흐림 효과 조절
+            const blurAmount = Math.max(10 - (Math.abs(window.innerWidth / 2 - x) / 30), 5);
+            background.style.filter = `blur(${blurAmount}px)`; // 마우스에 따라 흐림 강도 변화
+
+            // 마우스를 content 영역에 올리면 흐림 효과를 해제
+            const contentRect = content.getBoundingClientRect();
+            if (x > contentRect.left && x < contentRect.right && y > contentRect.top && y < contentRect.bottom) {
+                content.style.filter = 'blur(0px)';  // 마우스가 content 영역에 있을 때 선명하게
+            } else {
+                content.style.filter = 'blur(10px)';  // 마우스가 content 영역을 벗어나면 흐릿하게
+            }
+        });
+    </script>
+</body>
+</html>
