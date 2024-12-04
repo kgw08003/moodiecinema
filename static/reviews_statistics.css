@@ -3,7 +3,7 @@ body {
     font-family: Arial, sans-serif;
     color: #f1f1f1;
     background-color: #000000; /* 프로젝트 컨셉에 맞춘 검은색 배경 */
-    margin: 0;
+    margin-top: 10px;
     padding: 0;
 }
 
