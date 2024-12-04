@@ -38,6 +38,7 @@ a {
     align-items: center;
     gap: 10px;
     overflow: hidden;
+    width:1530px;
 }
 
 /* 슬라이더 컨테이너 */

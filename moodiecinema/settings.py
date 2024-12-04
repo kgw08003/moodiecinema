@@ -2,33 +2,17 @@
 Django settings for moodiecinema project.
 """
 import os
-
-import os
 from pathlib import Path
-
-TMDB_API_KEY = "5f0eb3027f1b131897e4dcbe057e0931" ## --> 제 API KEY 입니다. 바꾸시고 싶으시면 API KEY를 발급 받아서 쓰시면 됩니다.
-
-
-TMDB_API_KEY = "5f0eb3027f1b131897e4dcbe057e0931" ## --> 제 API KEY 입니다. 바꾸시고 싶으시면 API KEY를 발급 받아서 쓰시면 됩니다.
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-i^4dg$lv4d%)&wkni$y$*ici3ki8t_b3j#hvjd-w7s#&!2653&'
+# SECRET_KEY = os.getenv('SECRET_KEY') # 이걸로 배포시 수정 .env에 추가
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-
-
-AUTH_USER_MODEL = 'users.User'
-
-LOGIN_REDIRECT_URL = 'home'  # 로그인 후 이동할 URL의 name
-LOGOUT_REDIRECT_URL = '/'
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 AUTH_USER_MODEL = 'users.User'
@@ -120,8 +104,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 LANGUAGE_CODE = 'ko-kr'
 TIME_ZONE = 'Asia/Seoul'
-LANGUAGE_CODE = 'ko-kr'
-TIME_ZONE = 'Asia/Seoul'
 USE_I18N = True
 USE_TZ = True
 
@@ -150,7 +132,6 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = config('SOCIAL_AUTH_GOOGLE_OAUTH2_REDIR
 SOCIAL_AUTH_NAVER_KEY = config('SOCIAL_AUTH_NAVER_KEY')
 SOCIAL_AUTH_NAVER_SECRET = config('SOCIAL_AUTH_NAVER_SECRET')
 SOCIAL_AUTH_NAVER_REDIRECT_URI = 'http://127.0.0.1:8000/auth/complete/naver/'
-
 SOCIAL_AUTH_KAKAO_KEY = config('SOCIAL_AUTH_KAKAO_KEY')
 SOCIAL_AUTH_KAKAO_REDIRECT_URI = 'http://127.0.0.1:8000/auth/complete/kakao/'
 
@@ -168,7 +149,6 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
 )
 
-
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
@@ -180,9 +160,9 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1']
 
 import os
 from dotenv import load_dotenv
-
 load_dotenv()  # .env 파일 로드
 
+# 아이디 비밀번호 찾기
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -196,18 +176,13 @@ SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
 
-# 스포티파이 음악 설정
-load_dotenv()
-
+# 스포티파이 api
 SPOTIFY_CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
 SPOTIFY_CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
 
+# TMDB api
+TMDB_API_KEY = os.getenv('TMDB_API_KEY')
 
-from pathlib import Path
-import os
-from dotenv import load_dotenv
-
+# 허깅페이스 api (올라마 대용)
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv()
-
 HUGGINGFACE_API_KEY = os.getenv('HUGGINGFACE_API_KEY')
