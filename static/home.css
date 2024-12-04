@@ -279,6 +279,7 @@ body {
 
 /* 검색창 폼 스타일 */
 .search-form {
+  transform: translateY(-6px);
   position: fixed; /* 고정 위치 */
   top: 20px; /* 화면 상단에서 20px */
   left: 400px; /* 화면 좌측에서 20px */
