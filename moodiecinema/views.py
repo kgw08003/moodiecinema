@@ -1,10 +1,23 @@
 import requests
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .bertgpusentiment import predict_sentiment
 from django.views.decorators.csrf import csrf_exempt
 from datetime import timedelta,datetime
+
+def cover(request):
+    # 이미 스플래시 페이지를 본 사용자는 바로 홈페이지로 이동
+    last_seen = request.session.get('splash_last_seen')
+    # if last_seen:
+    #     last_seen_time = datetime.strptime(last_seen, '%Y-%m-%d %H:%M:%S')
+    #     # 마지막 방문이 1시간 이내라면 메인 페이지로 리디렉트
+    #     if datetime.now() - last_seen_time < timedelta(hours=1):
+    #         return redirect('home')
+    
+    # 현재 시간 저장 후 스플래시 페이지 렌더링
+    request.session['splash_last_seen'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return render(request, 'moodiecinema/cover.html')
 
 def home(request):
     api_key = settings.TMDB_API_KEY

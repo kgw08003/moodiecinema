@@ -33,7 +33,7 @@
                 <h2>감독</h2>
                 {% if director %}
                     <div class="director-item">
-                        <a href="{% url 'director_movies' director.id %}">
+                        <a href="{% url 'movies:director_movies' director.id %}">
                             <img src="{% if director.profile_path %}https://image.tmdb.org/t/p/w200{{ director.profile_path }}{% else %}{% static 'images/default-profile.png' %}{% endif %}" alt="{{ director.name }}">
                             <span>{{ director.name }}</span>
                         </a>
@@ -66,7 +66,7 @@
             <div class="cast-slider" id="cast-slider">
                 {% for actor in cast %}
                 <div class="cast-item">
-                    <a href="{% url 'actor_movies' actor.id %}">
+                    <a href="{% url 'movies:actor_movies' actor.id %}">
                         <img src="{% if actor.profile_image_url %}{{ actor.profile_image_url }}{% else %}{% static 'images/no-image.png' %}{% endif %}"
                             alt="{{ actor.name }}">
                         <span>{{ actor.name }}</span><br>
@@ -109,7 +109,7 @@
                 <div class="slider-container" id="similar-slider">
                     {% for similar_movie in similar_movies %}
                         <div class="slider-item">
-                            <a href="{% url 'movie_detail' similar_movie.id %}">
+                            <a href="{% url 'movies:movie_detail' similar_movie.id %}">
                                 <img src="https://image.tmdb.org/t/p/w300{{ similar_movie.poster_path }}" alt="{{ similar_movie.title }}">
                                 <p>{{ similar_movie.title }}</p>
                             </a>
@@ -248,10 +248,10 @@
     <!-- 리뷰 섹션 추가 -->
     <section class="reviews-section">
         <h2 class="reviews-title" style="display: inline-block;">리뷰</h2>
-        <a href="{% url 'review_stats' movie_id=movie.id %}" class="review-stats-button">리뷰 통계</a>
+        <a href="{% url 'movies:review_stats' movie_id=movie.id %}" class="review-stats-button">리뷰 통계</a>
 
         <!-- 리뷰 작성 폼 -->
-        <form method="post" action="{% url 'review_create' movie_id=movie.id %}" class="review-form">
+        <form method="post" action="{% url 'reviews:review_create' movie_id=movie.id %}" class="review-form">
             {% csrf_token %}
             {{ review_form.as_p }}
             <button type="submit" class="submit-button">리뷰 작성</button>
@@ -270,19 +270,16 @@
 
         <ul class="reviews-list">
             {% for review in reviews %}
-                <!-- 감정 분석 결과 표시 -->
-                <div class="emotion-analysis">
-                        
-                    <div class="emotion-box">
-                        <p>감정 분석 결과: {{ review.emotion|default:"분석 결과 없음" }}</p>
+                <li class="review-item" data-review-id="{{ review.id }}">
+                    <div class="review-header">
+                        <strong class="review-username">{{ review.user.user_name }}</strong> - 
+                        <span class="review-date">{{ review.created_at|date:"Y-m-d" }}</span>
+                        <span class="review-rating"> | 평점: {{ review.rating }} / 5</span>
+                        <span class="review-emotion"> | 감정: {{ review.emotion|default:"분석 결과 없음" }}</span>
                     </div>
-                </div>
-                <li class="review-item"data-review-id="{{ review.id }}">
-                    <strong class="review-username">{{ review.user.user_name }}</strong> - 
-                    <span class="review-date">{{ review.created_at|date:"Y-m-d" }}</span><br>
-                    <span class="review-rating">평점: {{ review.rating }} / 5</span><br>
-                    <p class="review-content">{{ review.content }}</p>
                     
+                    <p class="review-content">{{ review.content }}</p>
+        
                     <div class="like-dislike-buttons">
                         <button onclick="likeReview({{ review.id }})" class="like-button">
                             👍 <span id="like-count-{{ review.id }}">{{ review.like_count }}</span>
@@ -291,14 +288,15 @@
                             👎 <span id="dislike-count-{{ review.id }}">{{ review.dislike_count }}</span>
                         </button>
                     </div>
-
-                    <!-- 모달 버튼 및 모달 요소 -->
+        
+                    <!-- 신고 버튼 -->
                     <button onclick="openReportModal({{ review.id }})" class="report-button">🚨 신고</button>
                 </li>
             {% empty %}
                 <p class="no-reviews-message">아직 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</p>
             {% endfor %}
         </ul>
+        
 
         <!-- 신고 모달 창 -->
         <div id="report-modal" class="modal">

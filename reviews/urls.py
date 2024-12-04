@@ -1,7 +1,7 @@
 # review/urls.py
 from django.urls import path
 from .views import ReviewListView, ReviewCreateView,ReviewUpdateView,ReviewDeleteView,ReviewsManageView,LikeReviewView,DislikeReviewView, ReviewReportAPIView,ReportListView,update_report_status
-
+app_name = 'reviews'
 urlpatterns = [
     path('movie/<int:movie_id>/reviews/', ReviewListView.as_view(), name='review_list'),  # 리뷰 리스트
     path('movie/<int:movie_id>/reviews/new/', ReviewCreateView.as_view(), name='review_create'),  # 리뷰 작성

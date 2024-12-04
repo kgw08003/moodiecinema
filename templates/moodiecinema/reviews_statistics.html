@@ -52,69 +52,88 @@
 
     <div class="review-stats">
         <h2>별점 분포</h2>
-        <canvas id="ratingChart" width="200" height="100"></canvas>
+        <div style="width: 500px; height: 500px; margin: auto;">
+            <canvas id="ratingChart"></canvas>
+        </div>
     </div>
+        
     
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const ratingDistribution = JSON.parse('{{ rating_distribution_json|safe }}');
-            const labels = Object.keys(ratingDistribution).map(key => `${key}점`);
-            const values = Object.values(ratingDistribution);
-    
-            const ctx = document.getElementById('ratingChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: '별점 분포',
-                        data: values,
-                        backgroundColor: '#4BC0C0', // 막대 색상
-                    }]
-                },
-                options: {
-                    
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#FFFFFF', // 범례 텍스트 색상 (흰색)
-                                font: {
-                                    size: 14,       // 범례 글씨 크기
-                                    family: 'Arial',
-                                }
-                            }
-                        },
-                    },
-                    scales: {
-                        x: {
-                            ticks: {
-                                color: '#FFFFFF', // X축 글씨 색상
-                                font: {
-                                    size: 12,      // 글씨 크기
-                                }
-                            },
-                            grid: {
-                                color: '#444444', // X축 그리드 색상
-                            }
-                        },
-                        y: {
-                            ticks: {
-                                color: '#FFFFFF', // Y축 글씨 색상
-                                font: {
-                                    size: 12,      // 글씨 크기
-                                }
-                            },
-                            grid: {
-                                color: '#444444', // Y축 그리드 색상
+        // 모든 별점 (1점부터 5점)
+        const allRatings = ['1점', '2점', '3점', '4점', '5점'];
+
+        // 실제 데이터 (rating_distribution_json)
+        const ratingDistribution = JSON.parse('{{ rating_distribution_json|safe }}');
+
+        // 실제 데이터에서 값이 없는 점수는 0으로 설정
+        const values = allRatings.map(label => {
+            const score = label.replace('점', ''); // "1점" -> "1"
+            return ratingDistribution[score] || 0; // 데이터가 없으면 0
+        });
+
+        const ctx = document.getElementById('ratingChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: allRatings, // X축 라벨: "1점", "2점", "3점" ...
+                datasets: [{
+                    label: '별점 분포',
+                    data: values, // Y축 데이터 값 (예: [0, 0, 1, 0, 0])
+                    backgroundColor: '#FFD700', // 노란색 막대
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // 비율 고정 해제
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#FFFFFF', // 범례 텍스트 색상
+                            font: {
+                                size: 14,
+                                family: 'Arial',
                             }
                         }
                     }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#FFFFFF', // X축 글씨 색상
+                            font: {
+                                size: 12,
+                            }
+                        },
+                        grid: {
+                            color: '#444444', // X축 그리드 색상
+                        },
+                        barPercentage: 0.5, // 막대 상대 너비
+                        categoryPercentage: 0.8, // 카테고리 간격 비율
+                    },
+                    y: {
+                        ticks: {
+                            color: '#FFFFFF', // Y축 글씨 색상
+                            font: {
+                                size: 12,
+                            }
+                        },
+                        grid: {
+                            color: '#444444', // Y축 그리드 색상
+                        },
+                        beginAtZero: true // Y축 0부터 시작
+                    }
+                },
+                elements: {
+                    bar: {
+                        barThickness: 20, // 막대 두께 고정
+                        maxBarThickness: 30, // 최대 막대 두께 제한
+                    }
                 }
-            });
-
-
+            }
         });
+    });
+
     </script>
     
 

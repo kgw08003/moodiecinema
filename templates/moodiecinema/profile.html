@@ -30,16 +30,9 @@
             <h2 class="username">{{ user.user_name }}</h2>
             <p class="membership-date">{{ user.date_joined|date:"Y년 n월 d일"}}부터 회원</p>
         </div>
-        <div class="profile-stats">
-             <!-- 평균 영화 점수와 TV 점수 -->
-            <div class="stat-item">
-                <p class="stat-value">0</p>
-                <span>평균 영화 점수</span>
-            </div>
-            <div class="stat-item">
-                <p class="stat-value">0</p>
-                <span>평균 TV 점수</span>
-            </div>
+        <div class="movie-quote">
+            <blockquote class="quote" id="quote-text"></blockquote>
+            <cite class="author" id="quote-author"></cite>
         </div>
     </div>
 
@@ -47,7 +40,7 @@
     <div class="profile-tabs">
         <!-- 각 버튼 클릭 시 특정 섹션 표시 -->
         <button class="tab" onclick="showSection('authorStatisticsSection')">나의 기록</button>
-        <button class="tab" onclick="window.location.href='{% url "reviews_manage" %}'">리뷰 관리</button>
+        <button class="tab" onclick="window.location.href='{% url "reviews:reviews_manage" %}'">리뷰 관리</button>
         <button class="tab" onclick="showSection('deleteAccountSection')">회원 탈퇴</button>
     </div>
 
@@ -384,7 +377,6 @@
     <div class="action-buttons">
         <a href="{% url 'update_profile' %}" class="btn edit-profile-btn">회원정보 수정</a>
         <a href="{% url 'logout' %}" class="btn logout-btn">로그아웃</a>
-        <a href="{% url 'home' %}" class="btn home-btn">홈으로 이동</a>
     </div>
 </div>
 
@@ -414,5 +406,30 @@
     function closeModal() {
         document.getElementById("confirmModal").style.display = "none";
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const quotes = [
+        { text: "영화는 한순간에 인생을 바꿀 수 있다.", author: "스티븐 스필버그" },
+        { text: "인생은 당신이 만든 영화와 같다.", author: "테리 길리엄" },
+        { text: "영화는 꿈이다. 그리고 때로는 그 꿈이 현실이 된다.", author: "마틴 스콜세지" },
+        { text: "스크린에 비치는 것은 단순한 이미지가 아니라 감정이다.", author: "알프레드 히치콕" },
+        { text: "영화는 세상을 보는 창문이다.", author: "페데리코 펠리니" },
+        { text: "당신의 삶을 영화처럼 살지 말고, 영화를 당신의 삶처럼 살아라.", author: "장뤽 고다르" },
+        { text: "모든 영화는 관객을 위한 대화이다.", author: "조지 루카스" },
+        { text: "영화는 현실을 이해하기 위한 도구다.", author: "장 뤽 고다르" },
+        { text: "영화는 세계를 경험하는 방식이다.", author: "다리오 아르젠토" },
+        { text: "좋은 영화는 질문을 던진다, 답을 주지 않는다.", author: "리들리 스콧" },
+        { text: "영화는 인간을 이해하는 가장 강력한 수단이다.", author: "프랑수아 트뤼포" },
+        { text: "영화는 단순히 이야기가 아니라 예술이다.", author: "김기덕" },
+        { text: "스크린에서 삶을 본다는 것은 삶을 재발견하는 것이다.", author: "데이빗 린" }
+    ];
+
+    // 랜덤 명언 선택
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+
+    // HTML 요소에 랜덤 명언 삽입
+    document.getElementById("quote-text").textContent = `"${randomQuote.text}"`;
+    document.getElementById("quote-author").textContent = `- ${randomQuote.author}`;
+});
 </script>
 {% endblock %}

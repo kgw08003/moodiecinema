@@ -13,7 +13,12 @@ class Movies(models.Model):
     # 포스터 이미지 경로와 제목을 위한 새 필드
     poster_path = models.CharField(max_length=255, blank=True, null=True)  # 포스터 이미지 경로
     title = models.CharField(max_length=255, blank=True, null=True)  # 영화 제목
+    hashtags = models.ManyToManyField('community.Hashtag', related_name='movies')
 
+    def get_hashtags(self):
+        from community.models import Hashtag  # 함수 내부로 이동
+        return Hashtag.objects.filter(movies=self)
+    
     def __str__(self):
         return f'{self.user.user_name} - {self.movie_id}'
     
