@@ -22,10 +22,19 @@ class MovieSearchView(LoginRequiredMixin, View):
         movies = []
         total_pages = 1
 
-        # "추천" 기능: 하드코딩된 영화 리스트 반환
+        # "추천" 기능: 찜 목록 기반 협업 필터링
         if query == "추천":
-            predefined_movie_ids = [299536, 597, 137113, 155, 300, 603, 24428]  # TMDb 영화 ID 예시
-            movies = self.get_movie_details(predefined_movie_ids, request.user.pk)
+            # 세션 캐시 초기화
+            if 'reset_cache' in request.GET:
+                request.session['cached_movies'] = []
+                print("Session cache reset.")  # 디버깅
+
+            # 협업 필터링 추천
+            recommended_movie_ids = self.get_recommendations(request.user.pk)
+            if recommended_movie_ids:
+                movies = self.get_movie_details(recommended_movie_ids, request.user.pk)
+            else:
+                movies = []  # 추천 데이터가 없는 경우 빈 결과 반환
 
         # 일반 검색 기능
         elif query:
@@ -155,34 +164,59 @@ class MovieSearchView(LoginRequiredMixin, View):
         )
         data = response.json()
         return data.get('cast', [])
-
+    
     def get_recommendations(self, user_id):
         """찜 목록 기반 협업 필터링 추천"""
+        # 사용자 찜 목록 가져오기
         user_jjims = list(Jjim.objects.filter(user_id=user_id).values_list('movie_id', flat=True))
+        print(f"Updated Jjim List for User {user_id}: {user_jjims}")  # 디버깅
+
         if not user_jjims:
             return []
 
+        # 모든 사용자-영화 데이터 가져오기
         data = Jjim.objects.values('user_id', 'movie_id')
         df = pd.DataFrame(data)
         if df.empty:
             return []
 
+        # 사용자-영화 매트릭스 생성
         user_item_matrix = df.pivot_table(index='user_id', columns='movie_id', aggfunc='size', fill_value=0)
+        print(f"User-Item Matrix:\n{user_item_matrix}")  # 디버깅
+
+        # 유사도 계산
         similarity_matrix = cosine_similarity(user_item_matrix)
         similarity_df = pd.DataFrame(similarity_matrix, index=user_item_matrix.index, columns=user_item_matrix.index)
+        print(f"Similarity Matrix:\n{similarity_df}")  # 디버깅
+
+        # 유사 사용자 추출
         similar_users = similarity_df[user_id].sort_values(ascending=False)
+        print(f"Similar Users:\n{similar_users}")  # 디버깅
+
+        # 현재 사용자가 보지 않은 영화 추출
         user_movies = user_item_matrix.loc[user_id]
         unseen_movies = user_item_matrix.columns[user_movies == 0]
+        if unseen_movies.empty:
+            return []
 
-        movie_scores = user_item_matrix.loc[similar_users.index, unseen_movies].T.dot(similar_users)
+        # 가중치 계산
+        weighted_scores = user_item_matrix.loc[similar_users.index, unseen_movies].T.dot(similar_users)
+        print(f"Weighted Scores:\n{weighted_scores}")  # 디버깅
 
-        genre_weights = pd.Series({movie_id: sum(1 for g in self.get_movie_genres(movie_id)) 
-                                    for movie_id in unseen_movies})
-        movie_scores += genre_weights
+        # 장르 가중치 추가
+        genre_weights = pd.Series({movie_id: sum(1 for g in self.get_movie_genres(movie_id)) for movie_id in unseen_movies})
+        print(f"Genre Weights:\n{genre_weights}")  # 디버깅
 
-        recommended_movie_ids = movie_scores.sort_values(ascending=False).head(20).index
+        # 최종 점수 계산
+        final_scores = weighted_scores + genre_weights
+        print(f"Final Scores:\n{final_scores}")  # 디버깅
+
+        # 추천 영화 ID 반환
+        recommended_movie_ids = final_scores.sort_values(ascending=False).head(20).index
+        print(f"Recommended Movie IDs: {list(recommended_movie_ids)}")  # 디버깅
+
         return [movie_id for movie_id in recommended_movie_ids if movie_id not in user_jjims][:10]
-
+        
     def get_movie_genres(self, movie_id):
         """특정 영화의 장르 ID 가져오기"""
         response = requests.get(
