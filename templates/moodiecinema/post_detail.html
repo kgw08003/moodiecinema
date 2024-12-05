@@ -354,5 +354,16 @@
                 showNotification('서버와 통신 중 문제가 발생했습니다.', 'error'); // 네트워크 오류 알림 표시
             });
     }
+
+    function toggleReplyForm(button) {
+        const replyInputContainer = button.nextElementSibling;
+        if (replyInputContainer.style.display === "none" || replyInputContainer.style.display === "") {
+            replyInputContainer.style.display = "block"; // 폼을 표시
+            button.textContent = "답글 닫기"; // 버튼 텍스트 변경
+        } else {
+            replyInputContainer.style.display = "none"; // 폼을 숨김
+            button.textContent = "답글 작성"; // 버튼 텍스트 원래대로
+        }
+    }
 </script>
 {% endblock %}
