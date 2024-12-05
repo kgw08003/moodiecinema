@@ -30,3 +30,4 @@ moodiecinema/*.pt
 
 # 
 Include/
+include/site/python3.12/greenlet/
