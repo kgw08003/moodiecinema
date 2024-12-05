@@ -132,8 +132,8 @@ class MovieSearchView(LoginRequiredMixin, View):
         """중복 방지를 위한 캐싱 처리"""
         unique_movies = [movie for movie in movies if movie['id'] not in cached_movies]
         if not unique_movies:
-            return movies[:10]  # 캐싱된 영화만 있으면 일부 반환
-        return unique_movies[:10]
+            return movies  # 캐싱된 영화만 있으면 일부 반환
+        return unique_movies
 
     def get_person_id(self, name):
         """배우 또는 감독 이름으로 ID 가져오기"""

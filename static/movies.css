@@ -511,6 +511,34 @@ body {
     font-weight: bold;
 }
 
+/* 예매 사이트 섹션 스타일 */
+.ticket {
+    display: flex;                /* 이미지를 가로로 배치 */
+    justify-content: center;      /* 가운데 정렬 */       
+    gap: 20px;                    /* 이미지 간 간격을 통일시킴 */
+    margin-top: 20px;             /* 예매 사이트 제목과의 간격 */
+    flex-wrap: wrap;              /* 작은 화면에서는 이미지를 자동으로 줄바꿈 */
+}
+
+/* a 태그의 크기 고정 및 가운데 정렬 */
+.ticket a {
+    display: flex;                /* a 태그가 flex 컨테이너로 변환되어 자식 요소들을 정렬 */
+    justify-content: center;      /* 이미지가 가운데 정렬되도록 */
+    align-items: center;          /* 세로로도 가운데 정렬 */
+    width: 200px;                 /* a 태그의 너비 조정 */
+    height: 100px;                /* a 태그의 높이 조정 */
+    margin: 0;                    /* 불필요한 margin 제거 */
+}
+
+/* 이미지 스타일 */
+.ticket img {
+    width: 100%;                  /* a 태그의 너비에 맞게 이미지 크기 조정 */
+    height: 100%;                 /* a 태그의 높이에 맞게 이미지 크기 조정 */
+    object-fit: contain;          /* 이미지를 비율을 유지하며 컨테이너에 맞춤 */
+}
+
+
+
 /* 반응형 디자인 */
 @media screen and (max-width: 600px) {
     .emotion-analysis {
@@ -520,4 +548,3 @@ body {
         font-size: 14px; /* 작은 화면에서는 글자 크기 줄임 */
     }
 }
-
