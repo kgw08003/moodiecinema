@@ -54,6 +54,7 @@ class MovieDetailView(TemplateView):
 
         # TMDb 리뷰 가져오기
         sort_option = self.request.GET.get('sort_tmdb', 'newest')
+        context['sort_option'] = sort_option  # 추가
         context['tmdb_reviews'] = get_tmdb_reviews(movie_id, sort_option)
 
         # 사용자 리뷰 가져오기 및 분석

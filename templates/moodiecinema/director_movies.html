@@ -8,7 +8,7 @@
 {% block content %}
 <div class="director-profile-container">
     <div class="director-info">
-        <img src="{{ person.profile_image_url }}" alt="{{ person.name }}">
+        <img src="{% if movie.poster_path %}https://image.tmdb.org/t/p/w300{{ movie.poster_path }}{% else %}/static/images/No_Poster.png{% endif %}" alt="{{ person.name }}">
         <h1>{{ person.name }}</h1>
     </div>
 
