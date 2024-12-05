@@ -18,7 +18,10 @@ lib/
 .env
 
 tut6-model.pt
-
+myenv/
+Include/
+Lib/
+Scripts/
 # 환경 변수 파일 무시
 .env
 
