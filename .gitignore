@@ -27,3 +27,7 @@ moodiecinema/tut6-model.pt
 
 # moodiecinema 폴더 내 모든 .pt 파일 무시
 moodiecinema/*.pt
+
+# 
+Include/
+include/site/python3.12/greenlet/
