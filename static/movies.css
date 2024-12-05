@@ -525,14 +525,14 @@ body {
     display: flex;                /* a 태그가 flex 컨테이너로 변환되어 자식 요소들을 정렬 */
     justify-content: center;      /* 이미지가 가운데 정렬되도록 */
     align-items: center;          /* 세로로도 가운데 정렬 */
-    width: 300px;                 /* a 태그의 너비 고정 */
+    width: 400px;                 /* a 태그의 너비 고정 */
     height: 150px;                /* a 태그의 높이 고정 */
     margin: 0;                    /* 불필요한 margin 제거 */
 }
 
 /* 이미지 스타일 */
 .ticket img {
-    width: 300px;                  /* a 태그의 너비에 맞게 이미지 크기 조정 */
+    width: 400px;                  /* a 태그의 너비에 맞게 이미지 크기 조정 */
     height: 100%;                 /* a 태그의 높이에 맞게 이미지 크기 조정 */
     object-fit:fill;            /* 이미지를 컨테이너에 맞게 자르거나 확장하여 채움 */
 }
