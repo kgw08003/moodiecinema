@@ -14,7 +14,7 @@
         <div class="slider-container" id="this-month-slider">
             {% for movie in upcoming_movies_this_month %}
             <div class="movie-item">
-                <a href="{% url 'movie_detail' movie.id %}">
+                <a href="{% url 'movies:movie_detail' movie.id %}">
                     <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path|default:'/static/images/default-movie-poster.png' }}"
                         alt="{{ movie.title }}">
                     <p>{{ movie.title }}</p>
@@ -37,7 +37,7 @@
         <div class="slider-container" id="next-month-slider">
             {% for movie in upcoming_movies_next_month %}
             <div class="movie-item">
-                <a href="{% url 'movie_detail' movie.id %}">
+                <a href="{% url 'movies:movie_detail' movie.id %}">
                     <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path|default:'/static/images/default-movie-poster.png' }}"
                         alt="{{ movie.title }}">
                     <p>{{ movie.title }}</p>

@@ -34,7 +34,8 @@ def load_model():
 
     # 현재 파일의 위치를 기준으로 모델 파일 경로 설정
     model_path = os.path.join(os.path.dirname(__file__), 'tut6-model.pt')
-    model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+    # model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+    model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'), weights_only=True))
     model.eval()
     return model
 

@@ -19,14 +19,15 @@ EMOJI_MAPPING = {
     "기쁨": "😊",
     "감정 없음": "❔"
 }
-
+from .models import Movies
 class MovieDetailView(TemplateView):
+    model = Movies
     template_name = 'moodiecinema/movies.html'
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         movie_id = self.kwargs['movie_id']
-
+        context_object_name = 'movie'
         # API 데이터 가져오기
         movie_data = get_movie_data(movie_id)
         if not movie_data:
@@ -35,7 +36,7 @@ class MovieDetailView(TemplateView):
 
         credits_data = get_movie_credits(movie_id)
         videos_data = get_movie_videos(movie_id)
-
+        
         # 영화 관련 데이터 추가
         context['movie'] = movie_data
         context['cast'] = credits_data.get('cast', []) if credits_data else []

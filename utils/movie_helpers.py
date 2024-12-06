@@ -27,7 +27,15 @@ def get_movie_data(movie_id):
     """
     영화 기본 정보를 가져오는 함수
     """
-    return fetch_data_from_api(f'{BASE_URL}{movie_id}', {'language': 'ko-KR'})
+    # API에서 데이터 가져오기
+    data = fetch_data_from_api(f'{BASE_URL}{movie_id}', {'language': 'ko-KR'})
+    if data:
+        # id 필드 추가 (필요 시)
+        if 'id' not in data:
+            data['id'] = movie_id
+        return data
+    return None
+
 
 
 def get_movie_credits(movie_id):

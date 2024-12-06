@@ -2,15 +2,17 @@
 {% load static %}
 {% block content %}
 {% block head %}
-    <link rel="stylesheet" href="{% static 'movies.css' %}">
-    <meta name="csrf-token" content="{{ csrf_token }}">
+<link rel="stylesheet" href="{% static 'movies.css' %}">
+<meta name="csrf-token" content="{{ csrf_token }}">
 {% endblock %}
+
 <body data-movie-id="{{ movie.id }}">
     <section class="movie-detail-container">
         <div class="movie-header">
             <!-- 영화 포스터 -->
             <div class="movie-poster">
-                <img src="{% if movie.poster_path %}https://image.tmdb.org/t/p/w300{{ movie.poster_path }}{% else %}/static/images/No_Poster.png{% endif %}" alt="{{ movie.title }}">
+                <img src="{% if movie.poster_path %}https://image.tmdb.org/t/p/w300{{ movie.poster_path }}{% else %}/static/images/No_Poster.png{% endif %}"
+                    alt="{{ movie.title }}">
             </div>
 
             <!-- 영화 정보 -->
@@ -19,7 +21,7 @@
                 <p class="release-date"><strong>개봉일:</strong> {{ movie.release_date }}</p>
                 <p class="genres"><strong>장르:</strong>
                     {% for genre in movie.genres %}
-                        {{ genre.name }}{% if not forloop.last %}, {% endif %}
+                    {{ genre.name }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                 </p>
                 <p class="rating"><strong>평점:</strong> {{ movie.vote_average }} / 10</p>
@@ -27,19 +29,20 @@
                     <strong> 감정 :</strong>
                     <span>{{ total_sentiment_emoji }}</span>
                 </p>
-                
+
                 <p class="overview"><strong>개요:</strong> {{ movie.overview|default:"개요 없음" }}</p>
-                
+
                 <h2>감독</h2>
                 {% if director %}
-                    <div class="director-item">
-                        <a href="{% url 'director_movies' director.id %}">
-                            <img src="{% if director.profile_path %}https://image.tmdb.org/t/p/w200{{ director.profile_path }}{% else %}{% static 'images/default-profile.png' %}{% endif %}" alt="{{ director.name }}">
-                            <span>{{ director.name }}</span>
-                        </a>
-                    </div>
+                <div class="director-item">
+                    <a href="{% url 'movies:director_movies' director.id %}">
+                        <img src="{% if director.profile_path %}https://image.tmdb.org/t/p/w200{{ director.profile_path }}{% else %}{% static 'images/default-profile.png' %}{% endif %}"
+                            alt="{{ director.name }}">
+                        <span>{{ director.name }}</span>
+                    </a>
+                </div>
                 {% else %}
-                    <p>감독 정보가 없습니다.</p>
+                <p>감독 정보가 없습니다.</p>
                 {% endif %}
             </div>
             <!-- 찜 목록에 추가 버튼 -->
@@ -66,7 +69,7 @@
             <div class="cast-slider" id="cast-slider">
                 {% for actor in cast %}
                 <div class="cast-item">
-                    <a href="{% url 'actor_movies' actor.id %}">
+                    <a href="{% url 'movies:actor_movies' actor.id %}">
                         <img src="{% if actor.profile_image_url %}{{ actor.profile_image_url }}{% else %}{% static 'images/no-image.png' %}{% endif %}"
                             alt="{{ actor.name }}">
                         <span>{{ actor.name }}</span><br>
@@ -84,21 +87,28 @@
         <div class="additional-info">
             <h2>예고편</h2>
             {% if youtube_trailers %}
-                {% for video in youtube_trailers %}
-                    <iframe width="560" height="315" 
-                            src="https://www.youtube.com/embed/{{ video.key }}" 
-                            frameborder="0" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen 
-                            onerror="handleVideoError(this)">
-                    </iframe>
-                {% endfor %}
+            {% for video in youtube_trailers %}
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video.key }}" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen onerror="handleVideoError(this)">
+            </iframe>
+            {% endfor %}
             {% else %}
-                <h3 style="color:white; margin:20px;">예고편이 없습니다.</h3>
+            <h3 style="color:white; margin:20px;">예고편이 없습니다.</h3>
             {% endif %}
-            <h3>예매 링크</h3>
-            <a href="#">예매하기</a>
         </div>
+            <h2>예매사이트로 이동</h2>
+            <div class="ticket">
+                <a href="https://www.cgv.co.kr/">
+                    <img src="{% static 'images/CGV_logo.png' %}" alt="CGV"  class="cgv_logo">
+                </a>
+                <a href="https://www.megabox.co.kr/">
+                    <img src="{% static 'images/Megabox_logo.png' %}" alt="Megabox">
+                </a>
+                <a href="https://www.lottecinema.co.kr/NLCHS">
+                    <img src="{% static 'images/LotteCineMa_logo1.png'%}" alt="Lotte Cinema">
+                </a>
+            </div>
     </section>
 
     <!-- 유사한 영화 슬라이더 -->
@@ -106,24 +116,26 @@
         <h2>유사한 영화</h2>
         <div class="slider-wrapper">
             <button class="scroll-button left" onclick="slideMovies('left')"><</button>
-                <div class="slider-container" id="similar-slider">
-                    {% for similar_movie in similar_movies %}
+                    <div class="slider-container" id="similar-slider">
+                        {% for similar_movie in similar_movies %}
                         <div class="slider-item">
-                            <a href="{% url 'movie_detail' similar_movie.id %}">
-                                <img src="https://image.tmdb.org/t/p/w300{{ similar_movie.poster_path }}" alt="{{ similar_movie.title }}">
+                            <a href="{% url 'movies:movie_detail' similar_movie.id %}">
+                                <img src="https://image.tmdb.org/t/p/w300{{ similar_movie.poster_path }}"
+                                    alt="{{ similar_movie.title }}">
                                 <p>{{ similar_movie.title }}</p>
                             </a>
                         </div>
-                    {% endfor %}
-                </div>
-            <button class="scroll-button right" onclick="slideMovies('right')">></button>
+                        {% endfor %}
+                    </div>
+                    <button class="scroll-button right" onclick="slideMovies('right')">></button>
         </div>
     </section>
+
     <script>
         function showNotification(message, type = 'success') {
             const notification = document.getElementById('notification');
             notification.textContent = message; // 메시지 업데이트
-            
+
             // 타입에 따라 클래스 추가
             if (type === 'success') {
                 notification.classList.remove('error'); // 기존 에러 클래스 제거
@@ -132,15 +144,15 @@
                 notification.classList.remove('success'); // 기존 성공 클래스 제거
                 notification.classList.add('error'); // 에러 클래스 추가
             }
-    
+
             notification.classList.add('show'); // 알림 표시
-            
+
             // 3초 후에 자동으로 숨기기
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
         }
-    
+
         function addToWishlist(movieId) {
             fetch(`/wishlist/add-to-wishlist/${movieId}/`, {
                 method: 'POST',
@@ -149,13 +161,13 @@
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                showNotification('영화가 찜 목록에 추가되었습니다.', 'success');
-            })
-            .catch(error => console.error('Error:', error));
+                .then(response => response.json())
+                .then(data => {
+                    showNotification('영화가 찜 목록에 추가되었습니다.', 'success');
+                })
+                .catch(error => console.error('Error:', error));
         }
-    
+
         function removeFromWishlist(movieId) {
             fetch(`/wishlist/remove-from-wishlist/${movieId}/`, {
                 method: 'POST',
@@ -164,11 +176,11 @@
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                showNotification('영화가 찜 목록에서 삭제되었습니다.', 'error'); // 삭제 시 에러 스타일
-            })
-            .catch(error => console.error('Error:', error));
+                .then(response => response.json())
+                .then(data => {
+                    showNotification('영화가 찜 목록에서 삭제되었습니다.', 'error'); // 삭제 시 에러 스타일
+                })
+                .catch(error => console.error('Error:', error));
         }
     </script>
     <script src="https://kit.fontawesome.com/23cecef777.js" crossorigin="anonymous"></script>
@@ -222,13 +234,13 @@
                     'Content-Type': 'application/json'
                 },
             })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById(`like-count-${reviewId}`).innerText = data.like_count;
-            })
-            .catch(error => console.error('Error:', error));
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById(`like-count-${reviewId}`).innerText = data.like_count;
+                })
+                .catch(error => console.error('Error:', error));
         }
-        
+
         function dislikeReview(reviewId) {
             fetch(`/reviews/review/${reviewId}/dislike/`, {
                 method: 'POST',
@@ -237,83 +249,81 @@
                     'Content-Type': 'application/json'
                 },
             })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById(`dislike-count-${reviewId}`).innerText = data.dislike_count;
-            })
-            .catch(error => console.error('Error:', error));
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById(`dislike-count-${reviewId}`).innerText = data.dislike_count;
+                })
+                .catch(error => console.error('Error:', error));
         }
     </script>
 
     <!-- 리뷰 섹션 추가 -->
     <section class="reviews-section">
         <h2 class="reviews-title" style="display: inline-block;">리뷰</h2>
-        <a href="{% url 'review_stats' movie_id=movie.id %}" class="review-stats-button">리뷰 통계</a>
+        <a href="{% url 'movies:review_stats' movie_id=movie.id %}" class="review-stats-button">리뷰 통계</a>
 
         <!-- 리뷰 작성 폼 -->
-        <form method="post" action="{% url 'review_create' movie_id=movie.id %}" class="review-form">
+        <form method="post" action="{% url 'reviews:review_create' movie_id=movie.id %}" class="review-form">
             {% csrf_token %}
             {{ review_form.as_p }}
             <button type="submit" class="submit-button">리뷰 작성</button>
         </form>
-        
+
         <!-- 정렬 옵션과 리뷰 목록 -->
         <form method="get" action="" class="sort-form">
             <label for="sort" class="sort-label">정렬 기준:</label>
-            <select name="sort" id="sort" onchange="this.form.submit()">
-                <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>최신순</option>
-                <option value="highest_rating" {% if request.GET.sort == 'highest_rating' %}selected{% endif %}>평점 높은 순</option>
-                <option value="lowest_rating" {% if request.GET.sort == 'lowest_rating' %}selected{% endif %}>평점 낮은 순</option>
-                <option value="most_likes" {% if request.GET.sort == 'most_likes' %}selected{% endif %}>좋아요 많은 순</option>
+            <select name="sort_tmdb" id="sort" onchange="this.form.submit()">
+                <option value="newest" {% if sort_option == 'newest' %}selected{% endif %}>최신순</option>
+                <option value="highest_rating" {% if sort_option == 'highest_rating' %}selected{% endif %}>평점 높은 순</option>
+                <option value="lowest_rating" {% if sort_option == 'lowest_rating' %}selected{% endif %}>평점 낮은 순</option>
+                <option value="most_likes" {% if sort_option == 'most_likes' %}selected{% endif %}>좋아요 많은 순</option>
             </select>
         </form>
 
         <ul class="reviews-list">
             {% for review in reviews %}
-                <!-- 감정 분석 결과 표시 -->
-                <div class="emotion-analysis">
-                        
-                    <div class="emotion-box">
-                        <p>감정 분석 결과: {{ review.emotion|default:"분석 결과 없음" }}</p>
-                    </div>
+            <li class="review-item" data-review-id="{{ review.id }}">
+                <div class="review-header">
+                    <strong class="review-username">{{ review.user.user_name }}</strong> -
+                    <span class="review-date">{{ review.created_at|date:"Y-m-d" }}</span>
+                    <span class="review-rating"> | 평점: {{ review.rating }} / 5</span>
+                    <span class="review-emotion"> | 감정: {{ review.emotion|default:"분석 결과 없음" }}</span>
                 </div>
-                <li class="review-item"data-review-id="{{ review.id }}">
-                    <strong class="review-username">{{ review.user.user_name }}</strong> - 
-                    <span class="review-date">{{ review.created_at|date:"Y-m-d" }}</span><br>
-                    <span class="review-rating">평점: {{ review.rating }} / 5</span><br>
-                    <p class="review-content">{{ review.content }}</p>
-                    
-                    <div class="like-dislike-buttons">
-                        <button onclick="likeReview({{ review.id }})" class="like-button">
-                            👍 <span id="like-count-{{ review.id }}">{{ review.like_count }}</span>
-                        </button>
-                        <button onclick="dislikeReview({{ review.id }})" class="dislike-button">
-                            👎 <span id="dislike-count-{{ review.id }}">{{ review.dislike_count }}</span>
-                        </button>
-                    </div>
 
-                    <!-- 모달 버튼 및 모달 요소 -->
-                    <button onclick="openReportModal({{ review.id }})" class="report-button">🚨 신고</button>
-                </li>
+                <p class="review-content">{{ review.content }}</p>
+
+                <div class="like-dislike-buttons">
+                    <button onclick="likeReview({{ review.id }})" class="like-button">
+                        👍 <span id="like-count-{{ review.id }}">{{ review.like_count }}</span>
+                    </button>
+                    <button onclick="dislikeReview({{ review.id }})" class="dislike-button">
+                        👎 <span id="dislike-count-{{ review.id }}">{{ review.dislike_count }}</span>
+                    </button>
+                </div>
+
+                <!-- 신고 버튼 -->
+                <button onclick="openReportModal({{ review.id }})" class="report-button">🚨 신고</button>
+            </li>
             {% empty %}
-                <p class="no-reviews-message">아직 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</p>
+            <p class="no-reviews-message">아직 리뷰가 없습니다. 첫 리뷰를 작성해보세요!</p>
             {% endfor %}
         </ul>
+
 
         <!-- 신고 모달 창 -->
         <div id="report-modal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeReportModal()">&times;</span>
                 <h2>신고 사유를 선택하세요</h2>
-                
+
                 <form id="report-form">
                     {% csrf_token %}
                     <input type="hidden" id="review-id" name="review_id">
-                    
+
                     <label><input type="radio" name="report_reason" value="spam" required> 도배성 게시물</label><br>
                     <label><input type="radio" name="report_reason" value="inappropriate"> 부적절한 내용</label><br>
                     <label><input type="radio" name="report_reason" value="false_info"> 거짓 정보</label><br>
-                    
+
                     <button type="button" onclick="submitReport()">신고 제출</button>
                 </form>
             </div>
@@ -332,13 +342,13 @@
                         'Content-Type': 'application/json'
                     },
                 })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById(`like-count-${reviewId}`).innerText = data.like_count;
-                })
-                .catch(error => console.error('Error:', error));
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById(`like-count-${reviewId}`).innerText = data.like_count;
+                    })
+                    .catch(error => console.error('Error:', error));
             }
-        
+
             function dislikeReview(reviewId) {
                 fetch(`/reviews/review/${reviewId}/dislike/`, {
                     method: 'POST',
@@ -347,11 +357,11 @@
                         'Content-Type': 'application/json'
                     },
                 })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById(`dislike-count-${reviewId}`).innerText = data.dislike_count;
-                })
-                .catch(error => console.error('Error:', error));
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById(`dislike-count-${reviewId}`).innerText = data.dislike_count;
+                    })
+                    .catch(error => console.error('Error:', error));
             }
 
             function openReportModal(reviewId) {
@@ -418,7 +428,7 @@
                     .catch((error) => console.error('Error:', error));
             }
         </script>
-    
+
         <!-- TMDb 리뷰 섹션을 작성된 리뷰와 유사한 형식으로 수정 -->
         <h3 class="reviews-subtitle">TMDB 리뷰</h3>
 
@@ -426,25 +436,25 @@
         <form method="get" action="" class="sort-form">
             <label for="sort_tmdb" class="sort-label">정렬 기준:</label>
             <select name="sort_tmdb" id="sort_tmdb" onchange="this.form.submit()">
-                <option value="newest" {% if request.GET.sort_tmdb == 'newest' %}selected{% endif %}>최신순</option>
-                <option value="highest_rating" {% if request.GET.sort_tmdb == 'highest_rating' %}selected{% endif %}>평점 높은 순</option>
-                <option value="lowest_rating" {% if request.GET.sort_tmdb == 'lowest_rating' %}selected{% endif %}>평점 낮은 순</option>
+                <option value="newest" {% if sort_option == 'newest' %}selected{% endif %}>최신순</option>
+                <option value="highest_rating" {% if sort_option == 'highest_rating' %}selected{% endif %}>평점 높은 순</option>
+                <option value="lowest_rating" {% if sort_option == 'lowest_rating' %}selected{% endif %}>평점 낮은 순</option>
             </select>
         </form>
 
         <ul class="reviews-list tmdb-review-list">
             {% if tmdb_reviews %}
-                {% for review in tmdb_reviews %}
-                    <li class="review-item">
-                        <strong class="review-username">{{ review.author }}</strong> - 
-                        <span class="review-date">{{ review.created_at|date:"Y-m-d H:i" }}</span><br>
-                        <span class="review-rating">평점: {{ review.author_details.rating }} / 10</span><br>
-                        <p class="review-content">{{ review.content }}</p>
-                        <a href="{{ review.url }}" target="_blank">원문 보기</a>
-                    </li>
-                {% endfor %}
+            {% for review in tmdb_reviews %}
+            <li class="review-item">
+                <strong class="review-username">{{ review.author }}</strong> -
+                <span class="review-date">{{ review.created_at|date:"Y-m-d H:i" }}</span><br>
+                <span class="review-rating">평점: {{ review.author_details.rating }} / 10</span><br>
+                <p class="review-content">{{ review.content }}</p>
+                <a href="{{ review.url }}" target="_blank">원문 보기</a>
+            </li>
+            {% endfor %}
             {% else %}
-                <p class="no-reviews-message">이 영화에 대한 TMDB 리뷰가 없습니다.</p>
+            <p class="no-reviews-message">이 영화에 대한 TMDB 리뷰가 없습니다.</p>
             {% endif %}
         </ul>
     </section>

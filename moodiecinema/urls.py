@@ -23,7 +23,8 @@ from jjim import views as jjim_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
+    path('',views.cover,name='cover'),
+    path('home/', views.home, name='home'),
     path('users/', include('users.urls')),  # users 앱의 urls.py 포함
     path('diary/', include('diary.urls')),  # 다이어리 관련 URL 포함
     path('auth/', include('social_django.urls', namespace='social')),

@@ -2,6 +2,15 @@ from django.db import models
 from django.conf import settings
 from django.urls import reverse
 
+
+class Hashtag(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    
+    def get_movies(self):
+        from django.apps import apps
+        Movies = apps.get_model('movies', 'Movies')  # 지연 로딩
+        return Movies.objects.filter(hashtags=self)
+    
 class Post(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posts')
     title = models.CharField(max_length=200)
@@ -9,6 +18,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_posts', blank=True)
+    hashtags = models.ManyToManyField(Hashtag, related_name="posts", blank=True)
 
     def __str__(self):
         return self.title
@@ -30,3 +40,4 @@ class Comment(models.Model):
     @property
     def is_reply(self):
         return self.parent is not None
+    
