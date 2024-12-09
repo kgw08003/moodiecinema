@@ -1,0 +1,325 @@
+/* 공통 스타일 */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #000; /* 검은 배경 */
+    color: #fff; /* 흰색 텍스트 */
+}
+
+a {
+    color: gold; /* 금색 포인트 */
+    text-decoration: none;
+    margin-top : 10px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* 커뮤니티 페이지 스타일 */
+.community-page {
+    width: 95%; /* 페이지 너비를 적절히 유지 */
+    max-width: 1200px; /* 부모 컨테이너의 최대 너비를 제한 */
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden; /* 넘치는 콘텐츠를 숨김 */
+}
+
+
+/* 제목 스타일 */
+.community-title {
+    text-align: center;
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: gold;
+}
+
+
+/* 새 게시글 작성 버튼 */
+.btn-create-post {
+    position: absolute;
+    top: 50px; /* 제목과 구분선 사이에 위치 */
+    right: 0;
+    font-size: 14px;
+    color: #000000;
+    background-color: gold;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); /* 버튼에 그림자 추가 */
+}
+
+.btn-create-post:hover {
+    background-color: #ffd700; /* hover 효과 */
+}
+
+/* 게시물 목록 */
+.post-list {
+    display: flex; /* 게시물 목록을 유연하게 배치 */
+    flex-direction: column; /* 세로 정렬 */
+    gap: 20px; /* 게시물 간격 */
+    width: 100%; /* 목록이 컨테이너의 전체 너비를 차지 */
+}
+
+/* 게시물 */
+.post-item {
+    position: relative; /* 삭제 버튼 위치 조정 기준 */
+    background-color: #2c2c2c; /* 카드 배경색 */
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+
+.post-title {
+    font-size: 24px;
+    margin: 0 0 10px 0;
+    color: gold; /* 게시물 제목에 금색 적용 */
+}
+
+.post-snippet {
+    font-size: 16px;
+    margin: 0 0 10px 0;
+    color: #ccc;
+}
+
+
+
+/* 삭제 버튼 */
+.btn-danger1 {
+    background-color: #ff0000;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+    opacity: 0; /* 기본 상태에서는 숨김 */
+    pointer-events: none; /* 기본 상태에서 클릭 불가 */
+}
+
+.post-item:hover .btn-danger1 {
+    opacity: 1; /* 버튼 보이기 */
+    pointer-events: auto; /* 클릭 가능 */
+}
+
+.btn-danger1:hover {
+    background-color: #d10000; /* 더 어두운 빨간색 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 호버 시 그림자 */
+}
+
+/* 모달 삭제 버튼 */
+.btn-danger2 {
+    display: inline-block;
+    margin-top: 10px;
+    color: #fff;
+    background-color: #e63946;
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.btn-danger2:hover {
+    background-color: #ff4d4f;
+} 
+
+.divider2 {
+    border-top: 2px solid gold;
+    margin: 40px 0; /* 위아래 간격을 늘림 */
+    position: relative;
+    top: 20px; /* 구분선을 아래로 이동 */
+}
+
+/* 삭제 모달 */
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 9999; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-content {
+    background-color: #222;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 400px;
+    color: #fff;
+    text-align: center;
+}
+
+
+.modal-content h2 {
+    color: gold;
+}
+
+.btn-secondary {
+    background-color: #444;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-left: 10px;
+}
+
+
+.notification {
+    position: fixed;
+    top: 14px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    font-size: 1rem;
+    font-weight: bold;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* 알림 메시지가 표시될 때 */
+.notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 성공 알림 */
+.notification.success {
+    background-color: #28a745; /* 초록색 */
+    color: white;
+}
+
+/* 오류 알림 */
+.notification.error {
+    background-color: #dc3545; /* 빨간색 */
+    color: white;
+}
+.no-posts {
+    text-align: center;
+    color: #ffffff;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+
+/* post_form.html */
+/* 새 게시글 작성 페이지 컨테이너 */
+.post-create-container {
+    max-width: 600px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #1E1E1E; /* 어두운 회색 배경 */
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+}
+
+/* 페이지 제목 */
+.post-create-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #FFD700; /* 금색 강조 */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* 폼 스타일 */
+.post-create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* 폼 요소 간 간격 */
+}
+
+.post-create-form input[type="text"],
+.post-create-form textarea,
+.post-create-form select {
+    width: 100%;
+    padding: 10px;
+    background-color: #2A2A2A; /* 어두운 회색 입력 필드 */
+    color: #FFFFFF;
+    border: 1px solid #444444; /* 테두리 */
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.post-create-form input[type="text"]:focus,
+.post-create-form textarea:focus,
+.post-create-form select:focus {
+    outline: none;
+    border-color: #FFD700; /* 포커스 시 금색 강조 */
+    box-shadow: 0 0 5px #FFD700;
+}
+
+/* 버튼 스타일 */
+.btn-save {
+    background-color: #FFD700; /* 금색 배경 */
+    color: #121212; /* 검정 텍스트 */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-save:hover {
+    background-color: #FFA500; /* 호버 시 더 밝은 금색 */
+    color: #FFFFFF;
+}
+
+.btn-cancel {
+    display: inline-block;
+    background-color: #444444; /* 어두운 회색 */
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #555555; /* 호버 시 더 밝은 회색 */
+}
+
+/* 텍스트 필드와 텍스트 영역 스타일 */
+.post-create-form textarea {
+    height: 150px; /* 텍스트 영역 높이 */
+    resize: vertical; /* 세로 크기 조정 가능 */
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .post-create-container {
+        padding: 15px;
+    }
+
+    .post-create-title {
+        font-size: 1.5rem;
+    }
+
+    .btn-save,
+    .btn-cancel {
+        font-size: 0.9rem;
+        padding: 8px 15px;
+    }
+}

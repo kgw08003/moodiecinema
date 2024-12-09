@@ -1,0 +1,53 @@
+{% extends 'moodiecinema/base.html' %}
+
+{% load static %}
+
+{% block title %}회원가입{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'signup.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="signup-container">
+    <h2>회원가입</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="image-preview">
+            <img id="profilePreview" src="" alt="프로필 미리보기" style="display: none;">
+        </div>
+        <label for="profilePicture">프로필 사진:</label>
+        <input type="file" id="profilePicture" name="user_profile" accept="image/*" onchange="previewImage(event)">
+
+        {{ form.user_name.label_tag }} {{ form.user_name }}
+        {{ form.user_email.label_tag }} {{ form.user_email }}
+        
+        <!-- 생년월일 필드에만 wrapper div 추가 -->
+        <div class="date-field">
+            {{ form.user_birth.label_tag }} {{ form.user_birth }}
+        </div>
+        
+        {{ form.user_password.label_tag }} {{ form.user_password }}
+        {{ form.password_confirm.label_tag }} {{ form.password_confirm }}
+
+        <button type="submit">회원가입</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('profilePreview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        if (event.target.files[0]) {
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    }
+</script>
+{% endblock %}

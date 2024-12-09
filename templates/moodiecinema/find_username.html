@@ -1,0 +1,19 @@
+{% extends 'moodiecinema/base.html' %}
+{% load static %}
+
+{% block title %}아이디 찾기{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'find_username.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="find-username-container">
+    <h2>아이디 찾기</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="email" name="email" placeholder="이메일 주소" required>
+        <button type="submit">아이디 찾기</button>
+    </form>
+</div>
+{% endblock %}

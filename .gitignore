@@ -1,0 +1,33 @@
+# 데이터베이스 파일
+db.sqlite3
+db.sqlite3~Stashed changes
+
+# 가상 환경 관련 파일
+myenv/
+pyvenv.cfg
+
+# 캐시 파일 및 바이너리 파일
+__pycache__/
+*.pyc
+
+# 마이그레이션 파일 (팀 정책에 따라 제외 가능)
+# */migrations/
+
+# 라이브러리 폴더
+lib/
+.env
+
+tut6-model.pt
+
+# 환경 변수 파일 무시
+.env
+
+# moodiecinema 폴더 내 tut6-model.pt 파일 무시
+moodiecinema/tut6-model.pt
+
+# moodiecinema 폴더 내 모든 .pt 파일 무시
+moodiecinema/*.pt
+
+# 
+Include/
+include/site/python3.12/greenlet/

@@ -1,0 +1,28 @@
+{% extends 'moodiecinema/base.html' %}
+{% load static %}
+
+{% block title %}카테고리{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'category.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="movie-lists">
+        <h2>카테고리</h2>
+        <div class="list">
+            {% if genres %}
+                {% for genre in genres %}
+                    <div class="item" style="background-image: url('{% static 'images/' %}{{ genre.name }}.jpg');">
+                        <a href="{% url 'genres:genre_detail' genre_id=genre.genre_id %}">
+                            <div class="overlay"></div>
+                            <h4>{{ genre.name }}</h4>
+                        </a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>장르 정보를 불러올 수 없습니다.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

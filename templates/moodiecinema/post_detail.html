@@ -1,0 +1,369 @@
+{% extends 'moodiecinema/base.html' %}
+
+{% block title %}게시글 상세 보기{% endblock %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'post_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="post-detail-container">
+    <div class="post-header">
+        <h1>{{ post.title }}</h1>
+        <p class="post-meta">
+            작성자: <span>{{ post.user }}</span> | 작성일: <span>{{ post.created_at|date:"Y-m-d H:i" }}</span>
+        </p>
+        <div class="post-content">
+            <p>{{ post.content }}</p>
+            <ul class="hashtags-list">
+                {% for hashtag in post.hashtags.all %}
+                    <li class="hashtag-item">
+                        <a href="{% url 'community:hashtag_redirect' hashtag.name %}" class="hashtag-link">
+                            #{{ hashtag.name }}
+                        </a>
+                    </li>
+                {% empty %}
+                    <li class="no-hashtags">해시태그가 없습니다.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="post-actions">
+            <button id="like-btn" data-id="{{ post.id }}" class="like-btn">
+                ❤️ <span id="like-count">{{ post.likes.count }}</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('like-btn').addEventListener('click', function() {
+            const postId = this.getAttribute('data-id');
+            fetch(`/community/${postId}/like/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const likeBtn = document.getElementById('like-btn');
+                const likeCount = document.getElementById('like-count');
+                likeCount.innerHTML = data.likes_count;
+
+                // 하트 색상 변경
+                if (data.liked) {
+                    likeBtn.style.color = 'red'; // 좋아요 상태
+                } else {
+                    likeBtn.style.color = 'gray'; // 좋아요 취소 상태
+                }
+            });
+        });
+    </script>
+
+    <div class="comments-section">
+        <h2>댓글</h2>
+        <!-- 댓글이 없을 경우 -->
+        {% if parent_comments|length == 0 %}
+        <p class="no-comments">댓글이 없습니다.</p>
+        {% endif %}
+        
+        <ul class="comment-list">
+            {% for comment in parent_comments %}
+            <li class="comment-item">
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <span class="comment-user">{{ comment.user }}</span>
+                        <span class="comment-date">{{ comment.created_at|date:"Y-m-d H:i" }}</span>
+                    </div>
+                    <p class="comment-text">{{ comment.content }}</p>
+                </div>
+                {% if comment.user == request.user %}
+                <div class="comment-actions">
+                    <button class="btn-delete" onclick="commentModal('{{ post.id }}', '{{ comment.id }}')">삭제</button>
+                </div>
+                {% endif %}
+                <!-- 댓글 삭제 모달 -->
+                <div id="comment-delete-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal('comment-delete-modal')">&times;</span>
+                        <h2>댓글 삭제</h2>
+                        <p>정말 댓글을 삭제하시겠습니까?.</p>
+                        <form id="comment-delete-form" method="post" action="">
+                            {% csrf_token %}
+                            <button type="button" class="btn-delete" onclick="submitCommentDelete()">삭제 완료</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 대댓글 목록 -->
+                {% if comment.replies.all %}
+                <ul class="reply-list">
+                    {% for reply in comment.replies.all %}
+                    <li class="reply-item">
+                        <div class="reply-content">
+                            <div class="reply-header">
+                                <span class="reply-user">{{ reply.user }}</span>
+                                <span class="reply-date">{{ reply.created_at|date:"Y-m-d H:i" }}</span>
+                            </div>
+                            <p class="reply-text">{{ reply.content }}</p>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+        
+                <!-- 대댓글 작성 -->
+                <div class="reply-toggle">
+                    <button class="btn-reply-toggle" onclick="toggleReplyForm(this)">답글 작성</button>
+                    <div class="reply-input-container" style="display: none;">
+                        <form method="post" action="{% url 'community:comment_reply' post.id comment.id %}">
+                            {% csrf_token %}
+                            <textarea name="content" rows="2" placeholder="답글을 입력하세요"></textarea>
+                            <button type="submit" class="btn-submit">작성</button>
+                        </form>
+                    </div>
+                </div>          
+            </li>
+            {% endfor %}
+        </ul>
+
+        <!-- 일반 댓글 작성 -->
+        <div class="comment-input-container">
+            <h2>댓글 작성</h2>
+            <form method="post" action="{% url 'community:comment_create' post.id %}" class="comment-form">
+                {% csrf_token %}
+                <div class="textarea-container">
+                    <textarea name="content" rows="3" placeholder="댓글을 입력하세요"></textarea>
+                    <button type="submit" class="btn-submit">댓글 작성</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="post-actions-bottom">
+        {% if post.user == request.user %}
+        <button class="btn-edit" onclick="openEditModal()">게시글 수정</button>
+        <button class="btn-delete" onclick="openDeleteModal()">게시글 삭제</button>
+        {% endif %}
+    </div>
+</div>
+<!-- 수정 모달 -->
+<div id="edit-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('edit-modal')">&times;</span>
+        <h2>게시글 수정</h2>
+        <form id="edit-form" method="post" action="{% url 'community:post_edit' post.id %}">
+            {% csrf_token %}
+            <input type="text" name="title" value="{{ post.title }}" placeholder="제목을 입력하세요" />
+            <textarea name="content" rows="5" placeholder="게시글 내용을 수정하세요">{{ post.content }}</textarea>
+            <button type="button" class="btn-submit" onclick="submitEdit()">수정 완료</button>
+        </form>           
+    </div>
+</div>
+
+<!-- 삭제 모달 -->
+<div id="delete-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('delete-modal')">&times;</span>
+        <h2>게시글 삭제</h2>
+        <p>정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.</p>
+        <form id="delete-form" method="post" action="{% url 'community:post_delete' post.id %}">
+            {% csrf_token %}
+            <button type="button" class="btn-danger" onclick="submitDelete()">삭제 완료</button>
+        </form>
+    </div>
+</div>
+
+<!-- 알림 메시지 -->
+<div id="notification"></div>
+<script>
+    // 모달 열기
+    function openEditModal() {
+        document.getElementById("edit-modal").style.display = "flex";
+    }
+
+    function openDeleteModal() {
+        document.getElementById("delete-modal").style.display = "flex";
+    }
+
+    // 모달 닫기
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+        } else {
+            console.error(`Modal element with ID "${modalId}" not found!`);
+        }
+    }
+
+    function submitEdit() {
+        const editForm = document.getElementById('edit-form');
+        const formData = new FormData(editForm);
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch(editForm.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+            },
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeModal('edit-modal'); // 수정 모달 닫기
+                showNotification(data.message, "success");
+            } else {
+                const errorMessage = '수정 실패: ' + JSON.stringify(data.errors);
+                showNotification(errorMessage, 'error'); // 에러 메시지 표시
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('서버와 통신 중 문제가 발생했습니다.', 'error');
+        });
+    }
+
+    // 삭제 기능
+    function submitDelete() {
+        const deleteForm = document.getElementById('delete-form');
+        const formData = new FormData(deleteForm);
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch(deleteForm.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+            },
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                window.location.href = "{% url 'community:post_list' %}";
+            } else {
+                const errorMessage = '삭제 실패: ' + JSON.stringify(data.errors);
+                showNotification(errorMessage, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('서버와 통신 중 문제가 발생했습니다.', 'error');
+        });
+    }
+
+    // 알림 표시
+    function showNotification(message, type = 'success') {
+        const container = document.getElementById('notification');
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerText = message;
+
+        container.appendChild(notification);
+
+        requestAnimationFrame(() => {
+            notification.classList.add('show');
+        });
+
+        setTimeout(() => {
+            notification.classList.remove('show');
+            notification.addEventListener('transitionend', () => notification.remove());
+        }, 3000);
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const editForm = document.getElementById('edit-form');
+        const deleteForm = document.getElementById('delete-form');
+
+        if (editForm) {
+            editForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitEdit();
+            });
+        }
+
+        if (deleteForm) {
+            deleteForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitDelete();
+            });
+        }
+    });
+
+    
+</script>
+<script>
+    // 댓글 삭제 모달 열기
+    function commentModal(postId, commentId) {
+        const modal = document.getElementById('comment-delete-modal');
+        const form = document.getElementById('comment-delete-form');
+
+        // 댓글 삭제 URL 동적으로 설정
+        form.action = `/community/${postId}/comment/${commentId}/delete/`;
+
+        // 모달 열기
+        modal.style.display = 'flex';
+    }
+
+    // 모달 닫기
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // 알림창 표시 함수
+    function showNotification(message, type = 'success') {
+        const container = document.getElementById('notification');
+
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerText = message;
+
+        container.appendChild(notification);
+
+        requestAnimationFrame(() => {
+            notification.classList.add('show');
+        });
+
+        setTimeout(() => {
+            notification.classList.remove('show');
+            notification.addEventListener('transitionend', () => notification.remove());
+        }, 3000); // 3초 후 제거
+    }
+
+    // 댓글 삭제 요청 처리
+    function submitCommentDelete() {
+        const deleteForm = document.getElementById('comment-delete-form');
+        const formData = new FormData(deleteForm);
+
+        fetch(deleteForm.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}', // CSRF 토큰
+            },
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message, 'success'); // 성공 알림 표시
+                } else {
+                    showNotification('삭제 실패: ' + data.message, 'error'); // 오류 알림 표시
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('서버와 통신 중 문제가 발생했습니다.', 'error'); // 네트워크 오류 알림 표시
+            });
+    }
+
+    function toggleReplyForm(button) {
+        const replyInputContainer = button.nextElementSibling;
+        if (replyInputContainer.style.display === "none" || replyInputContainer.style.display === "") {
+            replyInputContainer.style.display = "block"; // 폼을 표시
+            button.textContent = "답글 닫기"; // 버튼 텍스트 변경
+        } else {
+            replyInputContainer.style.display = "none"; // 폼을 숨김
+            button.textContent = "답글 작성"; // 버튼 텍스트 원래대로
+        }
+    }
+</script>
+{% endblock %}

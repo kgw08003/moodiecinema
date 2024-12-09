@@ -1,0 +1,222 @@
+{% extends 'moodiecinema/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'reviews_statistics.css' %}">
+
+<div class="review-statistics">
+    <!-- 영화 기본 정보 -->
+    <div class="movie-info">
+        <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
+        <div class="movie-details">
+            <h1>{{ movie.title }}</h1>
+            <p><strong>장르:</strong> 
+                {% for genre in movie.genres %}
+                    {{ genre.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p><strong>개요:</strong> {{ movie.overview|default:"정보 없음" }}</p>
+        </div>
+    </div>
+    
+
+    <!-- 감정 분석 요약 -->
+    <div class="emotion-summary">
+        <h2>감정 분석 요약</h2>
+        <p class="total-sentiment">
+            <strong>총 감정 결과:</strong> {{ total_sentiment }} {{ total_sentiment_emoji }}
+        </p>
+        <canvas id="emotionChart"></canvas>
+    </div>
+
+    <!-- 리뷰 데이터 통계 -->
+    <div class="review-stats">
+        <h2>리뷰 데이터 통계</h2>
+        <p><strong>총 리뷰 수:</strong> {{ review_count|default:"0" }}</p>
+        <p><strong>평균 평점:</strong> {{ average_rating|default_if_none:"N/A" }}</p>
+        {% if highest_rating_review %}
+            <div class="card">
+                <p><strong>최고 평점 리뷰:</strong> "{{ highest_rating_review.content }}" ({{ highest_rating_review.rating }}점)</p>
+            </div>
+        {% else %}
+            <p>최고 평점 리뷰가 아직 없습니다.</p>
+        {% endif %}
+
+        {% if lowest_rating_review %}
+            <div class="card">
+                <p><strong>최저 평점 리뷰:</strong> "{{ lowest_rating_review.content }}" ({{ lowest_rating_review.rating }}점)</p>
+            </div>
+        {% else %}
+            <p>최저 평점 리뷰가 아직 없습니다.</p>
+        {% endif %}
+    </div>
+
+    <div class="review-stats">
+        <h2>별점 분포</h2>
+        <div style="width: 500px; height: 500px; margin: auto;">
+            <canvas id="ratingChart"></canvas>
+        </div>
+    </div>
+        
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        // 모든 별점 (1점부터 5점)
+        const allRatings = ['1점', '2점', '3점', '4점', '5점'];
+
+        // 실제 데이터 (rating_distribution_json)
+        const ratingDistribution = JSON.parse('{{ rating_distribution_json|safe }}');
+
+        // 실제 데이터에서 값이 없는 점수는 0으로 설정
+        const values = allRatings.map(label => {
+            const score = label.replace('점', ''); // "1점" -> "1"
+            return ratingDistribution[score] || 0; // 데이터가 없으면 0
+        });
+
+        const ctx = document.getElementById('ratingChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: allRatings, // X축 라벨: "1점", "2점", "3점" ...
+                datasets: [{
+                    label: '별점 분포',
+                    data: values, // Y축 데이터 값 (예: [0, 0, 1, 0, 0])
+                    backgroundColor: '#FFD700', // 노란색 막대
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // 비율 고정 해제
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#FFFFFF', // 범례 텍스트 색상
+                            font: {
+                                size: 14,
+                                family: 'Arial',
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#FFFFFF', // X축 글씨 색상
+                            font: {
+                                size: 12,
+                            }
+                        },
+                        grid: {
+                            color: '#444444', // X축 그리드 색상
+                        },
+                        barPercentage: 0.5, // 막대 상대 너비
+                        categoryPercentage: 0.8, // 카테고리 간격 비율
+                    },
+                    y: {
+                        ticks: {
+                            color: '#FFFFFF', // Y축 글씨 색상
+                            font: {
+                                size: 12,
+                            }
+                        },
+                        grid: {
+                            color: '#444444', // Y축 그리드 색상
+                        },
+                        beginAtZero: true // Y축 0부터 시작
+                    }
+                },
+                elements: {
+                    bar: {
+                        barThickness: 20, // 막대 두께 고정
+                        maxBarThickness: 30, // 최대 막대 두께 제한
+                    }
+                }
+            }
+        });
+    });
+
+    </script>
+    
+
+    <div class="author-statistics">
+        <h2>리뷰 작성자 분석</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>작성자</th>
+                    <th>작성 리뷰 수</th>
+                    <th>평균 평점</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for author in author_statistics %}
+                    <tr>
+                        <td>{{ author.user__user_name }}</td>
+                        <td>{{ author.review_count }}</td>
+                        <td>{{ author.average_rating|floatformat:1 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- 워드 클라우드 -->
+    <div class="word-cloud-section">
+        <h2>리뷰 워드 클라우드</h2>
+        <div class="word-cloud">
+            {% for word, count in word_count.items %}
+                <span class="word-cloud-word word-size-{{ count }}">{{ word }}</span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- 감정 분석 차트 스크립트 -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // JSON 데이터를 파싱
+        const sentimentCount = JSON.parse('{{ sentiment_count_json|safe }}');
+
+        // 데이터 키와 값 추출
+        const labels = Object.keys(sentimentCount);
+        const values = Object.values(sentimentCount);
+
+        console.log("Labels (Keys):", labels);
+        console.log("Data (Values):", values);
+
+        const canvas = document.getElementById('emotionChart');
+        if (!canvas) {
+            console.error("Canvas element not found");
+            return;
+        }
+
+        const ctx = canvas.getContext('2d');
+
+        const data = {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'], // 원하는 색상 배열
+                borderColor: ['#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF'], // 흰색 테두리 추가
+                borderWidth: 2 // 테두리 두께
+            }]
+        };
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: data,
+            options: {
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#FFFFFF' // 흰색 텍스트로 레이블 표시
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+</script>
+{% endblock %}

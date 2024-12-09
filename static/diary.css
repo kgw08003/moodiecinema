@@ -1,0 +1,445 @@
+body {
+    background-color: #222;
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+/* 모든 링크의 전역 스타일 */
+a {
+    color: #fff; /* 모든 링크를 흰색으로 설정 */
+    text-decoration: none; /* 밑줄 제거 */
+}
+
+/* 선택 사항: 링크에 마우스를 올렸을 때 효과 */
+a:hover {
+    color: #ccc; /* 호버 시 색상 변경 */
+    text-decoration: underline; /* 필요 시 호버 시 밑줄 추가 */
+}
+
+.diary-container {
+    padding: 0;
+    max-width: 100%;
+    margin: 0;
+    margin-top: 100px;
+    width: 100%;
+    color: #fff;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: left;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.small-modal {
+    width: 300px;
+    text-align: center;
+}
+
+.medium-modal {
+    width: 500px; /* 모달 크기 증가 */
+    max-width: 90%;
+    padding: 20px;
+}
+
+.modal-content h3 {
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.date-input {
+    display: flex;
+    align-items: center;
+}
+
+.date-input input[type="date"] {
+    width: calc(100% - 24px); /* 아이콘 공간 고려 */
+    padding: 8px;
+    border-radius: 4px;
+    border: none;
+    margin-right: 10px;
+    background-color: #444;
+    color: #fff;
+}
+
+.date-input .calendar-icon {
+    cursor: pointer;
+}
+
+#entryContent {
+    width: calc(100% - 20px); /* 왼쪽과 오른쪽 여백을 둠 */
+    margin-top: 10px;
+    padding: 10px;
+    height: 120px;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    resize: none;
+}
+
+.modal-buttons .btn {
+    margin: 10px 5px 0 0;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.close-btn {
+    background-color: #666; /* 기존 배경색 유지 */
+    color: #fff; /* 텍스트 색상 흰색 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    font-size: 14px; /* 글자 크기 */
+    font-weight: bold; /* 글자 굵게 */
+    border: 2px solid #444; /* 어두운 테두리 추가 */
+    cursor: pointer; /* 마우스 커서 변경 */
+    transition: all 0.3s ease; /* 부드러운 변화 효과 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* 그림자 효과 */
+}
+
+/* 호버 시 효과 */
+.close-btn:hover {
+    background-color: #555; /* 살짝 어두운 색 */
+    transform: scale(1.1); /* 약간 확대 */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.4); /* 그림자 더 진하게 */
+}
+
+/* 클릭 시 효과 */
+.close-btn:active {
+    background-color: #444; /* 클릭 시 더 어두운 색 */
+    transform: scale(0.95); /* 약간 축소 */
+    box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.2); /* 그림자 감소 */
+}
+
+.write-btn {
+    background-color: #ffd700; /* 기존 배경색 유지 */
+    color: #333; /* 텍스트 어두운 색 */
+    padding: 10px 15px; /* 버튼 크기 조정 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    font-size: 14px; /* 글자 크기 */
+    font-weight: bold; /* 글자 굵게 */
+    border: 2px solid #e6c200; /* 노란색 계열 테두리 */
+    cursor: pointer; /* 마우스 커서 변경 */
+    transition: all 0.3s ease; /* 부드러운 변화 효과 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* 기존 그림자 유지 */
+}
+
+/* 호버 시 효과 */
+.write-btn:hover {
+    background-color: #ffc700; /* 살짝 어두운 노란색 */
+    transform: scale(1.1); /* 약간 확대 */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6); /* 그림자 더 진하게 */
+}
+
+/* 클릭 시 효과 */
+.write-btn:active {
+    background-color: #e6b800; /* 클릭 시 더 어두운 노란색 */
+    transform: scale(0.95); /* 약간 축소 */
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4); /* 그림자 감소 */
+}
+
+
+.skip-btn {
+    background-color: #ffd700; /* 노란색 배경 */
+    color: #333; /* 텍스트 어두운 색 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    font-size: 14px; /* 글자 크기 증가 */
+    font-weight: bold; /* 글자 굵게 */
+    border: 2px solid #333; /* 테두리 추가 */
+    cursor: pointer; /* 마우스 커서 변경 */
+    transition: all 0.3s ease; /* 호버 효과 부드럽게 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* 그림자 효과 */
+    transform: scale(1.1);
+}
+
+/* 호버 시 효과 */
+.skip-btn:hover {
+    background-color: #f0c513; /* 더 어두운 노란색 */
+    color: #222; /* 텍스트 색상 조금 더 어둡게 */
+    transform: scale(1.2); /* 호버 시 크기 살짝 더 확대 */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.4); /* 그림자 더 진하게 */
+}
+
+/* 클릭 시 효과 */
+.skip-btn:active {
+    background-color: #e6b812; /* 클릭 시 어두운 노란색 */
+    transform: scale(0.95); /* 약간 축소 */
+    box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.2); /* 그림자 감소 */
+}
+
+.calendar {
+    margin-top: 20px;
+    text-align: center;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.calendar h2 {
+    font-size: 24px;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.calendar table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.calendar th,
+.calendar td {
+    padding: 15px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.calendar th {
+    font-weight: bold;
+}
+
+.calendar td {
+    padding: 50px; /* 셀의 패딩을 늘려 셀 크기 증가 */
+    cursor: pointer;
+    color: #fff;
+    background-color: #444;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 18px; /* 폰트 크기를 키워서 날짜가 잘 보이도록 조정 */
+}
+
+.calendar td:hover {
+    background-color: #555;
+}
+
+.diary-entry {
+    padding: 20px;
+    width: 100%;
+    background-color: #333;
+    border-radius: 8px;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.diary-entry h2 {
+    font-size: 24px;
+}
+
+.entry-content {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+/* 일기 내용 박스 */
+.diary-box {
+    background-color: #444;
+    color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 10px;
+    width: 1400px; /* 고정된 가로 길이 */
+    height: 400px; /* 고정된 세로 길이 */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: flex-start; /* 상단 왼쪽 정렬 */
+    align-items: flex-start; /* 상단 왼쪽 정렬 */
+    font-size: 16px;
+    white-space: pre-wrap; /* 공백과 줄 바꿈을 그대로 유지 */
+    word-break: break-word; /* 길이가 긴 단어도 줄 바꿈 */
+    overflow-y: auto; /* 내용이 많을 경우 세로 스크롤 표시 */
+    overflow-x: hidden; /* 가로 스크롤 숨김 */
+}
+
+
+/* 감정 분석 결과 박스 */
+.emotion-box {
+    background-color: #444;
+    color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    width: 20%; /* 너비 줄이기 */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+    text-align: center;
+    font-size: 14px;
+}
+
+.emotion-analysis {
+    margin-top: 20px; /* 일기 내용과의 간격 조정 */
+}
+
+.recommendations {
+    margin-top: 20px;
+    background-color: #333;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.recommendations h3 {
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #fff;
+}
+
+.movie-list {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 15px;
+}
+
+.movie-item {
+    width: 140px;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.movie-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.movie-item h3 {
+    font-size: 14px;
+    color: #fff;
+    padding: 8px 5px;
+    margin: 0;
+    background-color: #333;
+    width: 100%;
+    box-sizing: border-box;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: initial;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.movie-item h3 a {
+    color: #fff; /* Ensures links are white */
+    text-decoration: none; /* Removes underline */
+}
+
+.diary-entry {
+    position: relative;
+    z-index: 1;
+    border-radius: 8px; /* 모서리 둥글게 */
+    overflow: hidden; /* 배경 이미지가 모서리 밖으로 나가지 않도록 */
+    color: #fff; /* 텍스트가 배경 위에서 잘 보이도록 설정 */
+    background-attachment: fixed;
+}
+
+
+/* 알림 메시지 스타일 */
+.notification {
+    position: fixed;
+    top: 14px; /* 화면 상단에서 20px 떨어짐 */
+    right: 20px; /* 화면 우측에서 20px 떨어짐 */
+    background-color: #28a745; /* 초록색 배경 */
+    color: white; /* 텍스트 흰색 */
+    padding: 15px 20px; /* 내부 여백 */
+    border-radius: 8px; /* 둥근 모서리 */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+    font-size: 1rem; /* 텍스트 크기 */
+    font-weight: bold; /* 텍스트 굵게 */
+    z-index: 1000; /* 다른 요소보다 위에 표시 */
+    opacity: 0; /* 기본적으로 숨김 */
+    transform: translateY(-20px); /* 약간 위로 이동 */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* 애니메이션 효과 */
+}
+
+/* 알림 메시지가 표시될 때 */
+.notification.show {
+    opacity: 1; /* 보이기 */
+    transform: translateY(0); /* 제자리로 이동 */
+}
+
+/* 알림 메시지가 숨겨질 때 */
+.notification.hide {
+    opacity: 0; /* 숨기기 */
+    transform: translateY(-20px); /* 다시 위로 이동 */
+}
+
+/* 달력 페이지 업데이트 */
+.notification.success {
+    background-color: #28a745; /* 성공 메시지 초록색 */
+    color: white;
+}
+
+.notification.error {
+    background-color: #dc3545; /* 오류 메시지 빨간색 */
+    color: white;
+}
+
+/*달력 디자인*/
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    gap: 10px; /* 간격 줄이기 */
+}
+
+.calendar-header h2 {
+    font-size: 24px;
+    color: #fff;
+    margin: 0;
+    text-align: center;
+}
+
+.btn.arrow-btn {
+    background: none;
+    color: #fff;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 0; /* 불필요한 여백 제거 */
+}
+
+.btn.arrow-btn:hover {
+    color: #ccc;
+}
+
+.reset-skip-btn {
+    position: fixed;
+    bottom: 20px; /* 화면 하단에서 20px 떨어짐 */
+    right: 20px; /* 화면 오른쪽에서 20px 떨어짐 */
+    background-color: #ffd700;
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 15px; /* 크기 조정 */
+    font-size: 14px; /* 텍스트 크기 줄임 */
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.reset-skip-btn:hover {
+    background-color: #b2b445;
+    transform: scale(1.05);
+}
+
+.reset-skip-btn:active {
+    background-color: #1565C0;
+    transform: scale(0.95);
+}
+    

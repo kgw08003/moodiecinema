@@ -1,0 +1,194 @@
+{% extends 'moodiecinema/base.html' %}
+{% load static %}
+
+{% block title %}리뷰 관리{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'reviews_manage.css' %}">
+<meta name="csrf-token" content="{{ csrf_token }}">
+{% endblock %}
+
+{% block content %}
+<h2 class="page-title">리뷰 관리</h2>
+<div class="review-list">
+    {% for review in reviews %}
+        <div class="review-item">
+            {% if review.movie.poster_path %}
+                <img src="https://image.tmdb.org/t/p/w200{{ review.movie.poster_path }}" alt="{{ review.movie.title }}">
+            {% endif %}
+            <div class="review-details">
+                <h3>{{ review.movie.title }}</h3>
+                <p1>{{ review.content }}</p1>
+                <p></p>
+                <p2>평점: {{ review.rating }}</p2>
+                <p class="review-date">작성일: {{ review.created_at|date:"Y-m-d H:i" }}</p> <!-- 작성 날짜 표시 -->
+                <button class="edit-button" data-review-id="{{ review.id }}" 
+                        data-review-content="{{ review.content|escapejs }}" 
+                        data-review-rating="{{ review.rating }}" 
+                        onclick="openEditModal(this)">수정</button>
+                <button class="delete-button" data-review-id="{{ review.id }}" onclick="openDeleteModal(this)">삭제</button>
+            </div>
+        </div>
+    {% empty %}
+        <p class="no-reviews-message">작성된 리뷰가 없습니다.</p>
+    {% endfor %}
+</div>
+
+<!-- 수정 모달 -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 class="modal-title">리뷰 수정</h2>
+        <form id="editForm" method="post" action="">
+            {% csrf_token %}
+            <label for="editContent">리뷰 내용</label>
+            <textarea id="editContent" name="content" rows="4"></textarea>
+            
+            <label for="editRating">평점</label>
+            <input type="number" id="editRating" name="rating" min="1" max="5">
+            
+            <button type="submit" class="submit-button">수정하기</button>
+        </form>
+    </div>
+</div>
+
+<!-- 삭제 확인 모달 -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeDeleteModal()">&times;</span>
+        <h2 class="modal-title">리뷰 삭제 확인</h2>
+        <p class="modal-message">이 리뷰를 정말 삭제하시겠습니까?</p>
+        <div class="modal-buttons">
+            <form id="deleteForm" method="post" action="">
+                {% csrf_token %}
+                <button type="submit" class="confirm-button">삭제</button>
+            </form>
+            <button class="cancel-button" onclick="closeDeleteModal()">취소</button>
+        </div>
+    </div>
+</div>
+
+<!-- 알림 메시지 -->
+<div id="notification" class="notification"></div>
+
+<script>
+    function showNotification(message, type) {
+        console.log('알림 메시지:', message, '타입:', type); // 디버깅용
+        const notification = document.getElementById('notification');
+        if (!notification) {
+            console.error('notification 요소를 찾을 수 없습니다.');
+            return;
+        }
+
+        notification.textContent = message;
+        notification.className = 'notification'; // 기존 클래스 초기화
+        notification.classList.add(type);
+        notification.classList.add('show');
+        console.log('클래스 추가 완료:', notification.className);
+
+        setTimeout(() => {
+            notification.classList.remove('show');
+            console.log('클래스 제거 완료:', notification.className);
+            sessionStorage.removeItem('notificationMessage'); // 자동 삭제
+            sessionStorage.removeItem('notificationType');
+        }, 3000);
+    }
+
+
+    // 새로고침 후 알림 메시지를 복원
+    document.addEventListener('DOMContentLoaded', () => {
+        const message = sessionStorage.getItem('notificationMessage');
+        const type = sessionStorage.getItem('notificationType');
+        if (message && type) {
+            showNotification(message, type);
+        }
+    });
+
+    // 삭제 모달 열기
+    function openDeleteModal(button) {
+        const reviewId = button.getAttribute('data-review-id');
+        document.getElementById('deleteModal').style.display = 'block';
+        document.getElementById('deleteForm').setAttribute('data-review-id', reviewId);
+    }
+
+    // 삭제 모달 닫기
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+    }
+
+    // 삭제 요청 처리
+    document.getElementById('deleteForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const reviewId = this.getAttribute('data-review-id');
+
+        fetch(`/reviews/review/${reviewId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 리뷰 삭제 성공
+                const reviewElement = document.querySelector(`.delete-button[data-review-id="${reviewId}"]`).closest('.review-item');
+                if (reviewElement) {
+                    reviewElement.remove();
+                }
+                showNotification(data.message, 'success'); // 초록색 알림
+            } else {
+                // 리뷰 삭제 실패
+                showNotification(`오류: ${data.message}`, 'error'); // 빨간색 알림
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('리뷰 삭제 중 오류가 발생했습니다.', 'error'); // 빨간색 알림
+        });
+
+        closeDeleteModal();
+    });
+
+    document.getElementById("editForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // 기본 동작 막기
+        const form = this;
+
+        // 데이터를 fetch API로 제출
+        fetch(form.action, {
+            method: "POST",
+            body: new FormData(form),
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log("수정 성공");
+                closeModal(); // 모달 닫기
+            } else {
+                console.error("수정 실패");
+            }
+        })
+        .catch(error => {
+            console.error("수정 중 오류 발생:", error);
+        });
+    });
+
+
+    // 수정 모달 열기
+    function openEditModal(button) {
+        const reviewId = button.getAttribute("data-review-id");
+        const reviewContent = button.getAttribute("data-review-content");
+        const reviewRating = button.getAttribute("data-review-rating");
+
+        document.getElementById("editModal").style.display = "block";
+        document.getElementById("editContent").value = reviewContent;
+        document.getElementById("editRating").value = reviewRating;
+        document.getElementById("editForm").action = `/reviews/review/${reviewId}/update/`;
+    }
+
+    // 수정 모달 닫기
+    function closeModal() {
+        document.getElementById("editModal").style.display = "none";
+        showNotification("리뷰가 성공적으로 수정되었습니다!", 'success'); // 초록색 알림
+    }
+</script>
+{% endblock %}

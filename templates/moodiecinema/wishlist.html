@@ -1,0 +1,70 @@
+{% extends 'moodiecinema/base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'wishlist.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="wishlist-container">
+    <h2 class="wishlist-title">찜 목록</h2>
+
+    <ul class="wishlist">
+        {% for movie in movies %}
+        <li>
+            <div class="movie-item">
+                <a href="{% url 'movies:movie_detail' movie.movie_id %}">
+                    <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_path }}" alt="{{ movie.title }}">
+                    <h3>{{ movie.title }}</h3>
+                </a>
+                <button class="remove-button" data-movie-id="{{ movie.movie_id }}">삭제하기</button>
+            </div>
+        </li>
+        {% empty %}
+        <p class="wishlist-empty-message">찜 목록이 비어 있습니다.</p>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- 알림 메시지 -->
+<div id="notification" class="notification"></div>
+
+<script>
+    function showNotification(message) {
+        const notification = document.getElementById('notification');
+        notification.textContent = message; // 메시지 업데이트
+        notification.classList.add('show'); // 보이기 클래스 추가
+
+        // 3초 후에 자동으로 숨기기
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+
+    // 삭제하기 버튼 클릭 이벤트
+    document.querySelectorAll('.remove-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const movieId = this.getAttribute('data-movie-id');
+            fetch(`/wishlist/remove-from-wishlist/${movieId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                showNotification(data.message); // 알림 메시지 표시
+                if (data.success) {
+                    // 성공적으로 삭제되었으면 리스트에서 항목 제거
+                    this.closest('li').remove();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification("삭제에 실패했습니다."); // 실패 메시지 표시
+            });
+        });
+    });
+</script>
+{% endblock %}

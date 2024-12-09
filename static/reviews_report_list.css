@@ -1,0 +1,127 @@
+/* 신고 목록 테이블 스타일 */
+.container {
+    margin: 20px auto;
+    max-width: 1200px;
+    padding: 20px;
+    background-color: #000000;
+    border-radius: 10px;
+    color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #FFD700; /* 금색 */
+}
+
+.report-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.report-list-table th, 
+.report-list-table td {
+    border: 1px solid #444444;
+    text-align: center;
+    padding: 12px;
+}
+
+.report-list-table th {
+    background-color: #333333;
+    color: #FFD700; /* 금색 */
+    font-weight: bold;
+}
+
+.report-list-table tr:nth-child(even) {
+    background-color: #2a2a2a;
+}
+
+.report-list-table tr:nth-child(odd) {
+    background-color: #1e1e1e;
+}
+
+.report-list-table tr:hover {
+    background-color: #3a3a3a;
+}
+
+/* 상태 레이블 */
+.processed-label {
+    color: #4CAF50; /* 초록색 */
+    font-weight: bold;
+}
+
+.not-processed-label {
+    color: #FF5733; /* 주황색 */
+    font-weight: bold;
+}
+
+.blocked-label {
+    color: #FF0000; /* 빨간색 */
+    font-weight: bold;
+}
+
+.not-blocked-label {
+    color: #FFFFFF; /* 흰색 */
+}
+
+/* 처리 버튼 스타일 */
+.process-btn {
+    padding: 8px 12px;
+    background-color: #FFD700; /* 금색 */
+    color: #000000;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.process-btn:hover {
+    background-color: #E6C200; /* 약간 어두운 금색 */
+}
+
+.process-btn:active {
+    background-color: #CCAA00;
+}
+
+
+/* 취소 버튼 스타일 */
+.cancel-btn {
+    padding: 8px 12px; /* 버튼 크기 */
+    background-color: #FF5733; /* 주황색 */
+    color: #ffffff; /* 흰색 텍스트 */
+    border: none; /* 테두리 제거 */
+    border-radius: 4px; /* 둥근 모서리 */
+    font-size: 14px; /* 텍스트 크기 */
+    font-weight: bold; /* 텍스트 굵게 */
+    cursor: pointer; /* 클릭 가능하도록 포인터 변경 */
+    transition: background-color 0.3s, transform 0.2s; /* 호버 및 클릭 효과 */
+}
+
+/* 취소 버튼 호버 효과 */
+.cancel-btn:hover {
+    background-color: #E74C3C; /* 약간 더 어두운 빨간색 */
+    transform: scale(1.05); /* 버튼 크기 약간 확대 */
+}
+
+/* 취소 버튼 클릭 효과 */
+.cancel-btn:active {
+    background-color: #C0392B; /* 더 어두운 빨간색 */
+    transform: scale(0.95); /* 버튼 크기 약간 축소 */
+}
+
+/* 비활성화된 취소 버튼 */
+.cancel-btn:disabled {
+    background-color: #aaaaaa; /* 회색 */
+    cursor: not-allowed; /* 클릭 불가 포인터 */
+    opacity: 0.7; /* 약간 투명 */
+}
+
+/* 테이블 비어있을 때 */
+.report-list-table td[colspan="9"] {
+    text-align: center;
+    color: #aaaaaa;
+    font-style: italic;
+}

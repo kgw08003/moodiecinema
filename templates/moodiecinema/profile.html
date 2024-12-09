@@ -1,0 +1,435 @@
+{% extends 'moodiecinema/base.html' %}
+{% load static %}
+
+{% block title %}프로필{% endblock %}
+
+{% block head %}
+  <!-- CSS와 Chart.js 라이브러리 추가 -->
+  <link rel="stylesheet" href="{% static 'profile.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-box-and-violin-plot/build/Chart.BoxPlot.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <!-- 프로필 헤더 -->
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {% if user.user_profile %}
+            <!-- 사용자가 업로드한 프로필 사진 -->
+                <img src="{{ user.user_profile.url }}" alt="프로필 사진">
+            {% else %}
+            <!-- 프로필 사진이 없는 경우 사용자 이름의 첫 글자로 표시 -->
+                <div class="avatar-initial">{{ user.user_name|slice:":1" }}</div>
+            {% endif %}
+        </div>
+        <div class="profile-info">
+            <!-- 사용자 이름과 가입 날짜 표시 -->
+            <h2 class="username">{{ user.user_name }}</h2>
+            <p class="membership-date">{{ user.date_joined|date:"Y년 n월 d일"}}부터 회원</p>
+        </div>
+        <div class="movie-quote">
+            <blockquote class="quote" id="quote-text"></blockquote>
+            <cite class="author" id="quote-author"></cite>
+        </div>
+    </div>
+
+    <!-- 탭 네비게이션 -->
+    <div class="profile-tabs">
+        <!-- 각 버튼 클릭 시 특정 섹션 표시 -->
+        <button class="tab" onclick="showSection('authorStatisticsSection')">나의 기록</button>
+        <button class="tab" onclick="window.location.href='{% url "reviews:reviews_manage" %}'">리뷰 관리</button>
+        <button class="tab" onclick="showSection('deleteAccountSection')">회원 탈퇴</button>
+    </div>
+
+    <!-- 작성자 통계 섹션 -->
+    <div id="authorStatisticsSection" class="profile" style="display: none;">
+        <table>
+            <h1>{{ user.user_name }}님의 기록</h1>
+
+            <!-- 리뷰 작성 수 -->
+            <div class="card">
+                <h2>나의 리뷰 작성 수</h2>
+                <p class="stat">{{ review_count }}건</p>
+            </div>
+
+            <!-- 리뷰 평균 평점 -->
+            <div class="card">
+                <h2>나의 리뷰 평균 평점</h2>
+                <p class="stat">{{ average_rating|default:"평점 없음" }} / 5.0 ⭐⭐⭐⭐⭐</p>
+            </div>
+
+            <!-- 가장 높게 평가한 영화 -->
+            <div class="card">
+                <h2>가장 높게 평가한 영화</h2>
+                {% if highest_rating_reviews %}
+                    <ul>
+                        {% for review in highest_rating_reviews %}
+                            <li>{{ review.movie.title }} ({{ review.rating }}⭐)</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>없음</p>
+                {% endif %}
+            </div>
+
+            <!-- 가장 낮게 평가한 영화 -->
+            <div class="card">
+                <h2>가장 낮게 평가한 영화</h2>
+                {% if lowest_rating_reviews %}
+                    <ul>
+                        {% for review in lowest_rating_reviews %}
+                            <li>{{ review.movie.title }} ({{ review.rating }}⭐)</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>없음</p>
+                {% endif %}
+            </div>
+            <!-- 감정 분석 결과 -->
+            <div class="card">
+                <h2>나의 리뷰 감정 차트</h2>
+                <canvas id="emotionDoughnutChart"></canvas>
+            </div>
+            <div class="card">
+                <h2>나의 리뷰 감정 추세</h2>
+                <canvas id="emotionTrendChart"></canvas>
+            </div>
+
+            <div class="card">
+                <h2>나의 일기 감정 추세</h2>
+                <canvas id="diaryEmotionTrendChart"></canvas>
+            </div>
+        </table>
+    </div>
+    <!-- 리뷰 감정 분석 도넛차트 -->
+    <script>
+        const emotionPercentage = {{ emotion_percentage|safe }};
+        const labels = Object.keys(emotionPercentage);
+        const data = Object.values(emotionPercentage);
+    
+        const ctxDoughnut = document.getElementById('emotionDoughnutChart')?.getContext('2d');
+        if (ctxDoughnut) {
+            const doughnutData = {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: [
+                        '#f9d342', // 기쁨
+                        '#4a90e2', // 슬픔
+                        '#50c878', // 평온
+                        '#e74c3c', // 분노
+                        '#8e44ad', // 공포
+                    ],
+                    hoverOffset: 4
+                }]
+            };
+    
+            new Chart(ctxDoughnut, {
+                type: 'doughnut',
+                data: doughnutData,
+                options: {
+                    responsive: false, // 부모 요소에 맞추지 않음
+                    maintainAspectRatio: false, // 비율 유지 해제
+                    
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                    },
+                },
+            });
+        } else {
+            console.error("Canvas context를 찾을 수 없습니다.");
+        }
+    </script>
+
+    <script>
+        // Django에서 전달된 리뷰 데이터
+        const reviewTrendLabels = {{ review_trend_labels|safe }};
+        const reviewEmotionData = {{ review_emotion_data|safe }};
+        const reviewEmotions = ['기쁨', '슬픔', '분노', '평온', '공포'];
+    
+        // Chart.js 데이터셋 생성 (초기에는 hidden: true 설정)
+        const reviewDatasets = reviewEmotions.map((emotion, index) => ({
+            label: emotion, // 감정 이름
+            data: reviewEmotionData[emotion], // 날짜별 리뷰 수
+            borderColor: ['#f9d342', '#4a90e2', '#e74c3c', '#50c878', '#8e44ad'][index], // 색상
+            fill: false, // 배경 채우기 해제
+            tension: 0.4, // 라인 부드럽게
+            hidden: true, // 초기에는 표시 안 함
+        }));
+    
+        // Chart.js 리뷰 감정 추세 차트 생성
+        const reviewCtx = document.getElementById('emotionTrendChart').getContext('2d');
+        new Chart(reviewCtx, {
+            type: 'line',
+            data: {
+                labels: reviewTrendLabels, // X축: 날짜
+                datasets: reviewDatasets, // 감정별 데이터셋
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                        },
+                        onClick: function (e, legendItem) {
+                            const index = legendItem.datasetIndex;
+                            const chart = this.chart;
+                            const meta = chart.getDatasetMeta(index);
+                            meta.hidden = !meta.hidden;
+                            chart.update();
+                        },
+                    },
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: '날짜',
+                        },
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: '리뷰 수',
+                        },
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                        },
+                    },
+                },
+            },
+        });
+    
+        // Django에서 전달된 일기 데이터
+        const diaryTrendLabels = {{ diary_trend_labels|safe }};
+        const diaryEmotionData = {{ diary_emotion_data|safe }};
+        const diaryEmotions = ['기쁨', '슬픔', '분노', '평온', '공포'];
+    
+        // Chart.js 데이터셋 생성 (초기에는 hidden: true 설정)
+        const diaryDatasets = diaryEmotions.map((emotion, index) => ({
+            label: emotion, // 감정 이름
+            data: diaryEmotionData[emotion], // 날짜별 일기 수
+            borderColor: ['#f9d342', '#4a90e2', '#e74c3c', '#50c878', '#8e44ad'][index], // 색상
+            fill: false, // 배경 채우기 해제
+            tension: 0.4, // 라인 부드럽게
+            hidden: true, // 초기에는 표시 안 함
+        }));
+    
+        // Chart.js 일기 감정 추세 차트 생성
+        const diaryCtx = document.getElementById('diaryEmotionTrendChart').getContext('2d');
+        new Chart(diaryCtx, {
+            type: 'line',
+            data: {
+                labels: diaryTrendLabels, // X축: 날짜
+                datasets: diaryDatasets, // 감정별 데이터셋
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                        },
+                        onClick: function (e, legendItem) {
+                            const index = legendItem.datasetIndex;
+                            const chart = this.chart;
+                            const meta = chart.getDatasetMeta(index);
+                            meta.hidden = !meta.hidden;
+                            chart.update();
+                        },
+                    },
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: '날짜',
+                        },
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: '감정 수',
+                        },
+                        beginAtZero: true,
+                    },
+                },
+            },
+        });
+    </script>
+    
+
+    <!-- 일기 감정 추세 -->
+    <script>
+        // Django에서 전달된 일기 데이터
+        const diaryTrendLabels = {{ diary_trend_labels|safe }};
+        const diaryEmotionData = {{ diary_emotion_data|safe }};
+        const diaryEmotions = ['기쁨', '슬픔', '분노', '평온', '공포'];
+
+        // Chart.js 데이터셋 생성
+        const diaryDatasets = diaryEmotions.map((emotion, index) => ({
+            label: emotion, // 감정 이름
+            data: diaryEmotionData[emotion], // 날짜별 일기 수
+            borderColor: ['#f9d342', '#4a90e2', '#e74c3c', '#50c878', '#8e44ad'][index], // 색상
+            borderWidth: 2, // 라인 두께
+            pointRadius: 3, // 데이터 포인트 크기
+            fill: false, // 배경 채우기 해제
+            tension: 0.4, // 라인 부드럽게
+        }));
+
+        // Chart.js 차트 생성
+        const diaryCtx = document.getElementById('diaryEmotionTrendChart').getContext('2d');
+        new Chart(diaryCtx, {
+            type: 'line',
+            data: {
+                labels: diaryTrendLabels, // X축: 날짜
+                datasets: diaryDatasets, // 감정별 데이터셋
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top', // 범례 위치
+                    },
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: '날짜', // X축 제목
+                        },
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: '감정 수', // Y축 제목
+                        },
+                        beginAtZero: true, // Y축 0부터 시작
+                    },
+                },
+            },
+        });
+    </script>
+
+    
+
+
+    <!-- 회원 탈퇴 섹션 -->
+    <div id="deleteAccountSection" class="profile-section" style="display: none;">
+        <h3>회원 탈퇴</h3>
+        <p class="warning-text">회원님께선 <strong>위험 구역</strong>에 진입하셨습니다! 정말로 계정 삭제를 원하신다면, 하단에 비밀번호를 입력해주세요.</p>
+        <input type="password" id="password" placeholder="계속하려면 현재 비밀번호를 입력하십시오...">
+        <button class="btn continue-btn" onclick="showConfirmModal()">계속</button>
+    </div>
+
+    <!-- 회원 탈퇴 확인 모달 -->
+    <div id="confirmModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>회원 탈퇴 확인</h3>
+            <p>정말로 회원 탈퇴를 진행하시겠습니까?</p>
+            <div class="btn-container">
+                <form id="deleteAccountForm" action="{% url 'delete_account' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="password" id="confirmPasswordInput">
+                    <button type="submit" class="btn confirm-btn">예</button>
+                </form>
+                <button class="btn cancel-btn" onclick="closeModal()">아니오</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 회원 탈퇴 -->
+    <div id="deleteAccountSection" class="profile-section" style="display: none;">
+        <h3>회원 탈퇴</h3>
+        <p class="warning-text">회원님께선 <strong>위험 구역</strong>에 진입하셨습니다! 정말로 계정 삭제를 원하신다면, 하단에 비밀번호를 입력해주세요.</p>
+        <input type="password" id="password" placeholder="계속하려면 현재 비밀번호를 입력하십시오...">
+        <button class="btn continue-btn" onclick="showConfirmModal()">계속</button>
+    </div>
+    
+
+    <!-- 회원 탈퇴 확인 모달 -->
+    <div id="confirmModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>회원 탈퇴 확인</h3>
+            <p>정말로 회원 탈퇴를 진행하시겠습니까?</p>
+            <div class="btn-container">
+                <!-- 계정 삭제 확인 폼 -->
+                <form id="deleteAccountForm" action="{% url 'delete_account' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="password" id="confirmPasswordInput">
+                    <button type="submit" class="btn confirm-btn">예</button>
+                </form>
+                <button class="btn cancel-btn" onclick="closeModal()">아니오</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 하단 버튼 -->
+    <div class="action-buttons">
+        <a href="{% url 'update_profile' %}" class="btn edit-profile-btn">회원정보 수정</a>
+        <a href="{% url 'logout' %}" class="btn logout-btn">로그아웃</a>
+    </div>
+</div>
+
+<script>
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('.profile-section');
+        sections.forEach(section => {
+            section.style.display = 'none'; // 모든 섹션 숨김
+        });
+
+        const activeSection = document.getElementById(sectionId);
+        if (activeSection) {
+            activeSection.style.display = 'block'; // 선택된 섹션만 표시
+        }
+    }
+    function showConfirmModal() {
+        const password = document.getElementById("password").value;
+        if (password) {
+            document.getElementById("confirmPasswordInput").value = password;
+            document.getElementById("confirmModal").style.display = "block";
+        } else {
+            alert("비밀번호를 입력해주세요.");
+        }
+    }
+
+    // 탈퇴 확인 모달 닫기
+    function closeModal() {
+        document.getElementById("confirmModal").style.display = "none";
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const quotes = [
+        { text: "영화는 한순간에 인생을 바꿀 수 있다.", author: "스티븐 스필버그" },
+        { text: "인생은 당신이 만든 영화와 같다.", author: "테리 길리엄" },
+        { text: "영화는 꿈이다. 그리고 때로는 그 꿈이 현실이 된다.", author: "마틴 스콜세지" },
+        { text: "스크린에 비치는 것은 단순한 이미지가 아니라 감정이다.", author: "알프레드 히치콕" },
+        { text: "영화는 세상을 보는 창문이다.", author: "페데리코 펠리니" },
+        { text: "당신의 삶을 영화처럼 살지 말고, 영화를 당신의 삶처럼 살아라.", author: "장뤽 고다르" },
+        { text: "모든 영화는 관객을 위한 대화이다.", author: "조지 루카스" },
+        { text: "영화는 현실을 이해하기 위한 도구다.", author: "장 뤽 고다르" },
+        { text: "영화는 세계를 경험하는 방식이다.", author: "다리오 아르젠토" },
+        { text: "좋은 영화는 질문을 던진다, 답을 주지 않는다.", author: "리들리 스콧" },
+        { text: "영화는 인간을 이해하는 가장 강력한 수단이다.", author: "프랑수아 트뤼포" },
+        { text: "영화는 단순히 이야기가 아니라 예술이다.", author: "김기덕" },
+        { text: "스크린에서 삶을 본다는 것은 삶을 재발견하는 것이다.", author: "데이빗 린" }
+    ];
+
+    // 랜덤 명언 선택
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+
+    // HTML 요소에 랜덤 명언 삽입
+    document.getElementById("quote-text").textContent = `"${randomQuote.text}"`;
+    document.getElementById("quote-author").textContent = `- ${randomQuote.author}`;
+});
+</script>
+{% endblock %}

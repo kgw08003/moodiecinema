@@ -1,0 +1,22 @@
+{% extends 'moodiecinema/base.html' %}
+
+{% block title %}게시글 삭제 확인{% endblock %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'community.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="delete-confirm">
+    <h1>게시글 삭제</h1>
+    <p>정말로 이 게시글을 삭제하시겠습니까?</p>
+    <p>"{{ object.title }}"</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger">삭제</button>
+        <a href="{% url 'community:post_detail' object.id %}" class="btn-secondary">취소</a>
+    </form>
+</div>
+{% endblock %}

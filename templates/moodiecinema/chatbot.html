@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영화 챗봇</title>
+</head>
+<body>
+    <h1>영화 추천 챗봇</h1>
+    <div id="chat">
+        <div id="response"></div>
+        <input type="text" id="userMessage" placeholder="메시지를 입력하세요">
+        <button onclick="sendMessage()">보내기</button>
+    </div>
+
+    <script>
+        // async function sendMessage() {
+        //     const userMessage = document.getElementById('userMessage').value;
+        //     const userId = 'user1';  // 사용자 고유 ID (임시)
+        //     const responseDiv = document.getElementById('response');
+
+        //     const response = await fetch(`/chatbot/api/?user_id=${userId}&user_message=${userMessage}`);
+        //     const data = await response.json();
+
+        //     if (data.genres) {
+        //         // 장르 선택 화면
+        //         responseDiv.innerHTML = `
+        //             <p>${data.message}</p>
+        //             <ul>
+        //                 ${Object.keys(data.genres).map(genre => `<li>${genre}</li>`).join('')}
+        //             </ul>
+        //         `;
+        //     } else if (data.movies) {
+        //         // 영화 추천 화면
+        //         responseDiv.innerHTML = `
+        //             <p>${data.message}</p>
+        //             <ul>
+        //                 ${data.movies.map(movie => `<li>${movie}</li>`).join('')}
+        //             </ul>
+        //         `;
+        //     } else if (data.error) {
+        //         responseDiv.innerHTML = `<p>오류: ${data.error}</p>`;
+        //     } else {
+        //         responseDiv.innerHTML = `<p>${data.message}</p>`;
+        //     }
+        // }
+        async function sendMessage() {
+            const userMessage = document.getElementById('userMessage').value;
+            const responseDiv = document.getElementById('response');
+
+            const response = await fetch('/chatbot/api/', {
+                method: 'POST', // 반드시 POST로 설정
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: userMessage }), // 요청 본문
+            });
+
+            const data = await response.json();
+            responseDiv.innerHTML = `<p>${data.response}</p>`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{% extends 'moodiecinema/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'search_results.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- 검색 결과 제목을 맨 위에 배치 -->
+<h2 class="search-title">검색 결과{% if query %}: {{ query }}{% endif %}</h2>
+
+{% if not query %}
+<!-- 검색어가 없을 때만 장르 선택 필터를 보여줌 -->
+<div class="genre-filter">
+    <h3>장르 선택</h3> <!-- 장르 선택 단독으로 가운데 배치 -->
+    <form method="get" action="">
+        <div class="genre-options">
+            {% for genre in genres %}
+                <label>
+                    <input type="checkbox" name="genre" value="{{ genre.id }}"
+                        {% if genre.id|stringformat:"s" in selected_genres %}checked{% endif %}>
+                    {{ genre.name }}
+                </label>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="apply-button">적용</button>
+    </form>
+</div>
+{% endif %}
+
+<div class="search-results-container">
+    <div class="movie-list">
+        {% for movie in movies %}
+        <div class="movie-item">
+            <a href="{% url 'movies:movie_detail' movie.id %}">
+                <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_path }}" alt="{{ movie.title }}">
+                <h3>{{ movie.title }}</h3>
+                <p>{{ movie.overview|truncatechars:100 }}</p>
+            </a>
+        </div>
+        {% empty %}
+        <p>검색 결과가 없습니다.</p>
+        {% endfor %}
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div class="pagination">
+        {% if current_page > 1 %}
+            <a href="?q={{ query }}&page=1">처음</a>
+            <a href="?q={{ query }}&page={{ current_page|add:-1 }}">이전</a>
+        {% endif %}
+
+        <span>페이지 {{ current_page }} / {{ total_pages }}</span>
+
+        {% if current_page < total_pages %}
+            <a href="?q={{ query }}&page={{ current_page|add:1 }}">다음</a>
+            <a href="?q={{ query }}&page={{ total_pages }}">마지막</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

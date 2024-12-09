@@ -1,0 +1,135 @@
+{% extends 'moodiecinema/base.html' %}
+
+{% block title %}커뮤니티{% endblock %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'community.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="community-page">
+    <h1 class="community-title">커뮤니티</h1>
+    <a href="{% url 'community:post_create' %}" class="btn-create-post">새 게시글 작성</a>
+    <div class="divider2"></div>
+    <ul class="post-list">
+        {% for post in posts %}
+        <li class="post-item">
+            <h2 class="post-title">
+                <a href="{% url 'community:post_detail' post.id %}">{{ post.title }}</a>
+            </h2>
+            <p class="post-snippet">{{ post.content|truncatewords:20 }}</p>
+            <p class="post-meta">작성자: {{ post.user }} | 좋아요: {{ post.likes.count }}</p>
+            
+            <!-- 삭제 버튼 -->
+            {% if post.user == request.user %}
+            <button class="btn-danger1" 
+                    onclick="openModal('{{ post.id }}', '{{ post.title }}')">삭제</button>
+            {% endif %}
+        </li>
+        {% empty %}
+        <p class="no-posts">현재 게시물이 없습니다. 첫 번째 게시글을 작성해보세요!</p>
+        {% endfor %}
+    </ul>
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">이전</a>
+        {% endif %}
+        <span class="pagination-info">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">다음</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- 삭제 모달 -->
+<div id="delete-modal" class="modal">
+    <div class="modal-content">
+        <h2>게시글 삭제</h2>
+        <p id="modal-post-title"></p>
+        <p>정말로 이 게시글을 삭제하시겠습니까?</p>
+        <form id="delete-form" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn-danger2">삭제</button>
+            <button type="button" class="btn-secondary" onclick="closeModal()">취소</button>
+        </form>
+    </div>
+</div>
+<!-- 알림 메시지 -->
+<div id="notification" class="notification"></div>
+
+<script defer>
+    function showNotification(message, type) {
+        const notification = document.getElementById('notification');
+        notification.textContent = message; // 메시지 업데이트
+        notification.className = 'notification'; // 기존 클래스 초기화
+        notification.classList.add(type); // 알림 타입 클래스 추가 (success 또는 error)
+        notification.classList.add('show'); // 보이기 클래스 추가
+
+        // 3초 후 자동으로 숨기기
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+
+    window.openModal = function(postId, postTitle) {
+        const modal = document.getElementById('delete-modal');
+        const modalPostTitle = document.getElementById('modal-post-title');
+        const deleteForm = document.getElementById('delete-form');
+
+        modalPostTitle.textContent = `"${postTitle}"`;
+        deleteForm.action = `/community/delete/${postId}/`;
+        modal.style.display = 'block';
+    };
+
+    window.closeModal = function() {
+        const modal = document.getElementById('delete-modal');
+        modal.style.display = 'none';
+    };
+
+    // 삭제 요청 처리
+    document.getElementById('delete-form').addEventListener('submit', function (event) {
+        event.preventDefault(); // 기본 폼 제출 방지
+
+        const form = event.target;
+        const actionUrl = form.action;
+
+        fetch(actionUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then((response) => {
+            if (response.headers.get('content-type')?.includes('application/json')) {
+                return response.json();
+            } else {
+                throw new Error('서버에서 예상치 못한 응답이 반환되었습니다.');
+            }
+        })
+        .then((data) => {
+            if (data.success) {
+                closeModal(); // 모달 창 닫기
+                showNotification(data.message, 'success'); // 초록색 알림
+
+                // 3초 후 새로고침
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
+            } else {
+                showNotification(`오류: ${data.message}`, 'error'); // 빨간색 알림
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            closeModal(); // 모달 창 닫기
+            showNotification('삭제 중 오류가 발생했습니다.', 'error'); // 빨간색 알림
+        });
+    });
+
+</script>
+
+{% endblock %}
+
+
