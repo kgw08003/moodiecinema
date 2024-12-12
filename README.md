@@ -18,7 +18,7 @@
 
 ## 🎞 Demo
 - 시연영상
-- https://drive.google.com/file/d/1fnKK6k4w1NEDZLYPxqUZnyiymQCDHvJw/view?usp=drive_link
+- 
 
 <br/>
 
