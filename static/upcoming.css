@@ -39,6 +39,7 @@ a {
     gap: 10px;
     overflow: hidden;
     width:1530px;
+    padding:35px; 
 }
 
 /* 슬라이더 컨테이너 */

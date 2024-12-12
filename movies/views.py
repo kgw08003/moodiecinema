@@ -10,7 +10,7 @@ from utils.movie_helpers import (
     get_tmdb_reviews
 )
 from utils.review_helpers import get_reviews_with_list_view, analyze_reviews
-
+from reviews.models import Review
 EMOJI_MAPPING = {
     "슬픔": "😢",
     "공포": "😨",
@@ -66,6 +66,19 @@ class MovieDetailView(TemplateView):
         context['reviews'] = reviews
         context['review_form'] = ReviewCreateView.form_class()
 
+        # 리뷰 정렬 처리
+        sort_option = self.request.GET.get('sort', 'newest')
+        reviews = Review.objects.filter(movie_id=movie_id)
+
+        if sort_option == 'highest_rating':
+            reviews = reviews.order_by('-rating')
+        elif sort_option == 'lowest_rating':
+            reviews = reviews.order_by('rating')
+        elif sort_option == 'most_likes':
+            reviews = reviews.order_by('-like_count')
+        else:  # 최신순 (기본값)
+            reviews = reviews.order_by('-created_at')
+        context['sort_option'] = sort_option  # 선택된 옵션 템플릿에 전달
         return context
 
 from utils.person_helpers import fetch_person_data, get_cast_movies,fetch_person_data, get_director_movies
@@ -115,6 +128,7 @@ class ReviewStatisticsView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         movie_id = self.kwargs.get('movie_id')
+        
 
         # 영화 정보 가져오기
         movie_data = get_movie_data(movie_id)
@@ -143,4 +157,3 @@ class ReviewStatisticsView(TemplateView):
         })
 
         return context
-

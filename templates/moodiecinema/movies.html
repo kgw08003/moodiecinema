@@ -270,15 +270,16 @@
         </form>
 
         <!-- 정렬 옵션과 리뷰 목록 -->
-        <form method="get" action="" class="sort-form">
+        <form method="get" action="{% url 'movies:movie_detail' movie_id=movie.id %}" class="sort-form">
             <label for="sort" class="sort-label">정렬 기준:</label>
-            <select name="sort_tmdb" id="sort" onchange="this.form.submit()">
-                <option value="newest" {% if sort_option == 'newest' %}selected{% endif %}>최신순</option>
-                <option value="highest_rating" {% if sort_option == 'highest_rating' %}selected{% endif %}>평점 높은 순</option>
-                <option value="lowest_rating" {% if sort_option == 'lowest_rating' %}selected{% endif %}>평점 낮은 순</option>
-                <option value="most_likes" {% if sort_option == 'most_likes' %}selected{% endif %}>좋아요 많은 순</option>
+            <select name="sort" id="sort" onchange="this.form.submit()">
+                <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>최신순</option>
+                <option value="highest_rating" {% if request.GET.sort == 'highest_rating' %}selected{% endif %}>평점 높은 순</option>
+                <option value="lowest_rating" {% if request.GET.sort == 'lowest_rating' %}selected{% endif %}>평점 낮은 순</option>
+                <option value="most_likes" {% if request.GET.sort == 'most_likes' %}selected{% endif %}>좋아요 많은 순</option>
             </select>
         </form>
+        
 
         <ul class="reviews-list">
             {% for review in reviews %}
@@ -460,3 +461,5 @@
     </section>
 </body>
 {% endblock %}
+message.txt
+22KB

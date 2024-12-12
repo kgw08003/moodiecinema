@@ -58,7 +58,7 @@
             <!-- 리뷰 평균 평점 -->
             <div class="card">
                 <h2>나의 리뷰 평균 평점</h2>
-                <p class="stat">{{ average_rating|default:"평점 없음" }} / 5.0 ⭐⭐⭐⭐⭐</p>
+                <p class="stat">{{ average_rating|floatformat:1|default:"평점 없음" }} / 5.0 ⭐⭐⭐⭐⭐</p>
             </div>
 
             <!-- 가장 높게 평가한 영화 -->
