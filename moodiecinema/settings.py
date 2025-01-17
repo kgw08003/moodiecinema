@@ -8,8 +8,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-i^4dg$lv4d%)&wkni$y$*ici3ki8t_b3j#hvjd-w7s#&!2653&'
-# SECRET_KEY = os.getenv('SECRET_KEY') # 이걸로 배포시 수정 .env에 추가
+
+SECRET_KEY = os.getenv('SECRET_KEY') # 이걸로 배포시 수정 .env에 추가
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False
